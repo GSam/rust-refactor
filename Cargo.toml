@@ -1,0 +1,8 @@
+[package]
+
+name = "rust-refactor"
+version = "0.0.1"
+authors = ["Garming <garming_sam@outlook.com>"]
+
+[dependencies]
+csv = "*"
