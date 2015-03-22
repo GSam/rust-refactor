@@ -48,6 +48,8 @@ fn main() {
 				"end_external_crates" => {},
 				"function" => {},
 				"function_ref" => {},
+				"variable" => {},
+				"variable_ref" => {},
 				"type" => {},
 				"type_ref" => {},
 				"module" => {},
