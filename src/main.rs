@@ -60,4 +60,10 @@ fn main() {
 		
 	}
 
+	r.src_remove(5, 10);
+	println!("{}", &r.to_string()[0..20]);
+	r.src_insert(5, "boo".to_string());
+	println!("{}", &r.to_string()[0..20]);
+	r.src_remove(5, 10);
+	println!("{}", &r.to_string()[0..20]);
 }
