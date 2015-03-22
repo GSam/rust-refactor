@@ -42,6 +42,20 @@ fn main() {
 		for row in rdr.records() {
 			let row = row.unwrap();
 			println!("{:?}", row);
+			match row[0].as_slice() {
+				"crate" => {},
+				"external_crate" => {},
+				"end_external_crates" => {},
+				"function" => {},
+				"function_ref" => {},
+				"type" => {},
+				"type_ref" => {},
+				"module" => {},
+				"module_ref" => {},
+				"module_alias" => {},
+				"unknown_ref" => {},
+				_ => {}
+			}
 		}
 		
 	}
