@@ -21,20 +21,15 @@ use std::io::BufReader;
 use std::collections::HashMap;
 
 fn main() {
-	let path = PathBuf::new("C:/Rust/helloworld.rs");
+	let path = PathBuf::new("C:/Rust/test4.rs");
+	let rename_var = "9";
 
 	let mut file = match File::open(&path) {
 		Err(why) => panic!("couldn't open file {}", why.description()),
 		Ok(file) => file,
 	};
 
-	let mut s = String::new();
-	match file.read_to_string(&mut s) {
-		Err(why) => panic!("couldn't read into string {}", why.description()),
-		Ok(_) => println!("file reading ok {}", s),
-	}
-
-	let mut r: Rope = s.parse().unwrap();
+	let mut ropes: Vec<Rope> = BufReader::new(file).lines().map(|x| Rope::from_string(x.unwrap())).collect();
 
 	let mut analysis = BufReader::new(File::open(&"C:/Rust/dxr-temp/unknown_crate.csv").unwrap());
 
@@ -100,4 +95,46 @@ fn main() {
 	for (key, value) in var_ref_map.iter() {
 		println!("{}: \"{:?}\"", *key, value);
 	}
+	
+	let map = var_map.get(rename_var).unwrap();
+	let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+	let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+	let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+	let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &"hello");
+
+	for map in var_ref_map.get(rename_var).unwrap().iter() {
+		let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+		let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+		let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+		let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+		
+		println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+		rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &"hello");
+	}
+
+	for rope in &ropes {
+		println!("{}", rope.to_string());
+	}
+}
+
+fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize, file_col_end: usize, file_line_end: usize, new_name: &str) {
+	let to_change = &mut ropes[file_line-1..file_line_end];
+	let length = to_change.len();
+
+	if file_line == file_line_end {
+		to_change[0].src_remove(file_col, file_col_end);
+	} else {
+		for i in 0..length {
+			let len = to_change[i].len();
+			let line = &mut to_change[i];
+			match i {
+				0 => line.src_remove(file_col, len),
+				x if x == length => line.src_remove(0, file_col_end),
+				_ => line.src_remove(0, len)
+			}
+		}
+	}
+
+	to_change[0].src_insert(file_col, new_name.to_string());
 }
