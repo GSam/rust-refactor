@@ -17,9 +17,9 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 use std::fs::File;
 use rope::Rope;
+use std::io::BufReader;
 
 fn main() {
-    let mut rdr = csv::Reader::from_file("C:/Rust/dxr-temp/unknown_crate.csv").unwrap();
 	let path = PathBuf::new("C:/Rust/helloworld.rs");
 
 	let mut file = match File::open(&path) {
@@ -33,10 +33,17 @@ fn main() {
 		Ok(_) => println!("file reading ok {}", s),
 	}
 
-	let mut r: Rope = s.parse().unwrap(); //"Hello world!".parse().unwrap();
-    for record in rdr.records() {
-        let r = record.unwrap();
-        println!("{:?}", r);
-		break;
-    }
+	let mut r: Rope = s.parse().unwrap();
+
+	let mut analysis = BufReader::new(File::open(&"C:/Rust/dxr-temp/unknown_crate.csv").unwrap());
+
+	for line in analysis.lines() {
+		let mut rdr = csv::Reader::from_string(line.unwrap()).has_headers(false);
+		for row in rdr.records() {
+			let row = row.unwrap();
+			println!("{:?}", row);
+		}
+		
+	}
+
 }
