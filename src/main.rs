@@ -25,8 +25,8 @@ use rope::Rope;
 fn main() {
 	let args = env::args();
 
-	if args.len() < 4 {
-		println!("Not enough args: <analysis> <src> <var>");
+	if args.len() < 5 {
+		println!("Not enough args: <analysis> <src> <var> <outvar>");
 		return;
 	}
 
@@ -112,7 +112,7 @@ fn main() {
 	let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
 	let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
 	let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
-	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &"hello");
+	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &args[4]);
 
 	for map in var_ref_map.get(rename_var).unwrap().iter() {
 		let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
@@ -121,7 +121,7 @@ fn main() {
 		let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
 		
 		println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
-		rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &"hello");
+		rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &args[4]);
 	}
 
 	for rope in &ropes {
