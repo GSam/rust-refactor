@@ -13,25 +13,35 @@ extern crate log;
 
 pub mod rope;
 
+use std::collections::HashMap;
+use std::env;
+use std::fs::File;
+use std::io::BufReader;
 use std::io::prelude::*;
 use std::path::PathBuf;
-use std::fs::File;
+
 use rope::Rope;
-use std::io::BufReader;
-use std::collections::HashMap;
 
 fn main() {
-	let path = PathBuf::new("C:/Rust/test4.rs");
-	let rename_var = "9";
+	let args = env::args();
 
-	let mut file = match File::open(&path) {
+	if args.len() < 4 {
+		println!("Not enough args: <analysis> <src> <var>");
+		return;
+	}
+
+	let args:Vec<_> = args.collect();
+	let path = PathBuf::new(&args[2]);
+	let rename_var = &args[3];
+
+	let file = match File::open(&path) {
 		Err(why) => panic!("couldn't open file {}", why.description()),
 		Ok(file) => file,
 	};
 
 	let mut ropes: Vec<Rope> = BufReader::new(file).lines().map(|x| Rope::from_string(x.unwrap())).collect();
 
-	let mut analysis = BufReader::new(File::open(&"C:/Rust/dxr-temp/unknown_crate.csv").unwrap());
+	let analysis = BufReader::new(File::open(&args[1]).unwrap());
 
 	let mut var_map = HashMap::new();
 	let mut var_ref_map = HashMap::new();
@@ -96,6 +106,7 @@ fn main() {
 		println!("{}: \"{:?}\"", *key, value);
 	}
 	
+	// TODO Failed an attempt to chain the declaration to the other iterator...
 	let map = var_map.get(rename_var).unwrap();
 	let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
 	let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
