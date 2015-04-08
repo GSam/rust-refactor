@@ -7,18 +7,62 @@ use rope::Rope;
 pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> String {
 	let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
 
+	let analyzedData = init(analysis);
+	for (key, value) in analyzedData.type_map.iter() {
+		println!("{}: \"{}\"", *key, value.get("id").unwrap());
+	}
+
+	for (key, value) in analyzedData.type_ref_map.iter() {
+		println!("{}: \"{:?}\"", *key, value);
+	}
+	
+	// TODO Failed an attempt to chain the declaration to the other iterator...
+	let map = analyzedData.type_map.get(rename_var).unwrap();
+	let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+	let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+	let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+	let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+
+	for map in analyzedData.type_ref_map.get(rename_var).unwrap().iter() {
+		let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+		let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+		let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+		let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+		
+		println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+		rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+	}
+
+	let mut answer = String::new();
+	for rope in &ropes {
+		answer.push_str(&rope.to_string());
+		answer.push_str("\n");
+	}
+
+	return answer;
+}
+
+struct AnalysisData {
+	var_map: HashMap<String, HashMap<String, String>>,
+	var_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
+	type_map: HashMap<String, HashMap<String, String>>,
+	type_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
+}
+
+fn init(analysis: &str) -> AnalysisData {
 	let mut var_map = HashMap::new();
 	let mut var_ref_map = HashMap::new();
 	let mut type_map = HashMap::new();
 	let mut type_ref_map = HashMap::new();
 
 	for line in analysis.lines() {
-		println!("{}", line);
+		//println!("{}", line);
 		let mut rdr = csv::Reader::from_string(line).has_headers(false);
 		for row in rdr.records() {
 			let row = row.unwrap();
 			let mut map_record = HashMap::new();
-			println!("{:?}", row);
+			//println!("{:?}", row);
 
 			let mut it = row.iter();
 			it.next(); // discard first value
@@ -44,7 +88,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 				"var_ref" => {
 					let key = map_record.get("refid").unwrap().clone();
 
-					if !var_ref_map.contains_key("refid") {
+					if !var_ref_map.contains_key(&key) {
 						let v = vec![map_record];
 						var_ref_map.insert(key, v);
 					} else {
@@ -57,14 +101,14 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 					let key = map_record.get("id").unwrap().clone();
 					type_map.insert(key, map_record);
 				},
-				"type_ref" => {
+				"type_ref" | "struct_ref" => {
 					let key = map_record.get("refid").unwrap().clone();
 
-					if !type_ref_map.contains_key("refid") {
+					if !type_ref_map.contains_key(&key) {
 						let v = vec![map_record];
 						type_ref_map.insert(key, v);
 					} else {
-						let vec = var_ref_map.get_mut(&key);
+						let vec = type_ref_map.get_mut(&key);
 						vec.unwrap().push(map_record);
 					
 					}
@@ -79,41 +123,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 		
 	}
 
-
-	for (key, value) in var_map.iter() {
-		println!("{}: \"{}\"", *key, value.get("id").unwrap());
-	}
-
-	for (key, value) in var_ref_map.iter() {
-		println!("{}: \"{:?}\"", *key, value);
-	}
-	
-	// TODO Failed an attempt to chain the declaration to the other iterator...
-	let map = var_map.get(rename_var).unwrap();
-	let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
-	let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
-	let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
-	let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
-	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
-
-
-	for map in var_ref_map.get(rename_var).unwrap().iter() {
-		let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
-		let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
-		let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
-		let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
-		
-		println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
-		rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
-	}
-
-	let mut answer = String::new();
-	for rope in &ropes {
-		answer.push_str(&rope.to_string());
-		answer.push_str("\n");
-	}
-
-	return answer;
+	return AnalysisData{ var_map: var_map, var_ref_map: var_ref_map, type_map: type_map, type_ref_map: type_ref_map }
 }
 
 fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize, file_col_end: usize, file_line_end: usize, new_name: &str) {
