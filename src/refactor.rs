@@ -9,6 +9,9 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 
 	let mut var_map = HashMap::new();
 	let mut var_ref_map = HashMap::new();
+	let mut type_map = HashMap::new();
+	let mut type_ref_map = HashMap::new();
+
 	for line in analysis.lines() {
 		println!("{}", line);
 		let mut rdr = csv::Reader::from_string(line).has_headers(false);
@@ -50,8 +53,22 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 					
 					}
 				},
-				"type" => {},
-				"type_ref" => {},
+				"struct" | "enum" => {
+					let key = map_record.get("id").unwrap().clone();
+					type_map.insert(key, map_record);
+				},
+				"type_ref" => {
+					let key = map_record.get("refid").unwrap().clone();
+
+					if !type_ref_map.contains_key("refid") {
+						let v = vec![map_record];
+						type_ref_map.insert(key, v);
+					} else {
+						let vec = var_ref_map.get_mut(&key);
+						vec.unwrap().push(map_record);
+					
+					}
+				},
 				"module" => {},
 				"module_ref" => {},
 				"module_alias" => {},
