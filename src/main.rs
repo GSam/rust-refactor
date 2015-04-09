@@ -44,7 +44,11 @@ fn main() {
 
 
 	if args.len() == 6 {
-		println!("{}", refactor::refactor::rename_type(&file_str, &analysis_str, &args[4], rename_var));
+		if args[5] == "type" {
+			println!("{}", refactor::refactor::rename_type(&file_str, &analysis_str, &args[4], rename_var));
+		} else {
+			println!("{}", refactor::refactor::rename_function(&file_str, &analysis_str, &args[4], rename_var));
+		}
 	} else {
 		println!("{}", refactor::refactor::rename_variable(&file_str, &analysis_str, &args[4], rename_var));
 	}
