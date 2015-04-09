@@ -43,6 +43,10 @@ fn main() {
 	analysis.read_to_string(&mut analysis_str);
 
 
-	println!("{}", refactor::refactor::rename_variable(&file_str, &analysis_str, &args[4], rename_var));
+	if args.len() == 6 {
+		println!("{}", refactor::refactor::rename_type(&file_str, &analysis_str, &args[4], rename_var));
+	} else {
+		println!("{}", refactor::refactor::rename_variable(&file_str, &analysis_str, &args[4], rename_var));
+	}
 }
 
