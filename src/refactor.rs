@@ -33,11 +33,31 @@ pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str
 	return rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map);
 }
 
+pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> String {
+	let analyzed_data = init(analysis);
+
+	// method calls refer to top level trait function in declid
+
+	// rename original function 
+
+	// then rename all statically dispatched with refid = id
+	// then rename all dynamically dispatched with declid = id
+	// then rename all functions with declid = id
+	// assuming mutual exclusion, these should all be covered in func_ref_map
+
+	let dec_map = analyzed_data.func_map;
+	let ref_map = analyzed_data.func_ref_map;
+
+	return rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map);
+}
+
 struct AnalysisData {
 	var_map: HashMap<String, HashMap<String, String>>,
 	var_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
 	type_map: HashMap<String, HashMap<String, String>>,
 	type_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
+	func_map: HashMap<String, HashMap<String, String>>,
+	func_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
 }
 
 fn init(analysis: &str) -> AnalysisData {
@@ -47,6 +67,8 @@ fn init(analysis: &str) -> AnalysisData {
 	let mut type_ref_map = HashMap::new();
 	let mut ctor_map = HashMap::new();
 	let mut qual_type_map = HashMap::new();
+	let mut func_map = HashMap::new();
+	let mut func_ref_map = HashMap::new();
 
 	for line in analysis.lines() {
 		//println!("{}", line);
@@ -76,8 +98,56 @@ fn init(analysis: &str) -> AnalysisData {
 				"crate" => {},
 				"external_crate" => {},
 				"end_external_crates" => {},
-				"function" => {},
-				"function_ref" => {},
+				"function" | "function_impl" | "method_decl" => {
+					let rec = map_record.clone();
+					let copy = map_record.clone();
+					let key = rec.get("id").unwrap();
+					func_map.insert(key.clone(), map_record);
+
+					// Treat method impl as a function ref
+					let declid = rec.get("declid");
+					match declid {
+						Some(x) if *x != "" => {
+							if !func_ref_map.contains_key(x) {
+								let v = vec![copy];
+								func_ref_map.insert(x.clone(), v);
+							} else {
+								let vec = func_ref_map.get_mut(x);
+								vec.unwrap().push(copy);
+							}
+						},
+						_ => {}
+					}
+				},
+				"fn_ref" | "fn_call" | "method_call" => {
+					let rec = map_record.clone();
+					let refid = rec.get("refid");
+					let declid = rec.get("declid");
+					let mut key = "".to_string();
+
+					match refid {
+						Some(x) if *x != "" && *x != "0" => {
+							key = x.clone();
+						},
+						_ => {
+							match declid {
+								Some(x) if *x != "" => {
+									key = x.clone();
+								},
+								None | _ => {}
+							}
+						}
+					}
+
+					if !func_ref_map.contains_key(&key) {
+						let v = vec![map_record];
+						func_ref_map.insert(key, v);
+					} else {
+						let vec = func_ref_map.get_mut(&key);
+						vec.unwrap().push(map_record);
+					
+					}
+				},
 				"variable" => {
 					let key = map_record.get("id").unwrap().clone();
 					var_map.insert(key, map_record);
@@ -159,7 +229,8 @@ fn init(analysis: &str) -> AnalysisData {
 		}
 	}
 
-	return AnalysisData{ var_map: var_map, var_ref_map: var_ref_map, type_map: type_map, type_ref_map: type_ref_map }
+	return AnalysisData{ var_map: var_map, var_ref_map: var_ref_map, type_map: type_map,
+						 type_ref_map: type_ref_map, func_map: func_map, func_ref_map: func_ref_map }
 }
 
 fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
