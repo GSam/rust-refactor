@@ -64,8 +64,26 @@ fn prevented_variable_2() {
 	}
 }
 
-	match refactor::refactor::rename_variable(&input, &analysis, "x", "36") {
-		Ok(_) => assert!(false),
-		Err(x) => assert_eq!(Response::Conflict, x)
+#[test]
+fn working_struct_1() {
+	let input = read_to_string("tests/type/basic_struct.rs");
+	let output = read_to_string("tests/type/working_struct_1_out.rs");
+	let analysis = read_to_string("tests/type/basic_struct.csv");
+
+	match refactor::refactor::rename_type(&input, &analysis, "Pointer", "4") {
+		Ok(x) => assert_eq!(output.trim(), x.trim()),
+		Err(_) => assert!(false)
+	}
+}
+
+#[test]
+fn working_struct_2() {
+	let input = read_to_string("tests/type/scoped_struct.rs");
+	let output = read_to_string("tests/type/working_struct_1_out.rs");
+	let analysis = read_to_string("tests/type/scoped_struct.csv");
+
+	match refactor::refactor::rename_type(&input, &analysis, "Pointer", "4") {
+		Ok(x) => assert_eq!(output.trim(), x.trim()),
+		Err(_) => assert!(false)
 	}
 }
