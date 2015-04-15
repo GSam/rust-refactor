@@ -21,6 +21,7 @@ fn main() {
 
 	if args.len() < 5 {
 		println!("Not enough args: <analysis> <src> <var> <outvar>");
+		println!("var: <nodeid> | <name>:<row or -1>:<col or -1>");
 		return;
 	}
 
