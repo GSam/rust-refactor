@@ -86,6 +86,8 @@ fn init(analysis: &str) -> AnalysisData {
 					if key.to_string() == "qualname" {
 						let new_val = val.trim_left_matches(':');
 						map_record.insert(key.clone(), new_val.to_string());
+						let name: Vec<&str> = new_val.split("::").collect();
+						map_record.insert("name".to_string(), name[name.len()-1].to_string());
 					} else {
 						map_record.insert(key.clone(), val.clone());
 					}
@@ -265,7 +267,8 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
 	return answer;
 }
 
-fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize, file_col_end: usize, file_line_end: usize, new_name: &str) {
+fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize,
+		  file_col_end: usize, file_line_end: usize, new_name: &str) {
 	let to_change = &mut ropes[file_line-1..file_line_end];
 	let length = to_change.len();
 
@@ -284,4 +287,60 @@ fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize, file_col_end:
 	}
 
 	to_change[0].src_insert(file_col, new_name.to_string());
+}
+
+// TODO more efficient, perhaps better indexed and given type of node as arg
+// Factor out the init.
+fn identify_id(input_filename: &str, analysis: &str, rename_var: &str, 
+			   row: i32, col: i32) -> String {
+	let analyzed_data = init(analysis);
+
+	for (key, value) in analyzed_data.var_map {
+		if check_match(rename_var, input_filename, row, col, value) {
+			return key;
+		}
+	}
+
+	for (key, value) in analyzed_data.type_map {
+		if check_match(rename_var, input_filename, row, col, value) {
+			return key;
+		}
+	}
+
+	for (key, value) in analyzed_data.func_map {
+		if check_match(rename_var, input_filename, row, col, value) {
+			return key;
+		}
+	}
+
+	"".to_string()
+}
+
+fn check_match(name: &str, input_filename: &str, row: i32, col: i32, 
+			   record: HashMap<String, String>) -> bool {
+
+	let c: i32 = record.get("file_col").unwrap().parse().unwrap();
+	let r: i32 = record.get("file_line").unwrap().parse().unwrap();
+	let r_end: i32 = record.get("file_line_end").unwrap().parse().unwrap();
+	let c_end: i32 = record.get("file_col_end").unwrap().parse().unwrap();
+	let filename = record.get("file_name").unwrap();
+	let n = record.get("name").unwrap();
+
+	if &name == n && filename == &input_filename {
+		if !(row < 0) {
+			if row >= r && row <= r_end {
+				if !(col < 0) {
+					if col >= c && col < c_end {
+						return true;
+					}
+				} else {
+					return true;
+				}
+			}
+		} else {
+			return true;
+		}
+	}
+
+	false
 }
