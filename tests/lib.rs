@@ -100,3 +100,15 @@ fn working_method_1() {
 		Err(_) => assert!(false)
 	}
 }
+
+#[test]
+fn working_method_2() {
+	let input = read_to_string("tests/function/impl_override_method.rs");
+	let output = read_to_string("tests/function/working_method_2_out.rs");
+	let analysis = read_to_string("tests/function/impl_override_method.csv");
+
+	match refactor::refactor::rename_function(&input, &analysis, "func", "5") {
+		Ok(x) => assert_eq!(output.trim(), x.trim()),
+		Err(_) => assert!(false)
+	}
+}
