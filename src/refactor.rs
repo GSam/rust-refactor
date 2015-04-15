@@ -86,8 +86,10 @@ fn init(analysis: &str) -> AnalysisData {
 					if key.to_string() == "qualname" {
 						let new_val = val.trim_left_matches(':');
 						map_record.insert(key.clone(), new_val.to_string());
-						let name: Vec<&str> = new_val.split("::").collect();
-						map_record.insert("name".to_string(), name[name.len()-1].to_string());
+						if !map_record.contains_key("name") {
+							let name: Vec<&str> = new_val.split("::").collect();
+							map_record.insert("name".to_string(), name[name.len()-1].to_string());
+						}
 					} else {
 						map_record.insert(key.clone(), val.clone());
 					}
