@@ -78,6 +78,7 @@ fn working_struct_1() {
 
 #[test]
 fn working_struct_2() {
+	// ::Point mentioned instead of Point
 	let input = read_to_string("tests/type/scoped_struct.rs");
 	let output = read_to_string("tests/type/working_struct_1_out.rs");
 	let analysis = read_to_string("tests/type/scoped_struct.csv");
