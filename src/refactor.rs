@@ -32,7 +32,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 		_ => { return input.to_string(); }
 	}
 
-	return rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map);
+	rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map)
 }
 
 pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> String {

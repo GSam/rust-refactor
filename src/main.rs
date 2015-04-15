@@ -48,8 +48,8 @@ fn main() {
 	let v: Vec<_> = args[3].split(":").collect();
 	if v.len() == 3 {
 		s = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_str,
-													 v[0], v[1].parse().unwrap(), 
-													 v[2].parse().unwrap());
+											v[0], v[1].parse().unwrap(), 
+											v[2].parse().unwrap());
 		rename_var = &s;
 	}
 
