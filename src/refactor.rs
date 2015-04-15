@@ -4,7 +4,13 @@ use std::collections::HashMap;
 
 use rope::Rope;
 
-pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> String {
+#[derive(Debug)]
+pub enum Response {
+	Error,
+	Conflict
+}
+
+pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
 	let analyzed_data = init(analysis);
 	
 	for (key, value) in analyzed_data.type_map.iter() {
@@ -36,20 +42,20 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 							let line: i32 = record.get("file_line").unwrap().parse().unwrap();
 							if line >= line_no {
 								// Affected reference
-								return input.to_string();
+								return Err(Response::Conflict); //input.to_string();
 							}
 						}
 					}
 				}
 			}
 		},
-		_ => { return input.to_string(); }
+		_ => { return Err(Response::Conflict); } //input.to_string(); }
 	}
 
-	rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map)
+	Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> String {
+pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
 	let analyzed_data = init(analysis);
 
 	for (key, value) in analyzed_data.type_map.iter() {
@@ -59,10 +65,10 @@ pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str
 	let dec_map = analyzed_data.type_map;
 	let ref_map = analyzed_data.type_ref_map;
 
-	return rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map);
+	Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> String {
+pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
 	let analyzed_data = init(analysis);
 
 	// method calls refer to top level trait function in declid
@@ -77,7 +83,7 @@ pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: 
 	let dec_map = analyzed_data.func_map;
 	let ref_map = analyzed_data.func_ref_map;
 
-	return rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map);
+	Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
 struct AnalysisData {

@@ -27,7 +27,7 @@ fn main() {
 
 	let args: Vec<_> = args.collect();
 	let path = PathBuf::new(&args[2]);
-	let mut s = "".to_string();
+	let mut s;
 	let mut rename_var = &args[3];
 
 	let mut file = match File::open(&path) {
@@ -56,12 +56,24 @@ fn main() {
 
 	if args.len() == 6 {
 		if args[5] == "type" {
-			println!("{}", refactor::refactor::rename_type(&file_str, &analysis_str, &args[4], rename_var));
+			let result = refactor::refactor::rename_type(&file_str, &analysis_str, &args[4], rename_var);
+			match result {
+				Ok(x) => println!("{}", x),
+				Err(x) => println!("{:?}", x)
+			}
 		} else {
-			println!("{}", refactor::refactor::rename_function(&file_str, &analysis_str, &args[4], rename_var));
+			let result = refactor::refactor::rename_function(&file_str, &analysis_str, &args[4], rename_var);
+			match result {
+				Ok(x) => println!("{}", x),
+				Err(x) => println!("{:?}", x)
+			}
 		}
 	} else {
-		println!("{}", refactor::refactor::rename_variable(&file_str, &analysis_str, &args[4], rename_var));
+		let result = refactor::refactor::rename_variable(&file_str, &analysis_str, &args[4], rename_var);
+		match result {
+			Ok(x) => println!("{}", x),
+			Err(x) => println!("{:?}", x)
+		}
 	}
 }
 
