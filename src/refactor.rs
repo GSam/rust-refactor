@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 use rope::Rope;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Response {
 	Error,
 	Conflict
