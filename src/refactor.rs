@@ -34,7 +34,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 					// Conflict present:
 					// May still be ok if there is no references to it
 					// However, standalone blocks won't be detected + macros
-
+					// Will also restrict if reference is on same line as renaming
 					let id = value.get("id").unwrap();
 					let line_no: i32 = value.get("file_line").unwrap().parse().unwrap();
 					if let Some(refs) = ref_map.get(id) {
