@@ -59,9 +59,10 @@ fn working_rename_1() {
 	};
 
 }";
-
-	assert_eq!(output, refactor::refactor::rename_variable(&input, &ANALYSIS, "hello", "9"));
-
+	match refactor::refactor::rename_variable(&input, &ANALYSIS, "hello", "9") {
+		Ok(x) => assert_eq!(output, x),
+		Err(_) => assert!(false)
+	}
 }
 
 #[test]
