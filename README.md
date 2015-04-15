@@ -6,7 +6,7 @@ A tool to help refactor rust programs.
 Currently supports:
 Simple variable renames, function renaming, struct renaming.
 
-TODO:
+#TODO:
 Multiple file projects, multi-module.
 
 Renaming fields
@@ -17,7 +17,7 @@ Renaming traits
 
 Conflict resolution for functions + types
 
-TESTS TODO:
+#TESTS TODO:
 Simple static dispatch
 
 Simple parameterized static dispatch
