@@ -291,7 +291,7 @@ fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize,
 
 // TODO more efficient, perhaps better indexed and given type of node as arg
 // Factor out the init.
-fn identify_id(input_filename: &str, analysis: &str, rename_var: &str, 
+pub fn identify_id(input_filename: &str, analysis: &str, rename_var: &str, 
 			   row: i32, col: i32) -> String {
 	let analyzed_data = init(analysis);
 

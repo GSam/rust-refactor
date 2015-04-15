@@ -24,9 +24,10 @@ fn main() {
 		return;
 	}
 
-	let args:Vec<_> = args.collect();
+	let args: Vec<_> = args.collect();
 	let path = PathBuf::new(&args[2]);
-	let rename_var = &args[3];
+	let mut s = "".to_string();
+	let mut rename_var = &args[3];
 
 	let mut file = match File::open(&path) {
 		Err(why) => panic!("couldn't open file {}", why.description()),
@@ -42,6 +43,14 @@ fn main() {
 	let mut analysis_str = String::new();
 	analysis.read_to_string(&mut analysis_str);
 
+
+	let v: Vec<_> = args[3].split(":").collect();
+	if v.len() == 3 {
+		s = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_str,
+													 v[0], v[1].parse().unwrap(), 
+													 v[2].parse().unwrap());
+		rename_var = &s;
+	}
 
 	if args.len() == 6 {
 		if args[5] == "type" {
