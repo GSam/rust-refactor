@@ -50,6 +50,7 @@ fn main() {
 		s = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_str,
 											v[0], v[1].parse().unwrap(), 
 											v[2].parse().unwrap());
+		println!("NODE ID: {}", s);
 		rename_var = &s;
 	}
 

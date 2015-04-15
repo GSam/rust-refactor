@@ -22,10 +22,24 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 	match dec_map.get(rename_var) {
 		Some(x) => {
 			for (key, value) in dec_map.iter() {
+				let name = value.get("name").unwrap();
 				if (x.get("scopeid") == value.get("scopeid") &&
-					value.get("name").unwrap() == &new_name) {
-					// Conflict present
-					panic!("PANIC");
+					name == &new_name) {
+					// Conflict present:
+					// May still be ok if there is no references to it
+					// However, standalone blocks won't be detected + macros
+
+					let id = value.get("id").unwrap();
+					let line_no: i32 = value.get("file_line").unwrap().parse().unwrap();
+					if let Some(refs) = ref_map.get(id) {
+						for record in refs.iter() {
+							let line: i32 = record.get("file_line").unwrap().parse().unwrap();
+							if line >= line_no {
+								// Affected reference
+								return input.to_string();
+							}
+						}
+					}
 				}
 			}
 		},
@@ -265,7 +279,6 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
 	let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
 	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
 
-	let mut answer = String::new();
 	if let Some(references) = ref_map.get(rename_var) {
 		for map in references.iter() {
 			let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
@@ -276,18 +289,19 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
 			println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
 			rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
 		}
+	}
 
-		let mut count = ropes.len();
-		for rope in &ropes {
-			answer.push_str(&rope.to_string());
-			if count > 1 {
-				answer.push_str("\n");
-				count -= 1;
-			}
+	let mut answer = String::new();
+	let mut count = ropes.len();
+	for rope in &ropes {
+		answer.push_str(&rope.to_string());
+		if count > 1 {
+			answer.push_str("\n");
+			count -= 1;
 		}
 	}
 
-	return answer;
+	answer
 }
 
 fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize,
