@@ -14,8 +14,23 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 	//for (key, value) in analyzed_data.type_ref_map.iter() {
 	//	println!("{}: \"{:?}\"", *key, value);
 	//}
+
 	let dec_map = analyzed_data.var_map;
 	let ref_map = analyzed_data.var_ref_map;
+
+	// Check if renaming will cause conflicts
+	match dec_map.get(rename_var) {
+		Some(x) => {
+			for (key, value) in dec_map.iter() {
+				if (x.get("scopeid") == value.get("scopeid") &&
+					value.get("name").unwrap() == &new_name) {
+					// Conflict present
+					panic!("PANIC");
+				}
+			}
+		},
+		_ => { return input.to_string(); }
+	}
 
 	return rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map);
 }
@@ -250,23 +265,25 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
 	let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
 	rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
 
-	for map in ref_map.get(rename_var).unwrap().iter() {
-		let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
-		let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
-		let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
-		let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
-		
-		println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
-		rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
-	}
-
 	let mut answer = String::new();
-	let mut count = ropes.len();
-	for rope in &ropes {
-		answer.push_str(&rope.to_string());
-		if count > 1 {
-			answer.push_str("\n");
-			count -= 1;
+	if let Some(references) = ref_map.get(rename_var) {
+		for map in references.iter() {
+			let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+			let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+			let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+			let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+
+			println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+			rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+		}
+
+		let mut count = ropes.len();
+		for rope in &ropes {
+			answer.push_str(&rope.to_string());
+			if count > 1 {
+				answer.push_str("\n");
+				count -= 1;
+			}
 		}
 	}
 
