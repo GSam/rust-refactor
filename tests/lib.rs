@@ -87,3 +87,15 @@ fn working_struct_2() {
 		Err(_) => assert!(false)
 	}
 }
+
+#[test]
+fn working_method_1() {
+	let input = read_to_string("tests/function/basic_method.rs");
+	let output = read_to_string("tests/function/working_method_1_out.rs");
+	let analysis = read_to_string("tests/function/basic_method.csv");
+
+	match refactor::refactor::rename_function(&input, &analysis, "func", "5") {
+		Ok(x) => assert_eq!(output.trim(), x.trim()),
+		Err(_) => assert!(false)
+	}
+}
