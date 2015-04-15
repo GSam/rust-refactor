@@ -261,9 +261,13 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
 	}
 
 	let mut answer = String::new();
+	let mut count = ropes.len();
 	for rope in &ropes {
 		answer.push_str(&rope.to_string());
-		answer.push_str("\n");
+		if count > 1 {
+			answer.push_str("\n");
+			count -= 1;
+		}
 	}
 
 	return answer;

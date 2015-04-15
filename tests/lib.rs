@@ -60,7 +60,7 @@ fn working_rename_1() {
 
 }";
 
-	refactor::refactor::rename_variable(&input, &ANALYSIS, "hello", "9");
+	assert_eq!(output, refactor::refactor::rename_variable(&input, &ANALYSIS, "hello", "9"));
 
 }
 
