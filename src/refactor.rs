@@ -203,7 +203,14 @@ fn init(analysis: &str) -> AnalysisData {
 					
 					}
 				},
-				"struct" | "enum" => {
+				"enum" => {
+					let rec = map_record.clone();
+					let key = rec.get("id").unwrap();
+					let q_key = rec.get("qualname").unwrap();
+					type_map.insert(key.clone(), map_record);
+					qual_type_map.insert(q_key.clone(), key.clone());
+				},
+				"struct"  => {
 					let rec = map_record.clone();
 					let key = rec.get("id").unwrap();
 					let c_key = rec.get("ctor_id").unwrap();
@@ -212,7 +219,7 @@ fn init(analysis: &str) -> AnalysisData {
 					ctor_map.insert(c_key.clone(), key.clone());
 					qual_type_map.insert(q_key.clone(), key.clone());
 				},
-				"type_ref" | "struct_ref" => {
+				"type_ref" | "struct_ref" | "mod_ref" => {
 					let key = map_record.get("refid").unwrap().clone();
 
 					if !type_ref_map.contains_key(&key) {
@@ -225,7 +232,6 @@ fn init(analysis: &str) -> AnalysisData {
 					}
 				},
 				"module" => {},
-				"module_ref" => {},
 				"module_alias" => {},
 				"unknown_ref" => {},
 				_ => {}
