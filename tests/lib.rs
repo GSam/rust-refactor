@@ -90,6 +90,30 @@ fn working_struct_2() {
 }
 
 #[test]
+fn working_enum_1() {
+	let input = read_to_string("tests/type/basic_enum.rs");
+	let output = read_to_string("tests/type/working_enum_1_out.rs");
+	let analysis = read_to_string("tests/type/basic_enum.csv");
+
+	match refactor::refactor::rename_type(&input, &analysis, "YesNo", "4") {
+		Ok(x) => assert_eq!(output.trim(), x.trim()),
+		Err(_) => assert!(false)
+	}
+}
+
+#[test]
+fn working_enum_2() {
+	let input = read_to_string("tests/type/modref_enum.rs");
+	let output = read_to_string("tests/type/working_enum_2_out.rs");
+	let analysis = read_to_string("tests/type/modref_enum.csv");
+
+	match refactor::refactor::rename_type(&input, &analysis, "YesNo", "7") {
+		Ok(x) => assert_eq!(output.trim(), x.trim()),
+		Err(_) => assert!(false)
+	}
+}
+
+#[test]
 fn working_method_1() {
 	let input = read_to_string("tests/function/basic_default_method.rs");
 	let output = read_to_string("tests/function/working_method_1_out.rs");
