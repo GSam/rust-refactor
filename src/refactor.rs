@@ -58,9 +58,9 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
 pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
 	let analyzed_data = init(analysis);
 
-	for (key, value) in analyzed_data.type_map.iter() {
-		println!("{}: \"{:?}\"", *key, value);
-	}
+	//for (key, value) in analyzed_data.type_map.iter() {
+	//	println!("{}: \"{:?}\"", *key, value);
+	//}
 
 	let dec_map = analyzed_data.type_map;
 	let ref_map = analyzed_data.type_ref_map;
