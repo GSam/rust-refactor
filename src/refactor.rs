@@ -13,9 +13,9 @@ pub enum Response {
 pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
     let analyzed_data = init(analysis);
     
-    for (key, value) in analyzed_data.type_map.iter() {
-        println!("{}: \"{}\"", *key, value.get("id").unwrap());
-    }
+    //for (key, value) in analyzed_data.type_map.iter() {
+    //    println!("{}: \"{}\"", *key, value.get("id").unwrap());
+    //}
 
     //for (key, value) in analyzed_data.type_ref_map.iter() {
     //  println!("{}: \"{:?}\"", *key, value);
@@ -49,7 +49,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
                 }
             }
         },
-        _ => { println!("{}", rename_var); return Err(Response::Conflict); } //input.to_string(); }
+        _ => { return Err(Response::Conflict); } //input.to_string(); }
     }
 
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
