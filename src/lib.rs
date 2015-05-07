@@ -5,9 +5,15 @@
 #![feature(core)]
 #![feature(unicode)]
 #![feature(path)]
+#![feature(env)]
 
 #[macro_use]
 extern crate log;
 extern crate strings;
+extern crate getopts;
+extern crate rustc;
+extern crate rustc_driver;
+extern crate syntax;
+extern crate rustc_resolve;
 
 pub mod refactor;

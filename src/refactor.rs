@@ -1,8 +1,18 @@
 extern crate csv;
 
+use rustc::session::Session;
+use rustc::session::config::{self, Input};
+use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls};
+use rustc::metadata::creader::CrateReader;
+use rustc_resolve as resolve;
+use rustc::middle::lang_items;
+use rustc::middle::ty;
+use syntax::ast_map;
+use syntax::{ast, attr, diagnostics, visit};
 use std::collections::HashMap;
-
 use strings::src_rope::Rope;
+use std::path::PathBuf;
+use getopts;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -393,4 +403,73 @@ fn check_match(name: &str, input_filename: &str, row: i32, col: i32,
     }
 
     false
+}
+
+struct RefactorCalls {
+    default_calls: RustcDefaultCalls,
+}
+
+impl RefactorCalls {
+    fn new() -> RefactorCalls {
+        RefactorCalls { default_calls: RustcDefaultCalls }
+    }
+}
+
+impl<'a> CompilerCalls<'a> for RefactorCalls {
+    fn early_callback(&mut self,
+                      _: &getopts::Matches,
+                      _: &diagnostics::registry::Registry)
+                      -> Compilation {
+        Compilation::Continue
+    }
+
+    fn late_callback(&mut self,
+                     m: &getopts::Matches,
+                     s: &Session,
+                     i: &Input,
+                     odir: &Option<PathBuf>,
+                     ofile: &Option<PathBuf>)
+                     -> Compilation {
+        self.default_calls.late_callback(m, s, i, odir, ofile);
+        Compilation::Continue
+    }
+
+    fn some_input(&mut self, input: Input, input_path: Option<PathBuf>) -> (Input, Option<PathBuf>) {
+        (input, input_path)
+    }
+
+    fn no_input(&mut self,
+                m: &getopts::Matches,
+                o: &config::Options,
+                odir: &Option<PathBuf>,
+                ofile: &Option<PathBuf>,
+                r: &diagnostics::registry::Registry)
+                -> Option<(Input, Option<PathBuf>)> {
+        self.default_calls.no_input(m, o, odir, ofile, r);
+        // This is not optimal error handling.
+        panic!("No input supplied");
+    }
+
+    fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
+        let mut control = driver::CompileController::basic();
+        control.after_write_deps.stop = Compilation::Stop;
+        control.after_write_deps.callback = box |state| {
+            let krate =  state.expanded_crate.unwrap().clone();
+            let ast_map = state.ast_map.unwrap();
+            let krate = ast_map.krate();
+            CrateReader::new(&state.session).read_crates(krate);
+            let lang_items = lang_items::collect_language_items(krate, &state.session);
+            let resolve::CrateMap {
+                def_map,
+                freevars,
+                export_map,
+                trait_map,
+                external_exports,
+                glob_map,
+            } = resolve::resolve_crate(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No);
+            println!("{:?}", def_map);
+        };
+
+        control
+    }
 }
