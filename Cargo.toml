@@ -5,4 +5,9 @@ version = "0.0.1"
 authors = ["Garming <garming_sam@outlook.com>"]
 
 [dependencies]
-csv = "*"
+csv = "0.14.2"
+
+[dependencies.strings]
+strings = "0.0.1"
+git = "https://github.com/nrc/strings.rs.git"
+rev = "551331d01911b7e8da056a4a019eb367cfaf03bd"

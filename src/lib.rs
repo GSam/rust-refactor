@@ -8,6 +8,6 @@
 
 #[macro_use]
 extern crate log;
+extern crate strings;
 
 pub mod refactor;
-pub mod rope;
