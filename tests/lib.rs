@@ -43,6 +43,30 @@ fn working_variable_2() {
 }
 
 #[test]
+fn working_variable_3() {
+    let input = read_to_string("tests/variable/alex_var_test.rs");
+    let output = read_to_string("tests/variable/alex_var_test_out.rs");
+    let analysis = read_to_string("tests/variable/alex_var_test.csv");
+
+    match refactor::refactor::rename_variable(&input, &analysis, "bar", "14") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_variable_4() {
+    let input = read_to_string("tests/variable/alex_var_test.rs");
+    let output = read_to_string("tests/variable/alex_var_test_out2.rs");
+    let analysis = read_to_string("tests/variable/alex_var_test.csv");
+
+    match refactor::refactor::rename_variable(&input, &analysis, "bar", "4") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn prevented_variable_1() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
