@@ -160,3 +160,27 @@ fn working_method_2() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn working_method_3() {
+    let input = read_to_string("tests/function/alex_override_method.rs");
+    let output = read_to_string("tests/function/alex_override_method_out2.rs");
+    let analysis = read_to_string("tests/function/alex_override_method.csv");
+
+    match refactor::refactor::rename_function(&input, &analysis, "grue", "74") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn not_working_method_1() {
+    let input = read_to_string("tests/function/alex_override_method.rs");
+    let output = read_to_string("tests/function/alex_override_method_out.rs");
+    let analysis = read_to_string("tests/function/alex_override_method.csv");
+
+    match refactor::refactor::rename_function(&input, &analysis, "foo", "74") {
+        Ok(x) => assert!(false), // assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
