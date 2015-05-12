@@ -35,14 +35,14 @@ fn main() {
         Ok(file) => file,
     };
     let mut file_str = String::new();
-    file.read_to_string(&mut file_str);
+    let _ = file.read_to_string(&mut file_str);
 
     let mut analysis = match File::open(&args[2]) {
         Err(why) => panic!("couldn't open file {}", why),
         Ok(file) => file,
     };
     let mut analysis_str = String::new();
-    analysis.read_to_string(&mut analysis_str);
+    let _ = analysis.read_to_string(&mut analysis_str);
 
 
     let v: Vec<_> = args[4].split(":").collect();
