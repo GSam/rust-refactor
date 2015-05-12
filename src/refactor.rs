@@ -1,21 +1,29 @@
 extern crate csv;
 
+use getopts;
 use rustc::session::Session;
 use rustc::session::config::{self, Input};
-use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls};
+use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, run_compiler};
 use rustc::metadata::creader::CrateReader;
 use rustc_resolve as resolve;
 use rustc::middle::lang_items;
 use rustc::middle::ty;
-use syntax::ast_map;
-use syntax::{ast, attr, diagnostics, visit};
+use syntax;
+use syntax::{ast, ast_map, attr, diagnostics, visit};
+use syntax::ast_map::Node::*;
+use syntax::parse::token;
+use syntax::ast::NodeId;
+use syntax::ext::build::AstBuilder;
+use syntax::ext::mtwt;
+use syntax::codemap::DUMMY_SP;
 use std::collections::HashMap;
-use strings::src_rope::Rope;
-use std::path::PathBuf;
-use getopts;
-
+use std::env;
 use std::io::prelude::*;
 use std::io::stderr;
+use std::path::PathBuf;
+use std::thread;
+
+use strings::src_rope::Rope;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -23,7 +31,7 @@ pub enum Response {
     Conflict
 }
 
-pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
+pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
     let analyzed_data = init(analysis);
     
     //for (key, value) in analyzed_data.type_map.iter() {
@@ -48,7 +56,15 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
                     // May still be ok if there is no references to it
                     // However, standalone blocks won't be detected + macros
                     // Will also restrict if reference is on same line as renaming
-                    let id = value.get("id").unwrap();
+                    let node: NodeId = rename_var.parse().unwrap();
+                    match run_compiler_resolution(String::from_str(input_file), RefactorType::Variable, String::from_str(new_name), node) {
+                        Ok(()) => {
+                            debug!("GOOD");
+                            // Check for conflicts
+                        },
+                        Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
+                    }
+                    /*let id = value.get("id").unwrap();
                     let line_no: i32 = value.get("file_line").unwrap().parse().unwrap();
                     if let Some(refs) = ref_map.get(id) {
                         for record in refs.iter() {
@@ -58,7 +74,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
                                 return Err(Response::Conflict); //input.to_string();
                             }
                         }
-                    }
+                    }*/
                 }
             }
         },
@@ -68,7 +84,7 @@ pub fn rename_variable(input: &str, analysis: &str, new_name: &str, rename_var: 
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
+pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
     let analyzed_data = init(analysis);
 
     //for (key, value) in analyzed_data.type_map.iter() {
@@ -77,15 +93,39 @@ pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str
 
     let dec_map = analyzed_data.type_map;
     let ref_map = analyzed_data.type_ref_map;
+    let node: NodeId = rename_var.parse().unwrap();
+
+    match run_compiler_resolution(String::from_str(input_file), RefactorType::Type, String::from_str(new_name), node) {
+        Ok(()) => {
+            // Check for conflicts
+            Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+        },
+        Err(x) => { debug!("BAD"); Err(Response::Conflict) }
+    }
+
+}
+
+fn run_compiler_resolution(filename: String, kind: RefactorType, new_name: String, node: NodeId) -> Result<(), HashMap<String, String>> {
+    // -L flag for the new compiler. Doesn't always match LD_LIBRARY_PATH.
+    let key = "RUST_FOLDER";
+    let mut path = String::new();
+    let args = match env::var(key) {
+        Ok(val) => {
+            path.push_str("-L");
+            path.push_str(&val[..]);
+            vec!["refactor".to_owned(),
+                path,
+                filename]
+        }
+        Err(e) => {vec!["refactor".to_owned(), filename]},
+    };
 
     thread::catch_panic(move || {
-        run(args, WriteMode::Return(HANDLE_RESULT));
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node);
+        run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
-        // i know it is a hashmap
         *any.downcast().unwrap()
-    );
-
-    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+    )
 }
 
 pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
@@ -415,13 +455,24 @@ fn check_match(name: &str, input_filename: &str, row: i32, col: i32,
     false
 }
 
+#[derive(Copy, Clone)]
+pub enum RefactorType {
+    Variable,
+    Function,
+    Type,
+    Nil,
+}
+
 struct RefactorCalls {
     default_calls: RustcDefaultCalls,
+    isTrue: RefactorType,
+    new_name: String,
+    node_to_find: NodeId
 }
 
 impl RefactorCalls {
-    fn new() -> RefactorCalls {
-        RefactorCalls { default_calls: RustcDefaultCalls }
+    fn new(t: RefactorType, new_name: String, node: NodeId) -> RefactorCalls {
+        RefactorCalls { default_calls: RustcDefaultCalls, isTrue: t, new_name: new_name, node_to_find: node }
     }
 }
 
@@ -461,9 +512,13 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     }
 
     fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
+        let ss = self.isTrue;
+        let node_to_find = self.node_to_find;
+        let new_name = self.new_name.clone();
         let mut control = driver::CompileController::basic();
         control.after_write_deps.stop = Compilation::Stop;
-        control.after_write_deps.callback = box |state| {
+        control.after_write_deps.callback = box move |state| {
+            if let RefactorType::Type = ss {}
             let krate =  state.expanded_crate.unwrap().clone();
             let ast_map = state.ast_map.unwrap();
             let krate = ast_map.krate();
@@ -477,9 +532,106 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 external_exports,
                 glob_map,
             } = resolve::resolve_crate(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No);
-            println!("{:?}", def_map);
+            debug!("{:?}", def_map);
+
+            // According to some condition !
+            //let ps = syntax::parse::ParseSess::new();
+            let ps = &state.session.parse_sess;
+            let cratename = match attr::find_crate_name(&krate.attrs[..]) {
+                Some(name) => name.to_string(),
+                None => String::from_str("unknown_crate"),
+            };
+
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+            let mut cx = syntax::ext::base::ExtCtxt::new(ps, krate.config.clone(), //vec![],
+                                                         syntax::ext::expand::ExpansionConfig::default(cratename));
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+            //let ast_node = ast_map.get(ast_map.get_parent(node_to_find));
+            //println!("{:?}", ast_node);
+            let ast_node = ast_map.get(node_to_find);
+            debug!("{:?}", ast_node);
+            debug!("{}", node_to_find);
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+            let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
+            // create resolver
+            let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No,
+                                                        Some(Box::new(|_,_| {
+                                                                      true
+                                                                      })));
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+
+            match ss {
+                RefactorType::Type => {
+                    let mut h = HashMap::new();
+                    h.insert(String::new(), String::new());
+                    debug!("{:?}", token::str_to_ident(&new_name[..]));
+
+                    token::str_to_ident(&new_name[..]);
+
+                    // resolver resolve node id
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
+                        // unwind at this location
+                        panic!(h);
+                    }
+
+                },
+                RefactorType::Variable => {
+                    let mut t = token::str_to_ident(&new_name[..]);
+                    t.ctxt = 2;
+                    println!("{:?}", mtwt::resolve(t));
+                    let path = cx.path(DUMMY_SP, vec![t]);
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No,
+                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                        if *resolved {
+                            return true;
+                        }
+                        debug!("Entered resolver callback");
+                        //println!("{:?}", node);
+                        match node {
+                            NodeLocal(pat) => {
+                                if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            _ => {}
+                        }
+
+                        false
+                    })));
+
+                    visit::walk_crate(&mut resolver, krate);
+
+                    let mut h = HashMap::new();
+                    h.insert(String::new(), String::new());
+                    debug!("{:?}", token::str_to_ident(&new_name[..]));
+
+                    // resolver resolve node id
+                    //if resolver.resolve_path(node_to_find, &path) {
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
+                        // unwind at this location
+                        panic!(h);
+                    }
+                    //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
+
+                },
+                _ => {}
+            }
         };
 
         control
+    }
+}
+
+// Compare output to input.
+fn handle_result(result: HashMap<String, String>) {
+    let mut failures = HashMap::new();
+
+    for (file_name, fmt_text) in result {
+        failures.insert(String::new(), String::new());
+    }
+    if !failures.is_empty() {
+        panic!(failures);
     }
 }

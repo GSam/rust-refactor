@@ -24,7 +24,7 @@ fn working_variable_1() {
     let output = read_to_string("tests/variable/working_rename_1_out.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "hello", "9") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "hello", "9") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -36,7 +36,7 @@ fn working_variable_2() {
     let output = read_to_string("tests/variable/working_rename_2_out.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "hello", "17") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "hello", "17") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -48,7 +48,7 @@ fn working_variable_3() {
     let output = read_to_string("tests/variable/alex_var_test_out.rs");
     let analysis = read_to_string("tests/variable/alex_var_test.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "bar", "14") {
+    match refactor::refactor::rename_variable(&"tests/variable/alex_var_test.rs", &input, &analysis, "bar", "14") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -60,7 +60,7 @@ fn working_variable_4() {
     let output = read_to_string("tests/variable/alex_var_test_out2.rs");
     let analysis = read_to_string("tests/variable/alex_var_test.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "bar", "4") {
+    match refactor::refactor::rename_variable(&"tests/variable/alex_var_test.rs", &input, &analysis, "bar", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -72,7 +72,7 @@ fn working_variable_5() {
     let output = read_to_string("tests/variable/const_rename_out.rs");
     let analysis = read_to_string("tests/variable/const_rename.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "BAZ", "8") {
+    match refactor::refactor::rename_variable(&"tests/variable/const_rename.rs", &input, &analysis, "BAZ", "8") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -83,7 +83,7 @@ fn prevented_variable_1() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "j", "36") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "j", "36") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -94,7 +94,7 @@ fn prevented_variable_2() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&input, &analysis, "x", "36") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "x", "36") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -106,7 +106,7 @@ fn working_struct_1() {
     let output = read_to_string("tests/type/working_struct_1_out.rs");
     let analysis = read_to_string("tests/type/basic_struct.csv");
 
-    match refactor::refactor::rename_type(&input, &analysis, "Pointer", "4") {
+    match refactor::refactor::rename_type(&"tests/type/basic_struct.rs", &input, &analysis, "Pointer", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -119,7 +119,7 @@ fn working_struct_2() {
     let output = read_to_string("tests/type/working_struct_1_out.rs");
     let analysis = read_to_string("tests/type/scoped_struct.csv");
 
-    match refactor::refactor::rename_type(&input, &analysis, "Pointer", "4") {
+    match refactor::refactor::rename_type(&"tests/type/basic_struct.rs", &input, &analysis, "Pointer", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -131,7 +131,7 @@ fn working_enum_1() {
     let output = read_to_string("tests/type/working_enum_1_out.rs");
     let analysis = read_to_string("tests/type/basic_enum.csv");
 
-    match refactor::refactor::rename_type(&input, &analysis, "YesNo", "4") {
+    match refactor::refactor::rename_type(&"tests/type/basic_enum.rs", &input, &analysis, "YesNo", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -143,7 +143,7 @@ fn working_enum_2() {
     let output = read_to_string("tests/type/working_enum_2_out.rs");
     let analysis = read_to_string("tests/type/modref_enum.csv");
 
-    match refactor::refactor::rename_type(&input, &analysis, "YesNo", "7") {
+    match refactor::refactor::rename_type(&"tests/type/modref_enum.rs", &input, &analysis, "YesNo", "7") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }

@@ -56,14 +56,14 @@ fn main() {
 
     match &*args[1] {
         "var" => {
-            let result = refactor::refactor::rename_variable(&file_str, &analysis_str, &args[5], rename_var);
+            let result = refactor::refactor::rename_variable(&args[3], &file_str, &analysis_str, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", x),
                 Err(x) => println!("{:?}", x)
             }
         },
         "type" => {
-            let result = refactor::refactor::rename_type(&file_str, &analysis_str, &args[5], rename_var);
+            let result = refactor::refactor::rename_type(&args[3], &file_str, &analysis_str, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", x),
                 Err(x) => println!("{:?}", x)
