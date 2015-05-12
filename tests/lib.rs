@@ -67,6 +67,18 @@ fn working_variable_4() {
 }
 
 #[test]
+fn working_variable_5() {
+    let input = read_to_string("tests/variable/const_rename.rs");
+    let output = read_to_string("tests/variable/const_rename_out.rs");
+    let analysis = read_to_string("tests/variable/const_rename.csv");
+
+    match refactor::refactor::rename_variable(&input, &analysis, "BAZ", "8") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn prevented_variable_1() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
