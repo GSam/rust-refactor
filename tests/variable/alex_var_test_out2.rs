@@ -7,7 +7,7 @@ unsafe fn do_it() -> i32 {
 
 fn main() {
   unsafe {
-    println!("Values of variables once: {}", bar);
+    println!("Values of variables once: {}", FOO);
     bar = 37;
     println!("Values of variables twice: {}", do_it());
   }
