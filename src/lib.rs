@@ -6,6 +6,7 @@
 #![feature(unicode)]
 #![feature(path)]
 #![feature(env)]
+#![feature(io)]
 
 #[macro_use]
 extern crate log;

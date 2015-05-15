@@ -20,8 +20,8 @@ fn main() {
     let args = env::args();
 
     if args.len() < 6 {
-        println!("Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
-        println!("var: <nodeid> | <name>:<row or -1>:<col or -1>");
+        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
+        let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
     }
 
@@ -50,7 +50,7 @@ fn main() {
         s = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_str,
                                             v[0], v[1].parse().unwrap(), 
                                             v[2].parse().unwrap());
-        println!("NODE ID: {}", s);
+        let _ = writeln!(&mut std::io::stderr(), "NODE ID: {}", s);
         rename_var = &s;
     }
 
@@ -77,7 +77,7 @@ fn main() {
             }
         },
         _ => {
-            println!("Unknown rename function.");
+            let _ = writeln!(&mut std::io::stderr(), "Unknown rename function.");
         }
     }
 }

@@ -14,6 +14,9 @@ use strings::src_rope::Rope;
 use std::path::PathBuf;
 use getopts;
 
+use std::io::prelude::*;
+use std::io::stderr;
+
 #[derive(Debug, PartialEq)]
 pub enum Response {
     Error,
@@ -308,7 +311,7 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
             let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
 
-            println!("{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+            //let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
             rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
         }
     }
@@ -354,7 +357,7 @@ pub fn identify_id(input_filename: &str, analysis: &str, rename_var: &str,
                row: i32, col: i32) -> String {
     let analyzed_data = init(analysis);
 
-    println!("{} {} {}", rename_var, row, col);
+    let _ = writeln!(&mut stderr(), "{} {} {}", rename_var, row, col);
     for (key, value) in analyzed_data.var_map {
         if check_match(rename_var, input_filename, row, col, value) {
             return key;
