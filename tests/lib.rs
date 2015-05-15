@@ -192,7 +192,7 @@ fn not_working_method_1() {
     let analysis = read_to_string("tests/function/alex_override_method.csv");
 
     match refactor::refactor::rename_function(&input, &analysis, "foo", "74") {
-        Ok(x) => assert!(false), // assert_eq!(output.trim(), x.trim()),
-        Err(_) => assert!(false)
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
     }
 }
