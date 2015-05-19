@@ -78,6 +78,13 @@ pub fn rename_type(input: &str, analysis: &str, new_name: &str, rename_var: &str
     let dec_map = analyzed_data.type_map;
     let ref_map = analyzed_data.type_ref_map;
 
+    thread::catch_panic(move || {
+        run(args, WriteMode::Return(HANDLE_RESULT));
+    }).map_err(|any|
+        // i know it is a hashmap
+        *any.downcast().unwrap()
+    );
+
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
