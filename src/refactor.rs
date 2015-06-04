@@ -588,22 +588,24 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
                     
-                    println!("{}", ast_map.with_path(node_to_find, |path| {
-                    /*let itr = token::get_ident_interner();
+                    let mut idens = ast_map.with_path(node_to_find, |path| {
+                    let itr = token::get_ident_interner();
 
-                    path.fold(String::new(), |mut s, e| {
+                    path.fold(Vec::new(), |mut s, e| {
                         let e = itr.get(e.name());
-                        if !s.is_empty() {
-                            s.push_str("::");
-                        }
-                        s.push_str(&e[..]);
+                        s.push(token::str_to_ident(&e[..]));
                         s
-                    })*/
-                    ast_map::path_to_string(path)
+                    })
+                    //ast_map::path_to_string(path)
 
-                    }));
+                    });
+
+                    let new_iden = token::str_to_ident(&new_name[..]);
+                    idens.pop();
+                    idens.push(new_iden);
 
                     token::str_to_ident(&new_name[..]);
+                    let path = cx.path(DUMMY_SP, idens);
 
                     // resolver resolve node id
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
@@ -669,7 +671,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     idens.pop();
                     idens.push(new_iden);
 
-                    debug!("{:?}", cx.path(DUMMY_SP, idens));
                     let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
                     Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
                         if *resolved {
@@ -717,6 +718,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
                     
+                    // TODO 
+                    // let path = cx.path(DUMMY_SP, idens);
                     // resolver resolve node id
                     //if resolver.resolve_path(node_to_find, &path) {
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
