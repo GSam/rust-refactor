@@ -106,14 +106,13 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
 }
 
 fn run_compiler_resolution(filename: String, kind: RefactorType, new_name: String, node: NodeId) -> Result<(), HashMap<String, String>> {
-    // -L flag for the new compiler. Doesn't always match LD_LIBRARY_PATH.
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
         Ok(val) => {
             path.push_str("-L");
             path.push_str(&val[..]);
-            vec!["refactor".to_owned(),
+            vec!["refactor".to_owned(), 
                 path,
                 filename]
         }
@@ -124,6 +123,7 @@ fn run_compiler_resolution(filename: String, kind: RefactorType, new_name: Strin
         let mut call_ctxt = RefactorCalls::new(kind, new_name, node);
         run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
+        // i know it is a hashmap
         *any.downcast().unwrap()
     )
 }
@@ -552,12 +552,26 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
             debug!("{:?}", ast_node);
             debug!("{}", node_to_find);
             debug!("{:?}", token::str_to_ident(&new_name[..]));
+
+            // find current path and syntax context
+            let mut syntax_ctx = 0;
+            match ast_node {
+                NodeLocal(pat) => {
+                    match pat.node {
+                        ast::PatIdent(_, path, _) => {
+                            syntax_ctx = path.node.ctxt;
+                        },
+                        _ => {}
+                    }
+                },
+
+                _ => {}
+            }
+
             let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
             // create resolver
-            let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No,
-                                                        Some(Box::new(|_,_| {
-                                                                      true
-                                                                      })));
+            let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                                                        Some(Box::new(|_,_| { true })));
             debug!("{:?}", token::str_to_ident(&new_name[..]));
 
             match ss {
@@ -565,7 +579,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let mut h = HashMap::new();
                     h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
-
+                    
                     token::str_to_ident(&new_name[..]);
 
                     // resolver resolve node id
@@ -573,19 +587,18 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         // unwind at this location
                         panic!(h);
                     }
-
                 },
                 RefactorType::Variable => {
                     let mut t = token::str_to_ident(&new_name[..]);
-                    t.ctxt = 2;
-                    println!("{:?}", mtwt::resolve(t));
+                    t.ctxt = syntax_ctx;
+                    debug!("{:?}", mtwt::resolve(t));
                     let path = cx.path(DUMMY_SP, vec![t]);
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No,
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
                     Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
                         if *resolved {
                             return true;
                         }
-                        debug!("Entered resolver callback");
+                        //debug!("Entered resolver callback");
                         //println!("{:?}", node);
                         match node {
                             NodeLocal(pat) => {
@@ -606,7 +619,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let mut h = HashMap::new();
                     h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
-
+                    
                     // resolver resolve node id
                     //if resolver.resolve_path(node_to_find, &path) {
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
@@ -616,7 +629,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
 
                 },
-                _ => {}
+                _ => {}              
             }
         };
 
