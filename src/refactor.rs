@@ -13,6 +13,7 @@ use syntax::{ast, ast_map, attr, diagnostics, visit};
 use syntax::ast_map::Node::*;
 use syntax::parse::token;
 use syntax::ast::NodeId;
+use syntax::ast::Item_::ItemImpl;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
 use syntax::codemap::DUMMY_SP;
@@ -128,7 +129,7 @@ fn run_compiler_resolution(filename: String, kind: RefactorType, new_name: Strin
     )
 }
 
-pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
+pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
     let analyzed_data = init(analysis);
 
     // method calls refer to top level trait function in declid
@@ -142,8 +143,15 @@ pub fn rename_function(input: &str, analysis: &str, new_name: &str, rename_var: 
 
     let dec_map = analyzed_data.func_map;
     let ref_map = analyzed_data.func_ref_map;
+    let node: NodeId = rename_var.parse().unwrap();
 
-    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+    match run_compiler_resolution(String::from_str(input_file), RefactorType::Function, String::from_str(new_name), node) {
+        Ok(()) => {
+            // Check for conflicts
+            Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+        },
+        Err(x) => { debug!("BAD"); Err(Response::Conflict) }
+    }
 }
 
 struct AnalysisData {
@@ -580,6 +588,21 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
                     
+                    println!("{}", ast_map.with_path(node_to_find, |path| {
+                    /*let itr = token::get_ident_interner();
+
+                    path.fold(String::new(), |mut s, e| {
+                        let e = itr.get(e.name());
+                        if !s.is_empty() {
+                            s.push_str("::");
+                        }
+                        s.push_str(&e[..]);
+                        s
+                    })*/
+                    ast_map::path_to_string(path)
+
+                    }));
+
                     token::str_to_ident(&new_name[..]);
 
                     // resolver resolve node id
@@ -628,6 +651,87 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     }
                     //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
 
+                },
+                RefactorType::Function => {
+                    let mut idens = ast_map.with_path(node_to_find, |path| {
+                    let itr = token::get_ident_interner();
+
+                    path.fold(Vec::new(), |mut s, e| {
+                        let e = itr.get(e.name());
+                        s.push(token::str_to_ident(&e[..]));
+                        s
+                    })
+                    //ast_map::path_to_string(path)
+
+                    });
+
+                    let new_iden = token::str_to_ident(&new_name[..]);
+                    idens.pop();
+                    idens.push(new_iden);
+
+                    debug!("{:?}", cx.path(DUMMY_SP, idens));
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                        if *resolved {
+                            return true;
+                        }
+                        //debug!("Entered resolver callback");
+                        match node {
+                            NodeLocal(pat) => {
+                                if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            NodeItem(item) => {
+                                match item.node {
+                                    ItemImpl(_, _, _, _, _, ref impls) => {
+                                        for i in impls.iter() {
+                                            if i.id == node_to_find {
+                                                debug!("{:?}", i);
+                                                debug!("Found node");
+                                                *resolved = true;
+                                                return true;
+                                            }
+                                        }
+                                    },
+                                    _ => {}
+
+                                }
+                                if item.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            _ => {}
+                        }
+
+                        false
+                    })));
+
+                    visit::walk_crate(&mut resolver, krate);
+
+                    let mut h = HashMap::new();
+                    h.insert(String::new(), String::new());
+                    debug!("{:?}", token::str_to_ident(&new_name[..]));
+                    
+                    // resolver resolve node id
+                    //if resolver.resolve_path(node_to_find, &path) {
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
+                        // unwind at this location
+                        debug!("BAD");
+                        panic!(h);
+                    }
+
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
+                        // unwind at this location
+                        debug!("BAD");
+                        panic!(h);
+                    }
+                    debug!("OK");
+                    //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
                 },
                 _ => {}              
             }

@@ -70,7 +70,7 @@ fn main() {
             }
         },
         "fn" => {
-            let result = refactor::refactor::rename_function(&file_str, &analysis_str, &args[5], rename_var);
+            let result = refactor::refactor::rename_function(&args[3], &file_str, &analysis_str, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", x),
                 Err(x) => println!("{:?}", x)

@@ -155,7 +155,7 @@ fn working_method_1() {
     let output = read_to_string("tests/function/working_method_1_out.rs");
     let analysis = read_to_string("tests/function/basic_default_method.csv");
 
-    match refactor::refactor::rename_function(&input, &analysis, "func", "5") {
+    match refactor::refactor::rename_function(&"tests/function/basic_default_method.rs", &input, &analysis, "func", "5") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -167,7 +167,7 @@ fn working_method_2() {
     let output = read_to_string("tests/function/working_method_2_out.rs");
     let analysis = read_to_string("tests/function/impl_override_method.csv");
 
-    match refactor::refactor::rename_function(&input, &analysis, "func", "5") {
+    match refactor::refactor::rename_function(&"tests/function/impl_override_method.rs", &input, &analysis, "func", "5") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -179,7 +179,7 @@ fn working_method_3() {
     let output = read_to_string("tests/function/alex_override_method_out2.rs");
     let analysis = read_to_string("tests/function/alex_override_method.csv");
 
-    match refactor::refactor::rename_function(&input, &analysis, "grue", "74") {
+    match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &input, &analysis, "grue", "74") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -191,7 +191,7 @@ fn not_working_method_1() {
     let output = read_to_string("tests/function/alex_override_method_out.rs");
     let analysis = read_to_string("tests/function/alex_override_method.csv");
 
-    match refactor::refactor::rename_function(&input, &analysis, "foo", "74") {
+    match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &input, &analysis, "foo", "74") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
