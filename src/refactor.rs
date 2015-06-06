@@ -600,6 +600,36 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     });
 
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                        if *resolved {
+                            return true;
+                        }
+                        //debug!("Entered resolver callback");
+                        match node {
+                            NodeLocal(pat) => {
+                                if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            NodeItem(item) => {
+                                println!("{:?}", item);
+                                if item.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            _ => {}
+                        }
+
+                        false
+                    })));
+
+                    visit::walk_crate(&mut resolver, krate);
+
                     let new_iden = token::str_to_ident(&new_name[..]);
                     idens.pop();
                     idens.push(new_iden);
@@ -608,6 +638,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let path = cx.path(DUMMY_SP, idens);
 
                     // resolver resolve node id
+                    println!("{:?}", path);
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
                         // unwind at this location
                         panic!(h);
