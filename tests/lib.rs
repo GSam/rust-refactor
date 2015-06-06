@@ -172,6 +172,17 @@ fn prevented_struct_2() {
 }
 
 #[test]
+fn prevented_struct_3() {
+    let input = read_to_string("tests/type/conflict_use_mod_struct.rs");
+    let analysis = read_to_string("tests/type/conflict_use_mod_struct.csv");
+
+    match refactor::refactor::rename_type(&"tests/type/conflict_use_mod_struct.rs", &input, &analysis, "B", "6") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn working_method_1() {
     let input = read_to_string("tests/function/basic_default_method.rs");
     let output = read_to_string("tests/function/working_method_1_out.rs");
