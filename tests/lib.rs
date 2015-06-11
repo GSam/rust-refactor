@@ -101,6 +101,17 @@ fn prevented_variable_2() {
 }
 
 #[test]
+fn prevented_variable_3() {
+    let input = read_to_string("tests/variable/override.rs");
+    let analysis = read_to_string("tests/variable/override.csv");
+
+    match refactor::refactor::rename_variable(&"tests/variable/override.rs", &input, &analysis, "v", "9") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn working_struct_1() {
     let input = read_to_string("tests/type/basic_struct.rs");
     let output = read_to_string("tests/type/working_struct_1_out.rs");
