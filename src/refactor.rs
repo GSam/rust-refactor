@@ -58,7 +58,7 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                     // However, standalone blocks won't be detected + macros
                     // Will also restrict if reference is on same line as renaming
                     let node: NodeId = rename_var.parse().unwrap();
-                    match run_compiler_resolution(String::from_str(input_file), RefactorType::Variable, String::from_str(new_name), node) {
+                    match run_compiler_resolution(String::from_str(input_file), String::from_str(input), RefactorType::Variable, String::from_str(new_name), node) {
                         Ok(()) => {
                             debug!("GOOD");
                             // Check for conflicts
@@ -96,7 +96,7 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
     let ref_map = analyzed_data.type_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-    match run_compiler_resolution(String::from_str(input_file), RefactorType::Type, String::from_str(new_name), node) {
+    match run_compiler_resolution(String::from_str(input_file), String::from_str(input), RefactorType::Type, String::from_str(new_name), node) {
         Ok(()) => {
             // Check for conflicts
             Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
@@ -106,7 +106,7 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
 
 }
 
-fn run_compiler_resolution(filename: String, kind: RefactorType, new_name: String, node: NodeId) -> Result<(), HashMap<String, String>> {
+fn run_compiler_resolution(filename: String, input: String, kind: RefactorType, new_name: String, node: NodeId) -> Result<(), HashMap<String, String>> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
@@ -121,7 +121,7 @@ fn run_compiler_resolution(filename: String, kind: RefactorType, new_name: Strin
     };
 
     thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node);
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, input);
         run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
         // i know it is a hashmap
@@ -145,7 +145,7 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
     let ref_map = analyzed_data.func_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-    match run_compiler_resolution(String::from_str(input_file), RefactorType::Function, String::from_str(new_name), node) {
+    match run_compiler_resolution(String::from_str(input_file), String::from_str(input), RefactorType::Function, String::from_str(new_name), node) {
         Ok(()) => {
             // Check for conflicts
             Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
@@ -475,12 +475,13 @@ struct RefactorCalls {
     default_calls: RustcDefaultCalls,
     isTrue: RefactorType,
     new_name: String,
-    node_to_find: NodeId
+    node_to_find: NodeId,
+    input: String
 }
 
 impl RefactorCalls {
-    fn new(t: RefactorType, new_name: String, node: NodeId) -> RefactorCalls {
-        RefactorCalls { default_calls: RustcDefaultCalls, isTrue: t, new_name: new_name, node_to_find: node }
+    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: String) -> RefactorCalls {
+        RefactorCalls { default_calls: RustcDefaultCalls, isTrue: t, new_name: new_name, node_to_find: node, input: new_file }
     }
 }
 
@@ -504,7 +505,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     }
 
     fn some_input(&mut self, input: Input, input_path: Option<PathBuf>) -> (Input, Option<PathBuf>) {
-        (input, input_path)
+        /*match input {
+            Input::File(ref x) => { println!("{:?}", x); },
+            Input::Str(ref x) => { println!("{}", x); }
+        }*/
+        (Input::Str(self.input.clone()), input_path)
     }
 
     fn no_input(&mut self,
