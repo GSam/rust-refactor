@@ -506,7 +506,7 @@ pub enum RefactorType {
 
 struct RefactorCalls {
     default_calls: RustcDefaultCalls,
-    cType: RefactorType,
+    rType: RefactorType,
     new_name: String,
     node_to_find: NodeId,
     input: String,
@@ -516,7 +516,7 @@ struct RefactorCalls {
 impl RefactorCalls {
     fn new(t: RefactorType, new_name: String, node: NodeId, new_file: String,
            isFull: bool) -> RefactorCalls {
-        RefactorCalls { default_calls: RustcDefaultCalls, cType: t,
+        RefactorCalls { default_calls: RustcDefaultCalls, rType: t,
                         new_name: new_name, node_to_find: node,
                         input: new_file, isFull: isFull }
     }
@@ -558,7 +558,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     }
 
     fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
-        let ss = self.cType;
+        let rType = self.rType;
         let isFull = self.isFull;
 
         let mut control = driver::CompileController::basic();
@@ -627,7 +627,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                                         Some(Box::new(|_,_| { true })));
             debug!("{:?}", token::str_to_ident(&new_name[..]));
 
-            match ss {
+            match rType {
                 RefactorType::Type => {
                     let mut h = HashMap::new();
                     h.insert(String::new(), String::new());
