@@ -59,6 +59,15 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                     // Will also restrict if reference is on same line as renaming
                     let node: NodeId = rename_var.parse().unwrap();
 
+                    match run_compiler_resolution(String::from_str(input_file), String::from_str(input),
+                                                  RefactorType::Variable, String::from_str(new_name),
+                                                  node, false) {
+                        Ok(()) => {
+                            debug!("GOOD");
+                        },
+                        Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
+                    }
+
                     if let Some(references) = ref_map.get(rename_var) {
                         for map in references.iter() {
                             let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
