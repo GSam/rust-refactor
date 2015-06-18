@@ -558,20 +558,20 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     }
 
     fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
-        let full_run = self.isFull;
-        let node_to_find = self.node_to_find;
-        let new_name = self.new_name.clone();
+        let ss = self.cType;
+        let isFull = self.isFull;
 
         let mut control = driver::CompileController::basic();
-        
-        if full_run {
+        if isFull {
             control.after_analysis.stop = Compilation::Stop;
             return control;
         }
 
+        let node_to_find = self.node_to_find;
+        let new_name = self.new_name.clone();
+
         control.after_write_deps.stop = Compilation::Stop;
         control.after_write_deps.callback = box move |state| {
-            let cType = self.cType;
             let krate =  state.expanded_crate.unwrap().clone();
             let ast_map = state.ast_map.unwrap();
             let krate = ast_map.krate();
@@ -627,8 +627,10 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                                         Some(Box::new(|_,_| { true })));
             debug!("{:?}", token::str_to_ident(&new_name[..]));
 
-            match cType {
+            match ss {
                 RefactorType::Type => {
+                    let mut h = HashMap::new();
+                    h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
                     
                     let mut idens = ast_map.with_path(node_to_find, |path| {
@@ -684,7 +686,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     println!("{:?}", path);
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
                         // unwind at this location
-                        panic!(1);
+                        panic!(h);
                     }
                 },
                 RefactorType::Variable => {
@@ -715,13 +717,15 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     visit::walk_crate(&mut resolver, krate);
 
+                    let mut h = HashMap::new();
+                    h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
                     
                     // resolver resolve node id
                     //if resolver.resolve_path(node_to_find, &path) {
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
                         // unwind at this location
-                        panic!(1);
+                        panic!(h);
                     }
                     //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
 
@@ -786,6 +790,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     visit::walk_crate(&mut resolver, krate);
 
+                    let mut h = HashMap::new();
+                    h.insert(String::new(), String::new());
                     debug!("{:?}", token::str_to_ident(&new_name[..]));
                     
                     // TODO 
@@ -795,13 +801,13 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
                         // unwind at this location
                         debug!("BAD");
-                        panic!(1);
+                        panic!(h);
                     }
 
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
                         // unwind at this location
                         debug!("BAD");
-                        panic!(1);
+                        panic!(h);
                     }
                     debug!("OK");
                     //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
