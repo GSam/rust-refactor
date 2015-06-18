@@ -79,7 +79,9 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                                 }
                             }
 
-                            match run_compiler_resolution(String::from_str(input_file), answer, RefactorType::Variable, String::from_str(new_name), node) {
+                            match run_compiler_resolution(String::from_str(input_file), answer,
+                                                          RefactorType::Variable, String::from_str(new_name),
+                                                          node, true) {
                                 Ok(()) => {
                                     debug!("GOOD");
                                     // Check for conflicts 
@@ -121,7 +123,10 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
     let ref_map = analyzed_data.type_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-       match run_compiler_resolution(String::from_str(input_file), String::from_str(input), RefactorType::Type, String::from_str(new_name), node) {
+    let input_file_str = String::from_str(input_file);
+    let input_str = String::from_str(input);
+    match run_compiler_resolution(input_file_str, input_str, RefactorType::Type,
+                                  String::from_str(new_name), node, false) {
         Ok(()) => {
             // Check for conflicts
             Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
@@ -131,7 +136,8 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
 
 }
 
-fn run_compiler_resolution(filename: String, input: String, kind: RefactorType, new_name: String, node: NodeId) -> Result<(), i32> {
+fn run_compiler_resolution(filename: String, input: String, kind: RefactorType,
+                           new_name: String, node: NodeId, full: bool) -> Result<(), i32> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
@@ -146,7 +152,7 @@ fn run_compiler_resolution(filename: String, input: String, kind: RefactorType, 
     };
 
     thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, input);
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, input, full);
         run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
         1
@@ -169,7 +175,10 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
     let ref_map = analyzed_data.func_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-    match run_compiler_resolution(String::from_str(input_file), String::from_str(input), RefactorType::Function, String::from_str(new_name), node) {
+    let input_file_str = String::from_str(input_file);
+    let input_str = String::from_str(input);
+    match run_compiler_resolution(input_file_str, input_str, RefactorType::Function,
+                                  String::from_str(new_name), node, false) {
         Ok(()) => {
             // Check for conflicts
             Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
@@ -390,7 +399,7 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
             let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
 
-            let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+            // let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
             rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
         }
     }
@@ -497,15 +506,19 @@ pub enum RefactorType {
 
 struct RefactorCalls {
     default_calls: RustcDefaultCalls,
-    isTrue: RefactorType,
+    cType: RefactorType,
     new_name: String,
     node_to_find: NodeId,
-    input: String
+    input: String,
+    isFull: bool
 }
 
 impl RefactorCalls {
-    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: String) -> RefactorCalls {
-        RefactorCalls { default_calls: RustcDefaultCalls, isTrue: t, new_name: new_name, node_to_find: node, input: new_file }
+    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: String,
+           isFull: bool) -> RefactorCalls {
+        RefactorCalls { default_calls: RustcDefaultCalls, cType: t,
+                        new_name: new_name, node_to_find: node,
+                        input: new_file, isFull: isFull }
     }
 }
 
@@ -545,8 +558,258 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     }
 
     fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
+        let full_run = self.isFull;
+        let node_to_find = self.node_to_find;
+        let new_name = self.new_name.clone();
+
         let mut control = driver::CompileController::basic();
-        control.after_analysis.stop = Compilation::Stop;
+        
+        if full_run {
+            control.after_analysis.stop = Compilation::Stop;
+            return control;
+        }
+
+        control.after_write_deps.stop = Compilation::Stop;
+        control.after_write_deps.callback = box move |state| {
+            let cType = self.cType;
+            let krate =  state.expanded_crate.unwrap().clone();
+            let ast_map = state.ast_map.unwrap();
+            let krate = ast_map.krate();
+            CrateReader::new(&state.session).read_crates(krate);
+            let lang_items = lang_items::collect_language_items(krate, &state.session);
+            let resolve::CrateMap {
+                def_map,
+                freevars,
+                export_map,
+                trait_map,
+                external_exports,
+                glob_map,
+            } = resolve::resolve_crate(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No);
+            debug!("{:?}", def_map);
+
+            // According to some condition !
+            //let ps = syntax::parse::ParseSess::new();
+            let ps = &state.session.parse_sess;
+            let cratename = match attr::find_crate_name(&krate.attrs[..]) {
+                Some(name) => name.to_string(),
+                None => String::from_str("unknown_crate"),
+            };
+
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+            let mut cx = syntax::ext::base::ExtCtxt::new(ps, krate.config.clone(), //vec![],
+                                                         syntax::ext::expand::ExpansionConfig::default(cratename));
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+            //let ast_node = ast_map.get(ast_map.get_parent(node_to_find));
+            //println!("{:?}", ast_node);
+            let ast_node = ast_map.get(node_to_find);
+            debug!("{:?}", ast_node);
+            debug!("{}", node_to_find);
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+
+            // find current path and syntax context
+            let mut syntax_ctx = 0;
+            match ast_node {
+                NodeLocal(pat) => {
+                    match pat.node {
+                        ast::PatIdent(_, path, _) => {
+                            syntax_ctx = path.node.ctxt;
+                        },
+                        _ => {}
+                    }
+                },
+
+                _ => {}
+            }
+
+            let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
+            // create resolver
+            let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                                                        Some(Box::new(|_,_| { true })));
+            debug!("{:?}", token::str_to_ident(&new_name[..]));
+
+            match cType {
+                RefactorType::Type => {
+                    debug!("{:?}", token::str_to_ident(&new_name[..]));
+                    
+                    let mut idens = ast_map.with_path(node_to_find, |path| {
+                    let itr = token::get_ident_interner();
+
+                    path.fold(Vec::new(), |mut s, e| {
+                        let e = itr.get(e.name());
+                        s.push(token::str_to_ident(&e[..]));
+                        s
+                    })
+                    //ast_map::path_to_string(path)
+
+                    });
+
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                        if *resolved {
+                            return true;
+                        }
+                        //debug!("Entered resolver callback");
+                        match node {
+                            NodeLocal(pat) => {
+                                if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            NodeItem(item) => {
+                                println!("{:?}", item);
+                                if item.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            _ => {}
+                        }
+
+                        false
+                    })));
+
+                    visit::walk_crate(&mut resolver, krate);
+
+                    let new_iden = token::str_to_ident(&new_name[..]);
+                    idens.pop();
+                    idens.push(new_iden);
+
+                    token::str_to_ident(&new_name[..]);
+                    let path = cx.path(DUMMY_SP, idens);
+
+                    // resolver resolve node id
+                    println!("{:?}", path);
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
+                        // unwind at this location
+                        panic!(1);
+                    }
+                },
+                RefactorType::Variable => {
+                    let mut t = token::str_to_ident(&new_name[..]);
+                    t.ctxt = syntax_ctx;
+                    debug!("{:?}", mtwt::resolve(t));
+                    let path = cx.path(DUMMY_SP, vec![t]);
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                        if *resolved {
+                            return true;
+                        }
+                        //debug!("Entered resolver callback");
+                        //println!("{:?}", node);
+                        match node {
+                            NodeLocal(pat) => {
+                                if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            _ => {}
+                        }
+
+                        false
+                    })));
+
+                    visit::walk_crate(&mut resolver, krate);
+
+                    debug!("{:?}", token::str_to_ident(&new_name[..]));
+                    
+                    // resolver resolve node id
+                    //if resolver.resolve_path(node_to_find, &path) {
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
+                        // unwind at this location
+                        panic!(1);
+                    }
+                    //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
+
+                },
+                RefactorType::Function => {
+                    let mut idens = ast_map.with_path(node_to_find, |path| {
+                    let itr = token::get_ident_interner();
+
+                    path.fold(Vec::new(), |mut s, e| {
+                        let e = itr.get(e.name());
+                        s.push(token::str_to_ident(&e[..]));
+                        s
+                    })
+                    //ast_map::path_to_string(path)
+
+                    });
+
+                    let new_iden = token::str_to_ident(&new_name[..]);
+                    idens.pop();
+                    idens.push(new_iden);
+
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                        if *resolved {
+                            return true;
+                        }
+                        //debug!("Entered resolver callback");
+                        match node {
+                            NodeLocal(pat) => {
+                                if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            NodeItem(item) => {
+                                match item.node {
+                                    ItemImpl(_, _, _, _, _, ref impls) => {
+                                        for i in impls.iter() {
+                                            if i.id == node_to_find {
+                                                debug!("{:?}", i);
+                                                debug!("Found node");
+                                                *resolved = true;
+                                                return true;
+                                            }
+                                        }
+                                    },
+                                    _ => {}
+
+                                }
+                                if item.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            _ => {}
+                        }
+
+                        false
+                    })));
+
+                    visit::walk_crate(&mut resolver, krate);
+
+                    debug!("{:?}", token::str_to_ident(&new_name[..]));
+                    
+                    // TODO 
+                    // let path = cx.path(DUMMY_SP, idens);
+                    // resolver resolve node id
+                    //if resolver.resolve_path(node_to_find, &path) {
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
+                        // unwind at this location
+                        debug!("BAD");
+                        panic!(1);
+                    }
+
+                    if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
+                        // unwind at this location
+                        debug!("BAD");
+                        panic!(1);
+                    }
+                    debug!("OK");
+                    //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
+                },
+                _ => {}              
+            }
+        };
+
         control
     }
 }
