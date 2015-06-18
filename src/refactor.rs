@@ -136,13 +136,44 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
     let input_str = String::from_str(input);
     match run_compiler_resolution(input_file_str, input_str, RefactorType::Type,
                                   String::from_str(new_name), node, false) {
-        Ok(()) => {
-            // Check for conflicts
-            Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
-        },
-        Err(x) => { debug!("BAD"); Err(Response::Conflict) }
+        Ok(()) => {},
+        Err(x) => { debug!("BAD"); return Err(Response::Conflict) }
     }
 
+    if let Some(references) = ref_map.get(rename_var) {
+        for map in references.iter() {
+            let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+            let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+            let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+            let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+
+            //let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+            rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+            let mut answer = String::new();
+            let mut count = ropes.len();
+            for rope in &ropes {
+                answer.push_str(&rope.to_string());
+                if count > 1 {
+                    answer.push_str("\n");
+                    count -= 1;
+                }
+            }
+
+            match run_compiler_resolution(String::from_str(input_file), answer,
+                                          RefactorType::Variable, String::from_str(new_name),
+                                          node, true) {
+                Ok(()) => {
+                    debug!("GOOD");
+                    // Check for conflicts
+                    return Err(Response::Conflict);
+                },
+                Err(x) => { debug!("BAD");}
+            }
+        }
+    }
+
+    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
 fn run_compiler_resolution(filename: String, input: String, kind: RefactorType,
@@ -188,12 +219,44 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
     let input_str = String::from_str(input);
     match run_compiler_resolution(input_file_str, input_str, RefactorType::Function,
                                   String::from_str(new_name), node, false) {
-        Ok(()) => {
-            // Check for conflicts
-            Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
-        },
-        Err(x) => { debug!("BAD"); Err(Response::Conflict) }
+        Ok(()) => {},
+        Err(x) => { debug!("BAD"); return Err(Response::Conflict) }
     }
+
+    if let Some(references) = ref_map.get(rename_var) {
+        for map in references.iter() {
+            let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+            let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+            let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+            let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+
+            //let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+            rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+            let mut answer = String::new();
+            let mut count = ropes.len();
+            for rope in &ropes {
+                answer.push_str(&rope.to_string());
+                if count > 1 {
+                    answer.push_str("\n");
+                    count -= 1;
+                }
+            }
+
+            match run_compiler_resolution(String::from_str(input_file), answer,
+                                          RefactorType::Variable, String::from_str(new_name),
+                                          node, true) {
+                Ok(()) => {
+                    debug!("GOOD");
+                    // Check for conflicts
+                    return Err(Response::Conflict);
+                },
+                Err(x) => { debug!("BAD");}
+            }
+        }
+    }
+
+    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
 struct AnalysisData {
