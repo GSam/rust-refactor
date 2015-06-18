@@ -7,7 +7,7 @@ Currently supports:
 Simple variable renames, function renaming, struct renaming.
 
 ```
-% refactor.exe var "tests\variable\basic_rename.csv" "tests\variable\basic_rename.rs" x:-1:-1  new_name
+% refactor var "tests/variable/basic_rename.csv" "tests/variable/basic_rename.rs" x:-1:-1  new_name
 ```
 
 #TODO:
