@@ -27,6 +27,12 @@ impl FileLoader for ReplaceLoader {
 } 
 
 impl ReplaceLoader {
+    pub fn new() -> ReplaceLoader {
+        ReplaceLoader {
+            files: HashMap::new()
+        }
+    }
+
     pub fn add_file(&mut self, file: FileName, src: String) {
         self.files.insert(file, src);
     }

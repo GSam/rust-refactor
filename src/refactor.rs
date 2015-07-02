@@ -26,6 +26,7 @@ use std::path::PathBuf;
 use std::thread;
 
 use strings::src_rope::Rope;
+use loader::ReplaceLoader;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -187,13 +188,13 @@ fn run_compiler_resolution(filename: String, input: String, kind: RefactorType,
             path.push_str(&val[..]);
             vec!["refactor".to_owned(), 
                 path,
-                filename]
+                filename.clone()]
         }
-        Err(e) => {vec!["refactor".to_owned(), filename]},
+        Err(e) => {vec!["refactor".to_owned(), filename.clone()]},
     };
 
     thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, input, full);
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, (filename, input), full);
         run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
         1
@@ -582,12 +583,12 @@ struct RefactorCalls {
     rType: RefactorType,
     new_name: String,
     node_to_find: NodeId,
-    input: String,
+    input: (String, String),
     isFull: bool
 }
 
 impl RefactorCalls {
-    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: String,
+    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: (String, String),
            isFull: bool) -> RefactorCalls {
         RefactorCalls { default_calls: RustcDefaultCalls, rType: t,
                         new_name: new_name, node_to_find: node,
@@ -611,11 +612,14 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                      ofile: &Option<PathBuf>)
                      -> Compilation {
         self.default_calls.late_callback(m, s, i, odir, ofile);
+        let mut loader = ReplaceLoader::new();
+        loader.add_file(self.input.0.clone(), self.input.1.clone());
+        s.codemap().set_file_loader(Box::new(loader));
         Compilation::Continue
     }
 
     fn some_input(&mut self, input: Input, input_path: Option<PathBuf>) -> (Input, Option<PathBuf>) {
-        (Input::Str(self.input.clone()), input_path)
+        (input, input_path)
     }
 
     fn no_input(&mut self,
