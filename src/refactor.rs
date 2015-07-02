@@ -1,6 +1,8 @@
 extern crate csv;
 
 use getopts;
+use rustc::ast_map;
+use rustc::ast_map::Node::*;
 use rustc::session::Session;
 use rustc::session::config::{self, Input};
 use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, run_compiler};
@@ -9,8 +11,7 @@ use rustc_resolve as resolve;
 use rustc::middle::lang_items;
 use rustc::middle::ty;
 use syntax;
-use syntax::{ast, ast_map, attr, diagnostics, visit};
-use syntax::ast_map::Node::*;
+use syntax::{ast, attr, diagnostics, visit};
 use syntax::parse::token;
 use syntax::ast::NodeId;
 use syntax::ast::Item_::ItemImpl;
@@ -656,7 +657,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 trait_map,
                 external_exports,
                 glob_map,
-            } = resolve::resolve_crate(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No);
+            } = resolve::resolve_crate(&state.session, &ast_map, resolve::MakeGlobMap::No);
             debug!("{:?}", def_map);
 
             // According to some condition !
@@ -695,7 +696,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
             let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
             // create resolver
-            let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+            let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
                                                         Some(Box::new(|_,_| { true })));
             debug!("{:?}", token::str_to_ident(&new_name[..]));
 
@@ -717,7 +718,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     });
 
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
                     Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
                         if *resolved {
                             return true;
@@ -766,7 +767,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     t.ctxt = syntax_ctx;
                     debug!("{:?}", mtwt::resolve(t));
                     let path = cx.path(DUMMY_SP, vec![t]);
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
                     Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
                         if *resolved {
                             return true;
@@ -819,7 +820,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     idens.pop();
                     idens.push(new_iden);
 
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No, 
+                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
                     Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
                         if *resolved {
                             return true;
