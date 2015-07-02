@@ -20,3 +20,4 @@ extern crate syntax;
 extern crate strings;
 
 pub mod refactor;
+pub mod loader;
