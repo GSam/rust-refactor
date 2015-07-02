@@ -10,4 +10,4 @@ csv = "0.14.2"
 [dependencies.strings]
 strings = "0.0.1"
 git = "https://github.com/nrc/strings.rs.git"
-rev = "551331d01911b7e8da056a4a019eb367cfaf03bd"
+rev = "b7f37c4545b7dba24fb28161cd9c405fae978be4"

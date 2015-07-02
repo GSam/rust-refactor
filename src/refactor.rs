@@ -7,7 +7,7 @@ use rustc::metadata::creader::CrateReader;
 use rustc_resolve as resolve;
 use rustc::middle::lang_items;
 use rustc::middle::ty;
-use syntax::ast_map;
+use rustc::ast_map;
 use syntax::{ast, attr, diagnostics, visit};
 use std::collections::HashMap;
 use strings::src_rope::Rope;
@@ -469,7 +469,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 trait_map,
                 external_exports,
                 glob_map,
-            } = resolve::resolve_crate(&state.session, &ast_map, &lang_items, krate, resolve::MakeGlobMap::No);
+            } = resolve::resolve_crate(&state.session, &ast_map, resolve::MakeGlobMap::No);
             println!("{:?}", def_map);
         };
 
