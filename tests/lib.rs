@@ -91,6 +91,18 @@ fn working_variable_6() {
 }
 
 #[test]
+fn working_variable_7() {
+    let input = read_to_string("tests/variable/working_nested.rs");
+    let output = read_to_string("tests/variable/working_nested_out.rs");
+    let analysis = read_to_string("tests/variable/working_nested.csv");
+
+    match refactor::refactor::rename_variable(&"tests/variable/working_nested.rs", &input, &analysis, "b", "16") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn prevented_variable_1() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
