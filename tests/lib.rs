@@ -79,6 +79,18 @@ fn working_variable_5() {
 }
 
 #[test]
+fn working_variable_6() {
+    let input = read_to_string("tests/variable/working_fn_local.rs");
+    let output = read_to_string("tests/variable/working_fn_local_out.rs");
+    let analysis = read_to_string("tests/variable/working_fn_local.csv");
+
+    match refactor::refactor::rename_variable(&"tests/variable/working_fn_local.rs", &input, &analysis, "Foo", "9") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn prevented_variable_1() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
