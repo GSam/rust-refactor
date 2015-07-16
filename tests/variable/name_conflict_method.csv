@@ -1,0 +1,13 @@
+crate,file_name,"name_conflict_method.rs",file_line,1,file_col,0,extent_start,0,extent_start_bytes,0,file_line_end,6,file_col_end,0,extent_end,51,extent_end_bytes,51,name,"unknown_crate"
+external_crate,name,"alloc",crate,"5",file_name,"name_conflict_method.rs"
+external_crate,name,"rand",crate,"7",file_name,"name_conflict_method.rs"
+external_crate,name,"std",crate,"1",file_name,"name_conflict_method.rs"
+external_crate,name,"collections",crate,"3",file_name,"name_conflict_method.rs"
+external_crate,name,"rustc_unicode",crate,"4",file_name,"name_conflict_method.rs"
+external_crate,name,"libc",crate,"6",file_name,"name_conflict_method.rs"
+external_crate,name,"core",crate,"2",file_name,"name_conflict_method.rs"
+end_external_crates
+function,file_name,"name_conflict_method.rs",file_line,1,file_col,3,extent_start,3,extent_start_bytes,3,file_line_end,1,file_col_end,6,extent_end,6,extent_end_bytes,6,id,"4",qualname,"::foo",declid,"",declidcrate,"",scopeid,"0"
+function,file_name,"name_conflict_method.rs",file_line,3,file_col,3,extent_start,16,extent_start_bytes,16,file_line_end,3,file_col_end,7,extent_end,20,extent_end_bytes,20,id,"7",qualname,"::main",declid,"",declidcrate,"",scopeid,"0"
+variable,file_name,"name_conflict_method.rs",file_line,4,file_col,8,extent_start,33,extent_start_bytes,33,file_line_end,4,file_col_end,9,extent_end,34,extent_end_bytes,34,id,"12",name,"a",qualname,"a$12",value,"a = 2",type,"i32",scopeid,"0"
+fn_call,file_name,"name_conflict_method.rs",file_line,5,file_col,4,extent_start,44,extent_start_bytes,44,file_line_end,5,file_col_end,7,extent_end,47,extent_end_bytes,47,refid,"4",refidcrate,"0",qualname,"",scopeid,"7"

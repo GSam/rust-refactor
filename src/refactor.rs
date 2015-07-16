@@ -49,6 +49,16 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     let ref_map = analyzed_data.var_ref_map;
 
     // Check if renaming will cause conflicts
+    let node: NodeId = rename_var.parse().unwrap();
+
+    match run_compiler_resolution(String::from_str(input_file), String::from_str(input),
+                                  RefactorType::Variable, String::from_str(new_name),
+                                  node, false) {
+        Ok(()) => {
+            debug!("GOOD");
+        },
+        Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
+    }
     match dec_map.get(rename_var) {
         Some(x) => {
             for (key, value) in dec_map.iter() {
@@ -59,16 +69,6 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                     // May still be ok if there is no references to it
                     // However, standalone blocks won't be detected + macros
                     // Will also restrict if reference is on same line as renaming
-                    let node: NodeId = rename_var.parse().unwrap();
-
-                    match run_compiler_resolution(String::from_str(input_file), String::from_str(input),
-                                                  RefactorType::Variable, String::from_str(new_name),
-                                                  node, false) {
-                        Ok(()) => {
-                            debug!("GOOD");
-                        },
-                        Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
-                    }
 
                     if let Some(references) = ref_map.get(rename_var) {
                         for map in references.iter() {
