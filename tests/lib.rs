@@ -156,6 +156,39 @@ fn prevented_variable_7() {
 }
 
 #[test]
+fn prevented_variable_8() {
+    let file = "tests/variable/name_conflict_method_local.rs";
+    let input = read_to_string(file);
+    let analysis = read_to_string("tests/variable/name_conflict_method_local.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "13") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
+fn prevented_variable_9() {
+    let file = "tests/variable/name_conflict_method_local2.rs";
+    let input = read_to_string(file);
+    let analysis = read_to_string("tests/variable/name_conflict_method_local2.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "9") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+
+    // fn main() {
+    //     let a = 2;
+    //     fn foo() {}
+    //     foo();
+    // }
+    //
+    // Unlike the type case, this is not detected by the resolve_path
+    // This test is slightly modified, using a, to make sure only resolving occurs
+    // (Rather than a full run)
+
+}
+
+#[test]
 fn working_struct_1() {
     let input = read_to_string("tests/type/basic_struct.rs");
     let output = read_to_string("tests/type/working_struct_1_out.rs");
