@@ -23,6 +23,8 @@ use std::env;
 use std::io::prelude::*;
 use std::io::stderr;
 use std::path::PathBuf;
+use std::path::Path;
+use std::fs::File;
 use std::thread;
 
 use strings::src_rope::Rope;
@@ -48,6 +50,16 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     let dec_map = analyzed_data.var_map;
     let ref_map = analyzed_data.var_ref_map;
 
+
+    let input_file_str = String::from_str(input_file);
+    let input_str = String::from_str(input);
+    let mut filename = String::from_str(input_file);
+    if let Some(decl) = dec_map.get(rename_var) {
+        if let Some(file) = decl.get("file_name") {
+            filename = file.clone();
+        }
+    }
+    let filename = filename;
     // Check if renaming will cause conflicts
     let node: NodeId = rename_var.parse().unwrap();
 
@@ -72,7 +84,16 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
 
                     if let Some(references) = ref_map.get(rename_var) {
                         for map in references.iter() {
-                            let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+                            let filename = map.get("file_name").unwrap();
+
+                            let mut file = match File::open(&Path::new(filename)) {
+                                Err(why) => panic!("couldn't open file {}", why),
+                                    Ok(file) => file,
+                            };
+                            let mut file_str = String::new();
+                            let _ = file.read_to_string(&mut file_str);
+                            let file_str = &file_str[..];
+                            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
                             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
                             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
                             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
@@ -90,15 +111,15 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                                 }
                             }
 
-                            match run_compiler_resolution(String::from_str(input_file), answer,
+                            match run_compiler_resolution(String::from_str(input_file), String::from_str(filename), answer,
                                                           RefactorType::Variable, String::from_str(new_name),
                                                           node, true) {
                                 Ok(()) => {
-                                    debug!("GOOD");
+                                    debug!("Unexpected success!");
                                     // Check for conflicts 
                                     return Err(Response::Conflict); 
                                 },
-                                Err(x) => { debug!("BAD");}
+                                Err(x) => { debug!("Expected failure!");}
                             }
                         }
                     }
@@ -136,15 +157,31 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
 
     let input_file_str = String::from_str(input_file);
     let input_str = String::from_str(input);
-    match run_compiler_resolution(input_file_str, input_str, RefactorType::Type,
+    let mut filename = String::from_str(input_file);
+    if let Some(decl) = dec_map.get(rename_var) {
+        if let Some(file) = decl.get("file_name") {
+            filename = file.clone();
+        }
+    }
+    let filename = filename;
+    match run_compiler_resolution(input_file_str, filename, input_str, RefactorType::Type,
                                   String::from_str(new_name), node, false) {
         Ok(()) => {},
-        Err(x) => { debug!("BAD"); return Err(Response::Conflict) }
+        Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
 
     if let Some(references) = ref_map.get(rename_var) {
         for map in references.iter() {
-            let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let filename = map.get("file_name").unwrap();
+
+            let mut file = match File::open(&Path::new(filename)) {
+                Err(why) => panic!("couldn't open file {}", why),
+                Ok(file) => file,
+            };
+            let mut file_str = String::new();
+            let _ = file.read_to_string(&mut file_str);
+            let file_str = &file_str[..];
+            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
@@ -162,15 +199,15 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), answer,
+            match run_compiler_resolution(String::from_str(input_file), String::from_str(filename), answer,
                                           RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
-                    debug!("GOOD");
+                    debug!("Unexpected success!");
                     // Check for conflicts
                     return Err(Response::Conflict);
                 },
-                Err(x) => { debug!("BAD");}
+                Err(x) => { debug!("Expected failure!");}
             }
         }
     }
@@ -178,7 +215,7 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-fn run_compiler_resolution(filename: String, input: String, kind: RefactorType,
+fn run_compiler_resolution(root: String, filename: String, input: String, kind: RefactorType,
                            new_name: String, node: NodeId, full: bool) -> Result<(), i32> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
@@ -188,9 +225,9 @@ fn run_compiler_resolution(filename: String, input: String, kind: RefactorType,
             path.push_str(&val[..]);
             vec!["refactor".to_owned(), 
                 path,
-                filename.clone()]
+                root]
         }
-        Err(e) => {vec!["refactor".to_owned(), filename.clone()]},
+        Err(e) => {vec!["refactor".to_owned(), root]},
     };
 
     thread::catch_panic(move || {
@@ -219,15 +256,33 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
 
     let input_file_str = String::from_str(input_file);
     let input_str = String::from_str(input);
-    match run_compiler_resolution(input_file_str, input_str, RefactorType::Function,
+
+    let mut filename = String::from_str(input_file);
+    if let Some(decl) = dec_map.get(rename_var) {
+        if let Some(file) = decl.get("file_name") {
+            filename = file.clone();
+        }
+    }
+    let filename = filename;
+    match run_compiler_resolution(input_file_str, filename.clone(), input_str, RefactorType::Function,
                                   String::from_str(new_name), node, false) {
         Ok(()) => {},
-        Err(x) => { debug!("BAD"); return Err(Response::Conflict) }
+        Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
 
     if let Some(references) = ref_map.get(rename_var) {
         for map in references.iter() {
-            let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let filename = map.get("file_name").unwrap();
+
+            let mut file = match File::open(&Path::new(filename)) {
+                Err(why) => panic!("couldn't open file {}", why),
+                Ok(file) => file,
+            };
+            let mut file_str = String::new();
+            let _ = file.read_to_string(&mut file_str);
+            let file_str = &file_str[..];
+
+            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
@@ -245,15 +300,15 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), answer,
+            match run_compiler_resolution(String::from_str(input_file), String::from_str(filename), answer,
                                           RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
-                    debug!("GOOD");
+                    debug!("Unexpected success!");
                     // Check for conflicts
                     return Err(Response::Conflict);
                 },
-                Err(x) => { debug!("BAD");}
+                Err(x) => { debug!("Expected failure!");}
             }
         }
     }
@@ -613,6 +668,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                      -> Compilation {
         self.default_calls.late_callback(m, s, i, odir, ofile);
         let mut loader = ReplaceLoader::new();
+        // If there were multiple renamings per compile run, it would be added here
         loader.add_file(self.input.0.clone(), self.input.1.clone());
         s.codemap().set_file_loader(Box::new(loader));
         Compilation::Continue
