@@ -1,14 +1,5 @@
-crate,file_name,"name_conflict_type.rs",file_line,1,file_col,0,extent_start,0,extent_start_bytes,0,file_line_end,6,file_col_end,0,extent_end,57,extent_end_bytes,57,name,"unknown_crate"
-external_crate,name,"alloc",crate,"5",file_name,"name_conflict_type.rs"
-external_crate,name,"rand",crate,"7",file_name,"name_conflict_type.rs"
-external_crate,name,"std",crate,"1",file_name,"name_conflict_type.rs"
-external_crate,name,"collections",crate,"3",file_name,"name_conflict_type.rs"
-external_crate,name,"rustc_unicode",crate,"4",file_name,"name_conflict_type.rs"
-external_crate,name,"libc",crate,"6",file_name,"name_conflict_type.rs"
-external_crate,name,"core",crate,"2",file_name,"name_conflict_type.rs"
-end_external_crates
-struct,file_name,"name_conflict_type.rs",file_line,1,file_col,7,extent_start,7,extent_start_bytes,7,file_line_end,1,file_col_end,10,extent_end,10,extent_end_bytes,10,id,"4",ctor_id,"5",qualname,"::Foo",scopeid,"0",value,"struct Foo;"
-function,file_name,"name_conflict_type.rs",file_line,3,file_col,3,extent_start,16,extent_start_bytes,16,file_line_end,3,file_col_end,7,extent_end,20,extent_end_bytes,20,id,"7",qualname,"::main",declid,"",declidcrate,"",scopeid,"0"
-variable,file_name,"name_conflict_type.rs",file_line,4,file_col,8,extent_start,33,extent_start_bytes,33,file_line_end,4,file_col_end,9,extent_end,34,extent_end_bytes,34,id,"12",name,"a",qualname,"a$12",value,"a = 2",type,"i32",scopeid,"0"
-variable,file_name,"name_conflict_type.rs",file_line,5,file_col,8,extent_start,48,extent_start_bytes,48,file_line_end,5,file_col_end,9,extent_end,49,extent_end_bytes,49,id,"16",name,"b",qualname,"b$16",value,"b = Foo",type,"Foo",scopeid,"0"
-type_ref,file_name,"name_conflict_type.rs",file_line,5,file_col,12,extent_start,52,extent_start_bytes,52,file_line_end,5,file_col_end,15,extent_end,55,extent_end_bytes,55,refid,"5",refidcrate,"0",qualname,"",scopeid,"7"
+struct Foo;
+fn main() {
+    let a = 2;
+    let b = Foo;
+}
