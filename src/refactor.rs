@@ -36,7 +36,8 @@ pub enum Response {
     Conflict
 }
 
-pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
+pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str)
+                       -> Result<HashMap<String, String>, Response> {
     let analyzed_data = init(analysis);
     
     //for (key, value) in analyzed_data.type_map.iter() {
@@ -50,6 +51,7 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     let dec_map = analyzed_data.var_map;
     let ref_map = analyzed_data.var_ref_map;
 
+    let mut output = HashMap::new();
 
     let input_file_str = String::from_str(input_file);
     let input_str = String::from_str(input);
@@ -60,6 +62,8 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
         }
     }
     let filename = filename;
+
+    output.insert(input_file_str.clone(), input_str.clone());
     // Check if renaming will cause conflicts
     let node: NodeId = rename_var.parse().unwrap();
 
@@ -92,6 +96,7 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                             };
                             let mut file_str = String::new();
                             let _ = file.read_to_string(&mut file_str);
+                            output.insert(filename.clone(), file_str.clone());
                             let file_str = &file_str[..];
                             let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
                             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
@@ -144,7 +149,8 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
+pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str)
+                   -> Result<HashMap<String, String>, Response> {
     let analyzed_data = init(analysis);
 
     //for (key, value) in analyzed_data.type_map.iter() {
@@ -238,7 +244,9 @@ fn run_compiler_resolution(root: String, filename: String, input: String, kind: 
     )
 }
 
-pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str) -> Result<String, Response> {
+pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str)
+                       -> Result<HashMap<String, String>, Response> {
+    let analyzed_data = init(analysis);
     let analyzed_data = init(analysis);
 
     // method calls refer to top level trait function in declid
@@ -510,7 +518,9 @@ fn init(analysis: &str) -> AnalysisData {
 
 fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
                       dec_map: HashMap<String, HashMap<String, String>>, 
-                      ref_map: HashMap<String, Vec<HashMap<String, String>>>) -> String {
+                      ref_map: HashMap<String, Vec<HashMap<String, String>>>) -> HashMap<String, String> {
+    let mut output = HashMap::new();
+
     let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
 
     // TODO Failed an attempt to chain the declaration to the other iterator...
@@ -519,7 +529,9 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
     let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
     let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
     let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+    let filename = map.get("file_name").unwrap();
     rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+    output.insert(filename.clone(), ropes);
 
     if let Some(references) = ref_map.get(rename_var) {
         for map in references.iter() {
@@ -527,23 +539,38 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
             let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+            let filename = map.get("file_name").unwrap();
+            if let Some(ref mut ropes) = output.get_mut(filename) {
+                rename(ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+                continue;
+            }
+            let mut new_file = String::new();
+            File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
+            let mut ropes: Vec<Rope> = new_file.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+            output.insert(filename.clone(), ropes);
+
 
             // let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
-            rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
         }
     }
 
-    let mut answer = String::new();
-    let mut count = ropes.len();
-    for rope in &ropes {
-        answer.push_str(&rope.to_string());
-        if count > 1 {
-            answer.push_str("\n");
-            count -= 1;
+    let mut outmap = HashMap::new();
+    for (key, ropes) in output.iter() {
+        let mut answer = String::new();
+        let mut count = ropes.len();
+        for rope in ropes {
+            answer.push_str(&rope.to_string());
+            if count > 1 {
+                answer.push_str("\n");
+                count -= 1;
+            }
         }
+
+        outmap.insert(key.clone(), answer);
     }
 
-    answer
+    outmap
 }
 
 fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize,
