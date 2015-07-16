@@ -103,6 +103,58 @@ fn working_variable_7() {
 }
 
 #[test]
+fn working_variable_8() {
+    let file = "tests/variable/working_tuple_let.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/working_tuple_let_out.rs");
+    let analysis = read_to_string("tests/variable/working_tuple_let.csv");
+
+    match refactor::refactor::rename_variable(file, &input, &analysis, "x", "10") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_variable_9() {
+    let file = "tests/variable/working_mut_tuple_let.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/working_mut_tuple_let_out.rs");
+    let analysis = read_to_string("tests/variable/working_mut_tuple_let.csv");
+
+    match refactor::refactor::rename_variable(file, &input, &analysis, "x", "10") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_variable_10() {
+    let file = "tests/variable/working_mut_tuple_let2.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/working_mut_tuple_let2_out.rs");
+    let analysis = read_to_string("tests/variable/working_mut_tuple_let2.csv");
+
+    match refactor::refactor::rename_variable(file, &input, &analysis, "x", "11") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_variable_11() {
+    let file = "tests/variable/working_mut_tuple_let3.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/working_mut_tuple_let3_out.rs");
+    let analysis = read_to_string("tests/variable/working_mut_tuple_let3.csv");
+
+    match refactor::refactor::rename_variable(file, &input, &analysis, "x", "11") {
+        Ok(x) => assert_eq!(output.trim(), x.trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn prevented_variable_1() {
     let input = read_to_string("tests/variable/basic_rename.rs");
     let analysis = read_to_string("tests/variable/basic_rename.csv");
