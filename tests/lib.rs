@@ -276,7 +276,6 @@ fn working_method_3() {
 #[test]
 fn not_working_method_1() {
     let input = read_to_string("tests/function/alex_override_method.rs");
-    let output = read_to_string("tests/function/alex_override_method_out.rs");
     let analysis = read_to_string("tests/function/alex_override_method.csv");
 
     match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &input, &analysis, "foo", "74") {
