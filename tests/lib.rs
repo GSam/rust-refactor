@@ -127,7 +127,7 @@ fn prevented_variable_5() {
     let file = "tests/variable/name_conflict_type.rs";
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_type.csv");
-    match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "12") {
+    match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "12") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
