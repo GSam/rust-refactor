@@ -213,6 +213,17 @@ fn prevented_variable_9() {
 }
 
 #[test]
+fn prevented_variable_10() {
+    let file = "tests/variable/name_conflict_global.rs";
+    let input = read_to_string(file);
+    let analysis = read_to_string("tests/variable/name_conflict_global.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "FOO", "12") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn working_struct_1() {
     let input = read_to_string("tests/type/basic_struct.rs");
     let output = read_to_string("tests/type/working_struct_1_out.rs");
