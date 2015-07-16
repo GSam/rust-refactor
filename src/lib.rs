@@ -1,13 +1,14 @@
 #![feature(box_syntax)]
 #![feature(box_patterns)]
+#![feature(catch_panic)]
 #![feature(collections)]
-#![feature(rustc_private)]
 #![feature(core)]
-#![feature(unicode)]
-#![feature(path)]
 #![feature(env)]
 #![feature(io)]
-#![feature(catch_panic)]
+#![feature(path)]
+#![feature(rustc_private)]
+#![feature(result_expect)]
+#![feature(unicode)]
 
 #[macro_use]
 extern crate log;

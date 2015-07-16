@@ -15,6 +15,7 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::collections::HashMap;
 
 fn main() {
     let args = env::args();
@@ -58,21 +59,21 @@ fn main() {
         "var" => {
             let result = refactor::refactor::rename_variable(&args[3], &file_str, &analysis_str, &args[5], rename_var);
             match result {
-                Ok(x) => println!("{}", x),
+                Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "type" => {
             let result = refactor::refactor::rename_type(&args[3], &file_str, &analysis_str, &args[5], rename_var);
             match result {
-                Ok(x) => println!("{}", x),
+                Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "fn" => {
             let result = refactor::refactor::rename_function(&args[3], &file_str, &analysis_str, &args[5], rename_var);
             match result {
-                Ok(x) => println!("{}", x),
+                Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
@@ -82,3 +83,13 @@ fn main() {
     }
 }
 
+fn better_string(input: HashMap<String, String>) -> String {
+    let mut ans = String::new();
+    for (key, value) in input.iter() {
+        ans.push_str(key);
+        ans.push_str("\n");
+        ans.push_str(value);
+        ans.push_str("\n\n");
+    }
+    ans
+}
