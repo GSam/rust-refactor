@@ -67,7 +67,7 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     // Check if renaming will cause conflicts
     let node: NodeId = rename_var.parse().unwrap();
 
-    match run_compiler_resolution(String::from_str(input_file), String::from_str(input),
+    match run_compiler_resolution(String::from_str(input_file), filename, String::from_str(input),
                                   RefactorType::Variable, String::from_str(new_name),
                                   node, false) {
         Ok(()) => {
