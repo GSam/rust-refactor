@@ -1,12 +1,13 @@
+
 use std::collections::HashMap;
 use std::path::Path;
-use std::{fs};
+use std::fs;
 use std::io::{self, Read};
 use syntax::codemap::FileLoader;
 use syntax::codemap::FileName;
 
 pub struct ReplaceLoader {
-    files: HashMap<FileName, String>
+    files: HashMap<FileName, String>,
 }
 
 impl FileLoader for ReplaceLoader {
@@ -24,13 +25,11 @@ impl FileLoader for ReplaceLoader {
         try!(try!(fs::File::open(path)).read_to_string(&mut src));
         Ok(src)
     }
-} 
+}
 
 impl ReplaceLoader {
     pub fn new() -> ReplaceLoader {
-        ReplaceLoader {
-            files: HashMap::new()
-        }
+        ReplaceLoader { files: HashMap::new() }
     }
 
     pub fn add_file(&mut self, file: FileName, src: String) {

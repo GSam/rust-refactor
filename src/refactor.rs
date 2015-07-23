@@ -1,3 +1,4 @@
+
 extern crate csv;
 
 use getopts;
@@ -33,13 +34,17 @@ use loader::ReplaceLoader;
 #[derive(Debug, PartialEq)]
 pub enum Response {
     Error,
-    Conflict
+    Conflict,
 }
 
-pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str)
+pub fn rename_variable(input_file: &str,
+                       input: &str,
+                       analysis: &str,
+                       new_name: &str,
+                       rename_var: &str)
                        -> Result<HashMap<String, String>, Response> {
     let analyzed_data = init(analysis);
-    
+
     //for (key, value) in analyzed_data.type_map.iter() {
     //    println!("{}: \"{}\"", *key, value.get("id").unwrap());
     //}
@@ -149,7 +154,11 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str)
+pub fn rename_type(input_file: &str,
+                   input: &str,
+                   analysis: &str,
+                   new_name: &str,
+                   rename_var: &str)
                    -> Result<HashMap<String, String>, Response> {
     let analyzed_data = init(analysis);
 
@@ -221,8 +230,13 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-fn run_compiler_resolution(root: String, file_override: Option<(String, String)>, kind: RefactorType,
-                           new_name: String, node: NodeId, full: bool) -> Result<(), i32> {
+fn run_compiler_resolution(root: String,
+                           file_override: Option<(String, String)>,
+                           kind: RefactorType,
+                           new_name: String,
+                           node: NodeId,
+                           full: bool)
+                           -> Result<(), i32> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
@@ -244,14 +258,18 @@ fn run_compiler_resolution(root: String, file_override: Option<(String, String)>
     )
 }
 
-pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: &str, rename_var: &str)
+pub fn rename_function(input_file: &str,
+                       input: &str,
+                       analysis: &str,
+                       new_name: &str,
+                       rename_var: &str)
                        -> Result<HashMap<String, String>, Response> {
     let analyzed_data = init(analysis);
     let analyzed_data = init(analysis);
 
     // method calls refer to top level trait function in declid
 
-    // rename original function 
+    // rename original function
 
     // then rename all statically dispatched with refid = id
     // then rename all dynamically dispatched with declid = id
@@ -516,9 +534,12 @@ fn init(analysis: &str) -> AnalysisData {
                          type_ref_map: type_ref_map, func_map: func_map, func_ref_map: func_ref_map }
 }
 
-fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
-                      dec_map: HashMap<String, HashMap<String, String>>, 
-                      ref_map: HashMap<String, Vec<HashMap<String, String>>>) -> HashMap<String, String> {
+fn rename_dec_and_ref(input: &str,
+                      new_name: &str,
+                      rename_var: &str,
+                      dec_map: HashMap<String, HashMap<String, String>>,
+                      ref_map: HashMap<String, Vec<HashMap<String, String>>>)
+                      -> HashMap<String, String> {
     let mut output = HashMap::new();
 
     // TODO Failed an attempt to chain the declaration to the other iterator...
@@ -577,8 +598,12 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
     outmap
 }
 
-fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize,
-          file_col_end: usize, file_line_end: usize, new_name: &str) {
+fn rename(ropes: &mut Vec<Rope>,
+          file_col: usize,
+          file_line: usize,
+          file_col_end: usize,
+          file_line_end: usize,
+          new_name: &str) {
     let to_change = &mut ropes[file_line-1..file_line_end];
     let length = to_change.len();
 
@@ -601,8 +626,12 @@ fn rename(ropes: &mut Vec<Rope>, file_col:usize , file_line:usize,
 
 // TODO more efficient, perhaps better indexed and given type of node as arg
 // Factor out the init.
-pub fn identify_id(input_filename: &str, analysis: &str, rename_var: &str, 
-               row: i32, col: i32) -> String {
+pub fn identify_id(input_filename: &str,
+                   analysis: &str,
+                   rename_var: &str,
+                   row: i32,
+                   col: i32)
+                   -> String {
     let analyzed_data = init(analysis);
 
     let _ = writeln!(&mut stderr(), "{} {} {}", rename_var, row, col);
@@ -627,8 +656,12 @@ pub fn identify_id(input_filename: &str, analysis: &str, rename_var: &str,
     "".to_string()
 }
 
-fn check_match(name: &str, input_filename: &str, row: i32, col: i32, 
-               record: HashMap<String, String>) -> bool {
+fn check_match(name: &str,
+               input_filename: &str,
+               row: i32,
+               col: i32,
+               record: HashMap<String, String>)
+               -> bool {
 
     let c: i32 = record.get("file_col").unwrap().parse().unwrap();
     let r: i32 = record.get("file_line").unwrap().parse().unwrap();
@@ -670,15 +703,24 @@ struct RefactorCalls {
     new_name: String,
     node_to_find: NodeId,
     input: Option<(String, String)>,
-    isFull: bool
+    isFull: bool,
 }
 
 impl RefactorCalls {
-    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: Option<(String, String)>,
-           isFull: bool) -> RefactorCalls {
-        RefactorCalls { default_calls: RustcDefaultCalls, rType: t,
-                        new_name: new_name, node_to_find: node,
-                        input: new_file, isFull: isFull }
+    fn new(t: RefactorType,
+           new_name: String,
+           node: NodeId,
+           new_file: Option<(String, String)>,
+           isFull: bool)
+           -> RefactorCalls {
+        RefactorCalls {
+            default_calls: RustcDefaultCalls,
+            rType: t,
+            new_name: new_name,
+            node_to_find: node,
+            input: new_file,
+            isFull: isFull,
+        }
     }
 }
 
@@ -710,7 +752,10 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         Compilation::Continue
     }
 
-    fn some_input(&mut self, input: Input, input_path: Option<PathBuf>) -> (Input, Option<PathBuf>) {
+    fn some_input(&mut self,
+                  input: Input,
+                  input_path: Option<PathBuf>)
+                  -> (Input, Option<PathBuf>) {
         (input, input_path)
     }
 
