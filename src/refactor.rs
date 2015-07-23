@@ -67,7 +67,7 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
     // Check if renaming will cause conflicts
     let node: NodeId = rename_var.parse().unwrap();
 
-    match run_compiler_resolution(String::from_str(input_file), filename, String::from_str(input),
+    match run_compiler_resolution(String::from_str(input_file), None, //Some(filename, String::from_str(input)),
                                   RefactorType::Variable, String::from_str(new_name),
                                   node, false) {
         Ok(()) => {
@@ -116,7 +116,7 @@ pub fn rename_variable(input_file: &str, input: &str, analysis: &str, new_name: 
                                 }
                             }
 
-                            match run_compiler_resolution(String::from_str(input_file), String::from_str(filename), answer,
+                            match run_compiler_resolution(String::from_str(input_file), Some((String::from_str(filename), answer)),
                                                           RefactorType::Variable, String::from_str(new_name),
                                                           node, true) {
                                 Ok(()) => {
@@ -170,7 +170,7 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
         }
     }
     let filename = filename;
-    match run_compiler_resolution(input_file_str, filename, input_str, RefactorType::Type,
+    match run_compiler_resolution(input_file_str, None, RefactorType::Type,
                                   String::from_str(new_name), node, false) {
         Ok(()) => {},
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
@@ -205,7 +205,7 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), String::from_str(filename), answer,
+            match run_compiler_resolution(String::from_str(input_file), Some((String::from_str(filename), answer)),
                                           RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
@@ -221,7 +221,7 @@ pub fn rename_type(input_file: &str, input: &str, analysis: &str, new_name: &str
     Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
 }
 
-fn run_compiler_resolution(root: String, filename: String, input: String, kind: RefactorType,
+fn run_compiler_resolution(root: String, file_override: Option<(String, String)>, kind: RefactorType,
                            new_name: String, node: NodeId, full: bool) -> Result<(), i32> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
@@ -237,7 +237,7 @@ fn run_compiler_resolution(root: String, filename: String, input: String, kind: 
     };
 
     thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, (filename, input), full);
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, full);
         run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
         1
@@ -272,7 +272,7 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
         }
     }
     let filename = filename;
-    match run_compiler_resolution(input_file_str, filename.clone(), input_str, RefactorType::Function,
+    match run_compiler_resolution(input_file_str, None, RefactorType::Function,
                                   String::from_str(new_name), node, false) {
         Ok(()) => {},
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
@@ -308,7 +308,7 @@ pub fn rename_function(input_file: &str, input: &str, analysis: &str, new_name: 
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), String::from_str(filename), answer,
+            match run_compiler_resolution(String::from_str(input_file), Some((String::from_str(filename), answer)),
                                           RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
@@ -521,8 +521,6 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
                       ref_map: HashMap<String, Vec<HashMap<String, String>>>) -> HashMap<String, String> {
     let mut output = HashMap::new();
 
-    let mut ropes: Vec<Rope> = input.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
-
     // TODO Failed an attempt to chain the declaration to the other iterator...
     let map = dec_map.get(rename_var).unwrap();
     let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
@@ -530,7 +528,13 @@ fn rename_dec_and_ref(input: &str, new_name: &str, rename_var: &str,
     let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
     let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
     let filename = map.get("file_name").unwrap();
+
+    let mut new_file = String::new();
+    File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
+
+    let mut ropes: Vec<Rope> = new_file.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
     rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
+
     output.insert(filename.clone(), ropes);
 
     if let Some(references) = ref_map.get(rename_var) {
@@ -665,12 +669,12 @@ struct RefactorCalls {
     rType: RefactorType,
     new_name: String,
     node_to_find: NodeId,
-    input: (String, String),
+    input: Option<(String, String)>,
     isFull: bool
 }
 
 impl RefactorCalls {
-    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: (String, String),
+    fn new(t: RefactorType, new_name: String, node: NodeId, new_file: Option<(String, String)>,
            isFull: bool) -> RefactorCalls {
         RefactorCalls { default_calls: RustcDefaultCalls, rType: t,
                         new_name: new_name, node_to_find: node,
@@ -696,7 +700,12 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         self.default_calls.late_callback(m, s, i, odir, ofile);
         let mut loader = ReplaceLoader::new();
         // If there were multiple renamings per compile run, it would be added here
-        loader.add_file(self.input.0.clone(), self.input.1.clone());
+        match self.input.as_ref() {
+            Some(input) => {
+                loader.add_file(input.0.clone(), input.1.clone());
+            },
+            None => ()
+        }
         s.codemap().set_file_loader(Box::new(loader));
         Compilation::Continue
     }
