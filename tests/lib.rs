@@ -2,10 +2,8 @@
 
 extern crate refactor;
 
-use std::env;
 use std::fs::File;
 use std::io::prelude::*;
-use std::path::Path;
 use refactor::refactor::Response;
 
 fn read_to_string(filename: &str) -> String {
@@ -22,13 +20,11 @@ fn read_to_string(filename: &str) -> String {
 
 #[test]
 fn working_variable_1() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "basic_rename.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_rename_1_out.rs");
-    let analysis = read_to_string("basic_rename.csv");
+    let input = read_to_string("tests/variable/basic_rename.rs");
+    let output = read_to_string("tests/variable/working_rename_1_out.rs");
+    let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&"basic_rename.rs", &input, &analysis, "hello", "9") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "hello", "9") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -36,13 +32,11 @@ fn working_variable_1() {
 
 #[test]
 fn working_variable_2() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "basic_rename.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_rename_2_out.rs");
-    let analysis = read_to_string("basic_rename.csv");
+    let input = read_to_string("tests/variable/basic_rename.rs");
+    let output = read_to_string("tests/variable/working_rename_2_out.rs");
+    let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&"basic_rename.rs", &input, &analysis, "hello", "17") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "hello", "17") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -50,13 +44,11 @@ fn working_variable_2() {
 
 #[test]
 fn working_variable_3() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "alex_var_test.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("alex_var_test_out.rs");
-    let analysis = read_to_string("alex_var_test.csv");
+    let input = read_to_string("tests/variable/alex_var_test.rs");
+    let output = read_to_string("tests/variable/alex_var_test_out.rs");
+    let analysis = read_to_string("tests/variable/alex_var_test.csv");
 
-    match refactor::refactor::rename_variable(&"alex_var_test.rs", &input, &analysis, "bar", "14") {
+    match refactor::refactor::rename_variable(&"tests/variable/alex_var_test.rs", &input, &analysis, "bar", "14") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -64,13 +56,11 @@ fn working_variable_3() {
 
 #[test]
 fn working_variable_4() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "alex_var_test.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("alex_var_test_out2.rs");
-    let analysis = read_to_string("alex_var_test.csv");
+    let input = read_to_string("tests/variable/alex_var_test.rs");
+    let output = read_to_string("tests/variable/alex_var_test_out2.rs");
+    let analysis = read_to_string("tests/variable/alex_var_test.csv");
 
-    match refactor::refactor::rename_variable(&"alex_var_test.rs", &input, &analysis, "bar", "4") {
+    match refactor::refactor::rename_variable(&"tests/variable/alex_var_test.rs", &input, &analysis, "bar", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -78,13 +68,11 @@ fn working_variable_4() {
 
 #[test]
 fn working_variable_5() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "const_rename.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("const_rename_out.rs");
-    let analysis = read_to_string("const_rename.csv");
+    let input = read_to_string("tests/variable/const_rename.rs");
+    let output = read_to_string("tests/variable/const_rename_out.rs");
+    let analysis = read_to_string("tests/variable/const_rename.csv");
 
-    match refactor::refactor::rename_variable(&"const_rename.rs", &input, &analysis, "BAZ", "8") {
+    match refactor::refactor::rename_variable(&"tests/variable/const_rename.rs", &input, &analysis, "BAZ", "8") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -92,13 +80,11 @@ fn working_variable_5() {
 
 #[test]
 fn working_variable_6() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "working_fn_local.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_fn_local_out.rs");
-    let analysis = read_to_string("working_fn_local.csv");
+    let input = read_to_string("tests/variable/working_fn_local.rs");
+    let output = read_to_string("tests/variable/working_fn_local_out.rs");
+    let analysis = read_to_string("tests/variable/working_fn_local.csv");
 
-    match refactor::refactor::rename_variable(&"working_fn_local.rs", &input, &analysis, "Foo", "9") {
+    match refactor::refactor::rename_variable(&"tests/variable/working_fn_local.rs", &input, &analysis, "Foo", "9") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -106,13 +92,11 @@ fn working_variable_6() {
 
 #[test]
 fn working_variable_7() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "working_nested.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_nested_out.rs");
-    let analysis = read_to_string("working_nested.csv");
+    let input = read_to_string("tests/variable/working_nested.rs");
+    let output = read_to_string("tests/variable/working_nested_out.rs");
+    let analysis = read_to_string("tests/variable/working_nested.csv");
 
-    match refactor::refactor::rename_variable(&"working_nested.rs", &input, &analysis, "b", "16") {
+    match refactor::refactor::rename_variable(&"tests/variable/working_nested.rs", &input, &analysis, "b", "16") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -120,11 +104,10 @@ fn working_variable_7() {
 
 #[test]
 fn working_variable_8() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "working_tuple_let.rs";
+    let file = "tests/variable/working_tuple_let.rs";
     let input = read_to_string(file);
-    let output = read_to_string("working_tuple_let_out.rs");
-    let analysis = read_to_string("working_tuple_let.csv");
+    let output = read_to_string("tests/variable/working_tuple_let_out.rs");
+    let analysis = read_to_string("tests/variable/working_tuple_let.csv");
 
     match refactor::refactor::rename_variable(file, &input, &analysis, "x", "10") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
@@ -134,11 +117,10 @@ fn working_variable_8() {
 
 #[test]
 fn working_variable_9() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "working_mut_tuple_let.rs";
+    let file = "tests/variable/working_mut_tuple_let.rs";
     let input = read_to_string(file);
-    let output = read_to_string("working_mut_tuple_let_out.rs");
-    let analysis = read_to_string("working_mut_tuple_let.csv");
+    let output = read_to_string("tests/variable/working_mut_tuple_let_out.rs");
+    let analysis = read_to_string("tests/variable/working_mut_tuple_let.csv");
 
     match refactor::refactor::rename_variable(file, &input, &analysis, "x", "10") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
@@ -148,11 +130,10 @@ fn working_variable_9() {
 
 #[test]
 fn working_variable_10() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "working_mut_tuple_let2.rs";
+    let file = "tests/variable/working_mut_tuple_let2.rs";
     let input = read_to_string(file);
-    let output = read_to_string("working_mut_tuple_let2_out.rs");
-    let analysis = read_to_string("working_mut_tuple_let2.csv");
+    let output = read_to_string("tests/variable/working_mut_tuple_let2_out.rs");
+    let analysis = read_to_string("tests/variable/working_mut_tuple_let2.csv");
 
     match refactor::refactor::rename_variable(file, &input, &analysis, "x", "11") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
@@ -162,11 +143,10 @@ fn working_variable_10() {
 
 #[test]
 fn working_variable_11() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "working_mut_tuple_let3.rs";
+    let file = "tests/variable/working_mut_tuple_let3.rs";
     let input = read_to_string(file);
-    let output = read_to_string("working_mut_tuple_let3_out.rs");
-    let analysis = read_to_string("working_mut_tuple_let3.csv");
+    let output = read_to_string("tests/variable/working_mut_tuple_let3_out.rs");
+    let analysis = read_to_string("tests/variable/working_mut_tuple_let3.csv");
 
     match refactor::refactor::rename_variable(file, &input, &analysis, "x", "11") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
@@ -176,11 +156,10 @@ fn working_variable_11() {
 
 #[test]
 fn prevented_variable_1() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let input = read_to_string("basic_rename.rs");
-    let analysis = read_to_string("basic_rename.csv");
+    let input = read_to_string("tests/variable/basic_rename.rs");
+    let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&"basic_rename.rs", &input, &analysis, "j", "36") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "j", "36") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -188,11 +167,10 @@ fn prevented_variable_1() {
 
 #[test]
 fn prevented_variable_2() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let input = read_to_string("basic_rename.rs");
-    let analysis = read_to_string("basic_rename.csv");
+    let input = read_to_string("tests/variable/basic_rename.rs");
+    let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&"basic_rename.rs", &input, &analysis, "x", "36") {
+    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &input, &analysis, "x", "36") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -200,11 +178,10 @@ fn prevented_variable_2() {
 
 #[test]
 fn prevented_variable_3() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let input = read_to_string("override.rs");
-    let analysis = read_to_string("override.csv");
+    let input = read_to_string("tests/variable/override.rs");
+    let analysis = read_to_string("tests/variable/override.csv");
 
-    match refactor::refactor::rename_variable(&"override.rs", &input, &analysis, "v", "9") {
+    match refactor::refactor::rename_variable(&"tests/variable/override.rs", &input, &analysis, "v", "9") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -212,10 +189,9 @@ fn prevented_variable_3() {
 
 #[test]
 fn prevented_variable_4() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_method.rs";
+    let file = "tests/variable/name_conflict_method.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_method.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_method.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "12") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -224,10 +200,9 @@ fn prevented_variable_4() {
 
 #[test]
 fn prevented_variable_5() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_type.rs";
+    let file = "tests/variable/name_conflict_type.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_type.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_type.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "12") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -236,10 +211,9 @@ fn prevented_variable_5() {
 
 #[test]
 fn prevented_variable_6() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_type_local.rs";
+    let file = "tests/variable/name_conflict_type_local.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_type_local.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_type_local.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "13") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -248,10 +222,9 @@ fn prevented_variable_6() {
 
 #[test]
 fn prevented_variable_7() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_type_local2.rs";
+    let file = "tests/variable/name_conflict_type_local2.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_type_local2.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_type_local2.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "9") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -260,10 +233,9 @@ fn prevented_variable_7() {
 
 #[test]
 fn prevented_variable_8() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_method_local.rs";
+    let file = "tests/variable/name_conflict_method_local.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_method_local.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_method_local.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "13") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -272,10 +244,9 @@ fn prevented_variable_8() {
 
 #[test]
 fn prevented_variable_9() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_method_local2.rs";
+    let file = "tests/variable/name_conflict_method_local2.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_method_local2.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_method_local2.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "9") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -295,10 +266,9 @@ fn prevented_variable_9() {
 
 #[test]
 fn prevented_variable_10() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_global.rs";
+    let file = "tests/variable/name_conflict_global.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_global.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_global.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "FOO", "12") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -307,10 +277,9 @@ fn prevented_variable_10() {
 
 #[test]
 fn prevented_variable_11() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_type_global.rs";
+    let file = "tests/variable/name_conflict_type_global.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_type_global.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_type_global.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "7") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -319,10 +288,9 @@ fn prevented_variable_11() {
 
 #[test]
 fn prevented_variable_12() {
-    assert!(env::set_current_dir(&Path::new("tests/variable")).is_ok());
-    let file = "name_conflict_method_global.rs";
+    let file = "tests/variable/name_conflict_method_global.rs";
     let input = read_to_string(file);
-    let analysis = read_to_string("name_conflict_method_global.csv");
+    let analysis = read_to_string("tests/variable/name_conflict_method_global.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "4") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
@@ -331,13 +299,11 @@ fn prevented_variable_12() {
 
 #[test]
 fn working_struct_1() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
-    let file = "basic_struct.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_struct_1_out.rs");
-    let analysis = read_to_string("basic_struct.csv");
+    let input = read_to_string("tests/type/basic_struct.rs");
+    let output = read_to_string("tests/type/working_struct_1_out.rs");
+    let analysis = read_to_string("tests/type/basic_struct.csv");
 
-    match refactor::refactor::rename_type(&"basic_struct.rs", &input, &analysis, "Pointer", "4") {
+    match refactor::refactor::rename_type(&"tests/type/basic_struct.rs", &input, &analysis, "Pointer", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -345,14 +311,12 @@ fn working_struct_1() {
 
 #[test]
 fn working_struct_2() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
     // ::Point mentioned instead of Point
-    let file = "scoped_struct.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_struct_1_out.rs");
-    let analysis = read_to_string("scoped_struct.csv");
+    let input = read_to_string("tests/type/scoped_struct.rs");
+    let output = read_to_string("tests/type/working_struct_1_out.rs");
+    let analysis = read_to_string("tests/type/scoped_struct.csv");
 
-    match refactor::refactor::rename_type(&"basic_struct.rs", &input, &analysis, "Pointer", "4") {
+    match refactor::refactor::rename_type(&"tests/type/basic_struct.rs", &input, &analysis, "Pointer", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -360,13 +324,11 @@ fn working_struct_2() {
 
 #[test]
 fn working_enum_1() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
-    let file = "basic_enum.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_enum_1_out.rs");
-    let analysis = read_to_string("basic_enum.csv");
+    let input = read_to_string("tests/type/basic_enum.rs");
+    let output = read_to_string("tests/type/working_enum_1_out.rs");
+    let analysis = read_to_string("tests/type/basic_enum.csv");
 
-    match refactor::refactor::rename_type(&"basic_enum.rs", &input, &analysis, "YesNo", "4") {
+    match refactor::refactor::rename_type(&"tests/type/basic_enum.rs", &input, &analysis, "YesNo", "4") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -374,13 +336,11 @@ fn working_enum_1() {
 
 #[test]
 fn working_enum_2() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
-    let file = "modref_enum.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_enum_2_out.rs");
-    let analysis = read_to_string("modref_enum.csv");
+    let input = read_to_string("tests/type/modref_enum.rs");
+    let output = read_to_string("tests/type/working_enum_2_out.rs");
+    let analysis = read_to_string("tests/type/modref_enum.csv");
 
-    match refactor::refactor::rename_type(&"modref_enum.rs", &input, &analysis, "YesNo", "7") {
+    match refactor::refactor::rename_type(&"tests/type/modref_enum.rs", &input, &analysis, "YesNo", "7") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -388,11 +348,10 @@ fn working_enum_2() {
 
 #[test]
 fn prevented_struct_1() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
-    let input = read_to_string("conflict_struct.rs");
-    let analysis = read_to_string("conflict_struct.csv");
+    let input = read_to_string("tests/type/conflict_struct.rs");
+    let analysis = read_to_string("tests/type/conflict_struct.csv");
 
-    match refactor::refactor::rename_type(&"conflict_struct.rs", &input, &analysis, "P", "4") {
+    match refactor::refactor::rename_type(&"tests/type/conflict_struct.rs", &input, &analysis, "P", "4") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -400,11 +359,10 @@ fn prevented_struct_1() {
 
 #[test]
 fn prevented_struct_2() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
-    let input = read_to_string("conflict_mod_struct.rs");
-    let analysis = read_to_string("conflict_mod_struct.csv");
+    let input = read_to_string("tests/type/conflict_mod_struct.rs");
+    let analysis = read_to_string("tests/type/conflict_mod_struct.csv");
 
-    match refactor::refactor::rename_type(&"conflict_mod_struct.rs", &input, &analysis, "B", "6") {
+    match refactor::refactor::rename_type(&"tests/type/conflict_mod_struct.rs", &input, &analysis, "B", "6") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -412,11 +370,10 @@ fn prevented_struct_2() {
 
 #[test]
 fn prevented_struct_3() {
-    assert!(env::set_current_dir(&Path::new("tests/type")).is_ok());
-    let input = read_to_string("conflict_use_mod_struct.rs");
-    let analysis = read_to_string("conflict_use_mod_struct.csv");
+    let input = read_to_string("tests/type/conflict_use_mod_struct.rs");
+    let analysis = read_to_string("tests/type/conflict_use_mod_struct.csv");
 
-    match refactor::refactor::rename_type(&"conflict_use_mod_struct.rs", &input, &analysis, "B", "6") {
+    match refactor::refactor::rename_type(&"tests/type/conflict_use_mod_struct.rs", &input, &analysis, "B", "6") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -424,13 +381,11 @@ fn prevented_struct_3() {
 
 #[test]
 fn working_method_1() {
-    assert!(env::set_current_dir(&Path::new("tests/function")).is_ok());
-    let file = "basic_default_method.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_method_1_out.rs");
-    let analysis = read_to_string("basic_default_method.csv");
+    let input = read_to_string("tests/function/basic_default_method.rs");
+    let output = read_to_string("tests/function/working_method_1_out.rs");
+    let analysis = read_to_string("tests/function/basic_default_method.csv");
 
-    match refactor::refactor::rename_function(&"basic_default_method.rs", &input, &analysis, "func", "5") {
+    match refactor::refactor::rename_function(&"tests/function/basic_default_method.rs", &input, &analysis, "func", "5") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -438,13 +393,11 @@ fn working_method_1() {
 
 #[test]
 fn working_method_2() {
-    assert!(env::set_current_dir(&Path::new("tests/function")).is_ok());
-    let file = "impl_override_method.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("working_method_2_out.rs");
-    let analysis = read_to_string("impl_override_method.csv");
+    let input = read_to_string("tests/function/impl_override_method.rs");
+    let output = read_to_string("tests/function/working_method_2_out.rs");
+    let analysis = read_to_string("tests/function/impl_override_method.csv");
 
-    match refactor::refactor::rename_function(&"impl_override_method.rs", &input, &analysis, "func", "5") {
+    match refactor::refactor::rename_function(&"tests/function/impl_override_method.rs", &input, &analysis, "func", "5") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -452,13 +405,11 @@ fn working_method_2() {
 
 #[test]
 fn working_method_3() {
-    assert!(env::set_current_dir(&Path::new("tests/function")).is_ok());
-    let file = "alex_override_method.rs";
-    let input = read_to_string(file);
-    let output = read_to_string("alex_override_method_out2.rs");
-    let analysis = read_to_string("alex_override_method.csv");
+    let input = read_to_string("tests/function/alex_override_method.rs");
+    let output = read_to_string("tests/function/alex_override_method_out2.rs");
+    let analysis = read_to_string("tests/function/alex_override_method.csv");
 
-    match refactor::refactor::rename_function(&"alex_override_method.rs", &input, &analysis, "grue", "74") {
+    match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &input, &analysis, "grue", "74") {
         Ok(x) => assert_eq!(output.trim(), x.trim()),
         Err(_) => assert!(false)
     }
@@ -466,11 +417,10 @@ fn working_method_3() {
 
 #[test]
 fn not_working_method_1() {
-    assert!(env::set_current_dir(&Path::new("tests/function")).is_ok());
-    let input = read_to_string("alex_override_method.rs");
-    let analysis = read_to_string("alex_override_method.csv");
+    let input = read_to_string("tests/function/alex_override_method.rs");
+    let analysis = read_to_string("tests/function/alex_override_method.csv");
 
-    match refactor::refactor::rename_function(&"alex_override_method.rs", &input, &analysis, "foo", "74") {
+    match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &input, &analysis, "foo", "74") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
