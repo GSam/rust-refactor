@@ -112,7 +112,6 @@ fn working_variable_7() {
 #[test]
 fn working_variable_8() {
     let file = "tests/variable/working_tuple_let.rs";
-    let file = file;
     let input = read_to_string(file);
     let output = read_to_string("tests/variable/working_tuple_let_out.rs");
     let analysis = read_to_string("tests/variable/working_tuple_let.csv");
@@ -126,7 +125,6 @@ fn working_variable_8() {
 #[test]
 fn working_variable_9() {
     let file = "tests/variable/working_mut_tuple_let.rs";
-    let file = file;
     let input = read_to_string(file);
     let output = read_to_string("tests/variable/working_mut_tuple_let_out.rs");
     let analysis = read_to_string("tests/variable/working_mut_tuple_let.csv");
@@ -140,7 +138,6 @@ fn working_variable_9() {
 #[test]
 fn working_variable_10() {
     let file = "tests/variable/working_mut_tuple_let2.rs";
-    let file = file;
     let input = read_to_string(file);
     let output = read_to_string("tests/variable/working_mut_tuple_let2_out.rs");
     let analysis = read_to_string("tests/variable/working_mut_tuple_let2.csv");
@@ -154,7 +151,6 @@ fn working_variable_10() {
 #[test]
 fn working_variable_11() {
     let file = "tests/variable/working_mut_tuple_let3.rs";
-    let file = file;
     let input = read_to_string(file);
     let output = read_to_string("tests/variable/working_mut_tuple_let3_out.rs");
     let analysis = read_to_string("tests/variable/working_mut_tuple_let3.csv");
@@ -204,7 +200,6 @@ fn prevented_variable_3() {
 #[test]
 fn prevented_variable_4() {
     let file = "tests/variable/name_conflict_method.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_method.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "12") {
@@ -216,7 +211,6 @@ fn prevented_variable_4() {
 #[test]
 fn prevented_variable_5() {
     let file = "tests/variable/name_conflict_type.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_type.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "12") {
@@ -228,7 +222,6 @@ fn prevented_variable_5() {
 #[test]
 fn prevented_variable_6() {
     let file = "tests/variable/name_conflict_type_local.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_type_local.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "13") {
@@ -240,7 +233,6 @@ fn prevented_variable_6() {
 #[test]
 fn prevented_variable_7() {
     let file = "tests/variable/name_conflict_type_local2.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_type_local2.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "9") {
@@ -252,7 +244,6 @@ fn prevented_variable_7() {
 #[test]
 fn prevented_variable_8() {
     let file = "tests/variable/name_conflict_method_local.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_method_local.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "13") {
@@ -264,7 +255,6 @@ fn prevented_variable_8() {
 #[test]
 fn prevented_variable_9() {
     let file = "tests/variable/name_conflict_method_local2.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_method_local2.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "9") {
@@ -287,7 +277,6 @@ fn prevented_variable_9() {
 #[test]
 fn prevented_variable_10() {
     let file = "tests/variable/name_conflict_global.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_global.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "FOO", "12") {
@@ -299,7 +288,6 @@ fn prevented_variable_10() {
 #[test]
 fn prevented_variable_11() {
     let file = "tests/variable/name_conflict_type_global.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_type_global.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "Foo", "7") {
@@ -311,7 +299,6 @@ fn prevented_variable_11() {
 #[test]
 fn prevented_variable_12() {
     let file = "tests/variable/name_conflict_method_global.rs";
-    let file = file;
     let input = read_to_string(file);
     let analysis = read_to_string("tests/variable/name_conflict_method_global.csv");
     match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "4") {
