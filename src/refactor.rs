@@ -56,8 +56,6 @@ pub fn rename_variable(input_file: &str,
     let dec_map = analyzed_data.var_map;
     let ref_map = analyzed_data.var_ref_map;
 
-    let mut output = HashMap::new();
-
     let input_file_str = String::from_str(input_file);
     let input_str = String::from_str(input);
     let mut filename = String::from_str(input_file);
@@ -68,7 +66,6 @@ pub fn rename_variable(input_file: &str,
     }
     let filename = filename;
 
-    output.insert(input_file_str.clone(), input_str.clone());
     // Check if renaming will cause conflicts
     let node: NodeId = rename_var.parse().unwrap();
 
@@ -101,7 +98,6 @@ pub fn rename_variable(input_file: &str,
                             };
                             let mut file_str = String::new();
                             let _ = file.read_to_string(&mut file_str);
-                            output.insert(filename.clone(), file_str.clone());
                             let file_str = &file_str[..];
                             let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
                             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
