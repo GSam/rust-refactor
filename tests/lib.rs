@@ -321,6 +321,64 @@ fn prevented_variable_12() {
 }
 
 #[test]
+fn working_argument_1() {
+    let file = "tests/variable/fn_args_1.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/fn_args_1_out.rs");
+    let analysis = read_to_string("tests/variable/fn_args_1.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "z", "6") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_argument_2() {
+    let file = "tests/variable/fn_args_2.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/fn_args_2_1_out.rs");
+    let analysis = read_to_string("tests/variable/fn_args_2.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "z", "10") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_argument_3() {
+    let file = "tests/variable/fn_args_2.rs";
+    let input = read_to_string(file);
+    let output = read_to_string("tests/variable/fn_args_2_2_out.rs");
+    let analysis = read_to_string("tests/variable/fn_args_2.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "z", "15") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn prevented_argument_1() {
+    let file = "tests/variable/fn_args_1.rs";
+    let input = read_to_string(file);
+    let analysis = read_to_string("tests/variable/fn_args_1.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "c", "6") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
+fn prevented_argument_2() {
+    let file = "tests/variable/fn_args_1.rs";
+    let input = read_to_string(file);
+    let analysis = read_to_string("tests/variable/fn_args_1.csv");
+    match refactor::refactor::rename_variable(file, &input, &analysis, "foo", "6") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn working_struct_1() {
     let file = "tests/type/basic_struct.rs";
     let input = read_to_string(file);
