@@ -38,7 +38,6 @@ pub enum Response {
 }
 
 pub fn rename_variable(input_file: &str,
-                       input: &str,
                        analysis: &str,
                        new_name: &str,
                        rename_var: &str)
@@ -57,7 +56,6 @@ pub fn rename_variable(input_file: &str,
     let ref_map = analyzed_data.var_ref_map;
 
     let input_file_str = String::from_str(input_file);
-    let input_str = String::from_str(input);
     let mut filename = String::from_str(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
@@ -147,11 +145,10 @@ pub fn rename_variable(input_file: &str,
         _ => { return Err(Response::Conflict); } //input.to_string(); }
     }
 
-    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+    Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
 }
 
 pub fn rename_type(input_file: &str,
-                   input: &str,
                    analysis: &str,
                    new_name: &str,
                    rename_var: &str)
@@ -167,7 +164,6 @@ pub fn rename_type(input_file: &str,
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from_str(input_file);
-    let input_str = String::from_str(input);
     let mut filename = String::from_str(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
@@ -223,7 +219,7 @@ pub fn rename_type(input_file: &str,
         }
     }
 
-    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+    Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
 }
 
 fn run_compiler_resolution(root: String,
@@ -255,7 +251,6 @@ fn run_compiler_resolution(root: String,
 }
 
 pub fn rename_function(input_file: &str,
-                       input: &str,
                        analysis: &str,
                        new_name: &str,
                        rename_var: &str)
@@ -277,7 +272,6 @@ pub fn rename_function(input_file: &str,
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from_str(input_file);
-    let input_str = String::from_str(input);
 
     let mut filename = String::from_str(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
@@ -335,7 +329,7 @@ pub fn rename_function(input_file: &str,
         }
     }
 
-    Ok(rename_dec_and_ref(input, new_name, rename_var, dec_map, ref_map))
+    Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
 }
 
 struct AnalysisData {
@@ -530,8 +524,7 @@ fn init(analysis: &str) -> AnalysisData {
                          type_ref_map: type_ref_map, func_map: func_map, func_ref_map: func_ref_map }
 }
 
-fn rename_dec_and_ref(input: &str,
-                      new_name: &str,
+fn rename_dec_and_ref(new_name: &str,
                       rename_var: &str,
                       dec_map: HashMap<String, HashMap<String, String>>,
                       ref_map: HashMap<String, Vec<HashMap<String, String>>>)
