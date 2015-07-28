@@ -504,3 +504,43 @@ fn not_working_method_1() {
         Err(x) => assert_eq!(Response::Conflict, x)
     }
 }
+
+#[test]
+fn multi_file_1() {
+    let file = "tests/multi-file/simple_function_1/main.rs";
+    let input = read_to_string(file);
+    let changed1 = file;
+    let changed2 = "tests/multi-file/simple_function_1/foo.rs";
+    let output1 = read_to_string("tests/multi-file/simple_function_1/main_out.rs");
+    let output2 = read_to_string("tests/multi-file/simple_function_1/foo_out.rs");
+    let analysis = read_to_string("tests/multi-file/simple_function_1/main.csv");
+
+    match refactor::refactor::rename_function(&file, &input, &analysis, "boo", "6") {
+        Ok(x) => {
+            assert_eq!(output1.trim(), x.get(changed1).unwrap().trim());
+            assert_eq!(output2.trim(), x.get(changed2).unwrap().trim());
+        },
+        Err(_) => assert!(false)
+    }
+
+}
+
+#[test]
+fn multi_file_2() {
+    let file = "tests/multi-file/simple_function_2/main.rs";
+    let input = read_to_string(file);
+    let changed1 = file;
+    let changed2 = "tests/multi-file/simple_function_2/foo/mod.rs";
+    let output1 = read_to_string("tests/multi-file/simple_function_2/main_out.rs");
+    let output2 = read_to_string("tests/multi-file/simple_function_2/foo/mod_out.rs");
+    let analysis = read_to_string("tests/multi-file/simple_function_2/main.csv");
+
+    match refactor::refactor::rename_function(&file, &input, &analysis, "boo", "6") {
+        Ok(x) => {
+            assert_eq!(output1.trim(), x.get(changed1).unwrap().trim());
+            assert_eq!(output2.trim(), x.get(changed2).unwrap().trim());
+        },
+        Err(_) => assert!(false)
+    }
+
+}
