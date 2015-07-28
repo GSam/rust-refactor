@@ -31,12 +31,12 @@ fn main() {
     let mut s;
     let mut rename_var = &args[4];
 
-    let mut file = match File::open(&path) {
+    /*let mut file = match File::open(&path) {
         Err(why) => panic!("couldn't open file {}", why),
         Ok(file) => file,
     };
     let mut file_str = String::new();
-    let _ = file.read_to_string(&mut file_str);
+    let _ = file.read_to_string(&mut file_str);*/
 
     let mut analysis = match File::open(&args[2]) {
         Err(why) => panic!("couldn't open file {}", why),
@@ -57,21 +57,21 @@ fn main() {
 
     match &*args[1] {
         "var" => {
-            let result = refactor::refactor::rename_variable(&args[3], &file_str, &analysis_str, &args[5], rename_var);
+            let result = refactor::refactor::rename_variable(&args[3], &analysis_str, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "type" => {
-            let result = refactor::refactor::rename_type(&args[3], &file_str, &analysis_str, &args[5], rename_var);
+            let result = refactor::refactor::rename_type(&args[3], &analysis_str, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "fn" => {
-            let result = refactor::refactor::rename_function(&args[3], &file_str, &analysis_str, &args[5], rename_var);
+            let result = refactor::refactor::rename_function(&args[3], &analysis_str, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
