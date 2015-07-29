@@ -827,8 +827,45 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
             let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
             // create resolver
             let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
-                                                        Some(Box::new(|_,_| { true })));
-            debug!("{:?}", token::str_to_ident(&new_name[..]));
+            Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                if *resolved {
+                    return true;
+                }
+                //debug!("Entered resolver callback");
+                match node {
+                    NodeLocal(pat) => {
+                        if pat.id == node_to_find {
+                            debug!("Found node");
+                            *resolved = true;
+                            return true;
+                        }
+                    },
+                    NodeItem(item) => {
+                        match item.node {
+                            ItemImpl(_, _, _, _, _, ref impls) => {
+                                for i in impls.iter() {
+                                    if i.id == node_to_find {
+                                        debug!("{:?}", i);
+                                        debug!("Found node");
+                                        *resolved = true;
+                                        return true;
+                                    }
+                                }
+                            },
+                            _ => {}
+
+                        }
+                        if item.id == node_to_find {
+                            debug!("Found node");
+                            *resolved = true;
+                            return true;
+                        }
+                    },
+                    _ => {}
+                }
+
+                false
+            })));
 
             match rType {
                 RefactorType::Type => {
@@ -848,46 +885,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     });
 
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
-                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
-                        if *resolved {
-                            return true;
-                        }
-                        //debug!("Entered resolver callback");
-                        match node {
-                            NodeLocal(pat) => {
-                                if pat.id == node_to_find {
-                                    debug!("Found node");
-                                    *resolved = true;
-                                    return true;
-                                }
-                            },
-                            NodeItem(item) => {
-                                match item.node {
-                                    ItemImpl(_, _, _, _, _, ref impls) => {
-                                        for i in impls.iter() {
-                                            if i.id == node_to_find {
-                                                debug!("{:?}", i);
-                                                debug!("Found node");
-                                                *resolved = true;
-                                                return true;
-                                            }
-                                        }
-                                    },
-                                    _ => {}
-
-                                }
-                                if item.id == node_to_find {
-                                    debug!("Found node");
-                                    *resolved = true;
-                                    return true;
-                                }
-                            },
-                            _ => {}
-                        }
-
-                        false
-                    })));
 
                     visit::walk_crate(&mut resolver, krate);
 
@@ -910,47 +907,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     t.ctxt = syntax_ctx;
                     debug!("{:?}", mtwt::resolve(t));
                     let path = cx.path(DUMMY_SP, vec![t]);
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
-                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
-                        if *resolved {
-                            return true;
-                        }
-                        //debug!("Entered resolver callback");
-                        //println!("{:?}", node);
-                        match node {
-                            NodeLocal(pat) => {
-                                if pat.id == node_to_find {
-                                    debug!("Found node");
-                                    *resolved = true;
-                                    return true;
-                                }
-                            },
-                            NodeItem(item) => {
-                                match item.node {
-                                    ItemImpl(_, _, _, _, _, ref impls) => {
-                                        for i in impls.iter() {
-                                            if i.id == node_to_find {
-                                                debug!("{:?}", i);
-                                                debug!("Found node");
-                                                *resolved = true;
-                                                return true;
-                                            }
-                                        }
-                                    },
-                                    _ => {}
-
-                                }
-                                if item.id == node_to_find {
-                                    debug!("Found node");
-                                    *resolved = true;
-                                    return true;
-                                }
-                            },
-                            _ => {}
-                        }
-
-                        false
-                    })));
 
                     visit::walk_crate(&mut resolver, krate);
 
@@ -983,47 +939,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let new_iden = token::str_to_ident(&new_name[..]);
                     idens.pop();
                     idens.push(new_iden);
-
-                    let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
-                    Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
-                        if *resolved {
-                            return true;
-                        }
-                        //debug!("Entered resolver callback");
-                        match node {
-                            NodeLocal(pat) => {
-                                if pat.id == node_to_find {
-                                    debug!("Found node");
-                                    *resolved = true;
-                                    return true;
-                                }
-                            },
-                            NodeItem(item) => {
-                                match item.node {
-                                    ItemImpl(_, _, _, _, _, ref impls) => {
-                                        for i in impls.iter() {
-                                            if i.id == node_to_find {
-                                                debug!("{:?}", i);
-                                                debug!("Found node");
-                                                *resolved = true;
-                                                return true;
-                                            }
-                                        }
-                                    },
-                                    _ => {}
-
-                                }
-                                if item.id == node_to_find {
-                                    debug!("Found node");
-                                    *resolved = true;
-                                    return true;
-                                }
-                            },
-                            _ => {}
-                        }
-
-                        false
-                    })));
 
                     visit::walk_crate(&mut resolver, krate);
 
