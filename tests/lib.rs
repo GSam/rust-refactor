@@ -467,6 +467,28 @@ fn not_working_method_1() {
 }
 
 #[test]
+fn working_fn_1() {
+    let file = "tests/function/basic_function.rs";
+    let output = read_to_string("tests/function/basic_function_out.rs");
+    let analysis = read_to_string("tests/function/basic_function.csv");
+
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "4") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn not_working_fn_1() {
+    let file = "tests/function/basic_function.rs";
+    let analysis = read_to_string("tests/function/basic_function.csv");
+    match refactor::refactor::rename_function(&file, &analysis, "main", "4") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn multi_file_1() {
     let file = "tests/multi-file/simple_function_1/main.rs";
     let changed1 = file;
