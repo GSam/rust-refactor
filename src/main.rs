@@ -77,6 +77,13 @@ fn main() {
                 Err(x) => println!("{:?}", x)
             }
         },
+        "inline" => {
+            let result = refactor::refactor::inline_local(&args[3], &analysis_str, rename_var);
+            match result {
+                Ok(x) => println!("{}", better_string(x)),
+                Err(x) => println!("{:?}", x)
+            }
+        },
         _ => {
             let _ = writeln!(&mut std::io::stderr(), "Unknown rename function.");
         }

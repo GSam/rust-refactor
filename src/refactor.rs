@@ -705,11 +705,12 @@ fn check_match(name: &str,
     false
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum RefactorType {
     Variable,
     Function,
     Type,
+    InlineLocal,
     Nil,
 }
 
@@ -790,14 +791,34 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
         let rType = self.rType;
         let isFull = self.isFull;
+        let node_to_find = self.node_to_find;
 
         let mut control = driver::CompileController::basic();
         if isFull {
             control.after_analysis.stop = Compilation::Stop;
+            control.after_analysis.callback = box move |state| {
+                if rType == RefactorType::InlineLocal {
+                    let krate = state.expanded_crate.unwrap().clone();
+                    let tcx = state.tcx.unwrap();
+                    let anal = state.analysis.unwrap();
+                    let ast_map = &tcx.map;
+
+                    debug!("{:?}", ast_map.get_parent(node_to_find));
+                    debug!("{:?}", ast_map.get(node_to_find));
+
+                    match ast_map.get(ast_map.get_parent(node_to_find)) {
+                        NodeLocal(ref pat) => {
+
+                        },
+                            _ => {}
+                    }
+                    // Build save walker
+                }
+            };
+
             return control;
         }
 
-        let node_to_find = self.node_to_find;
         let new_name = self.new_name.clone();
 
         control.after_write_deps.stop = Compilation::Stop;
