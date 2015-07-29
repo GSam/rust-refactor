@@ -863,7 +863,20 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                 }
                             },
                             NodeItem(item) => {
-                                println!("{:?}", item);
+                                match item.node {
+                                    ItemImpl(_, _, _, _, _, ref impls) => {
+                                        for i in impls.iter() {
+                                            if i.id == node_to_find {
+                                                debug!("{:?}", i);
+                                                debug!("Found node");
+                                                *resolved = true;
+                                                return true;
+                                            }
+                                        }
+                                    },
+                                    _ => {}
+
+                                }
                                 if item.id == node_to_find {
                                     debug!("Found node");
                                     *resolved = true;
@@ -907,6 +920,27 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         match node {
                             NodeLocal(pat) => {
                                 if pat.id == node_to_find {
+                                    debug!("Found node");
+                                    *resolved = true;
+                                    return true;
+                                }
+                            },
+                            NodeItem(item) => {
+                                match item.node {
+                                    ItemImpl(_, _, _, _, _, ref impls) => {
+                                        for i in impls.iter() {
+                                            if i.id == node_to_find {
+                                                debug!("{:?}", i);
+                                                debug!("Found node");
+                                                *resolved = true;
+                                                return true;
+                                            }
+                                        }
+                                    },
+                                    _ => {}
+
+                                }
+                                if item.id == node_to_find {
                                     debug!("Found node");
                                     *resolved = true;
                                     return true;
