@@ -28,7 +28,7 @@
 //! DumpCsvVisitor walks the AST and processes it.
 
 
-use trans::save::{escape, generated_code, recorder, SaveContext, PathCollector, Data};
+use trans::save::{generated_code, recorder, SaveContext, Data};
 
 use rustc::session::Session;
 
@@ -39,6 +39,7 @@ use std::fs::File;
 use std::path::Path;
 
 use syntax::ast::{self, NodeId, DefId};
+use syntax::ast_util;
 use syntax::codemap::*;
 use syntax::parse::token::{self, keywords};
 use syntax::owned_slice::OwnedSlice;
@@ -58,6 +59,60 @@ macro_rules! down_cast_data {
             $this.sess.span_bug($sp, &format!("unexpected data kind: {:?}", $id));
         };
     };
+}
+
+// TODO make Path collector public
+// An AST visitor for collecting paths from patterns.
+struct PathCollector {
+    // The Row field identifies the kind of pattern.
+    collected_paths: Vec<(NodeId, ast::Path, ast::Mutability, recorder::Row)>,
+}
+
+impl PathCollector {
+    fn new() -> PathCollector {
+        PathCollector {
+            collected_paths: vec![],
+        }
+    }
+}
+
+impl<'v> Visitor<'v> for PathCollector {
+    fn visit_pat(&mut self, p: &ast::Pat) {
+        if generated_code(p.span) {
+            return;
+        }
+
+        match p.node {
+            ast::PatStruct(ref path, _, _) => {
+                self.collected_paths.push((p.id,
+                                           path.clone(),
+                                           ast::MutMutable,
+                                           recorder::Row::TypeRef));
+            }
+            ast::PatEnum(ref path, _) |
+            ast::PatQPath(_, ref path) => {
+                self.collected_paths.push((p.id, path.clone(), ast::MutMutable, recorder::Row::VarRef));
+            }
+            ast::PatIdent(bm, ref path1, _) => {
+                debug!("PathCollector, visit ident in pat {}: {:?} {:?}",
+                       path1.node,
+                       p.span,
+                       path1.span);
+                let immut = match bm {
+                    // Even if the ref is mut, you can't change the ref, only
+                    // the data pointed at, so showing the initialising expression
+                    // is still worthwhile.
+                    ast::BindByRef(_) => ast::MutImmutable,
+                    ast::BindByValue(mt) => mt,
+                };
+                // collect path for either visit_local or visit_arm
+                let path = ast_util::ident_to_path(path1.span, path1.node);
+                self.collected_paths.push((p.id, path, immut, recorder::Row::VarRef));
+            }
+            _ => {}
+        }
+        visit::walk_pat(self, p);
+    }
 }
 
 pub struct DumpCsvVisitor<'l, 'tcx: 'l> {
@@ -246,19 +301,19 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
         let def = def_map.get(&ref_id).unwrap().full_def();
         match def {
             def::DefMod(_) |
-            def::DefForeignMod(_) => Some(recorder::ModRef),
-            def::DefStruct(_) => Some(recorder::TypeRef),
+            def::DefForeignMod(_) => Some(recorder::Row::ModRef),
+            def::DefStruct(_) => Some(recorder::Row::TypeRef),
             def::DefTy(..) |
             def::DefAssociatedTy(..) |
-            def::DefTrait(_) => Some(recorder::TypeRef),
+            def::DefTrait(_) => Some(recorder::Row::TypeRef),
             def::DefStatic(_, _) |
             def::DefConst(_) |
             def::DefAssociatedConst(..) |
             def::DefLocal(_) |
             def::DefVariant(_, _, _) |
-            def::DefUpvar(..) => Some(recorder::VarRef),
+            def::DefUpvar(..) => Some(recorder::Row::VarRef),
 
-            def::DefFn(..) => Some(recorder::FnRef),
+            def::DefFn(..) => Some(recorder::Row::FnRef),
 
             def::DefSelfTy(..) |
             def::DefRegion(_) |
@@ -346,7 +401,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
     fn process_trait_ref(&mut self, trait_ref: &ast::TraitRef) {
         let trait_ref_data = self.save_ctxt.get_trait_ref_data(trait_ref, self.cur_scope);
         if let Some(trait_ref_data) = trait_ref_data {
-            self.fmt.ref_str(recorder::TypeRef,
+            self.fmt.ref_str(recorder::Row::TypeRef,
                              trait_ref.path.span,
                              Some(trait_ref_data.span),
                              trait_ref_data.ref_id,
@@ -568,7 +623,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
         down_cast_data!(impl_data, ImplData, self, item.span);
         match impl_data.self_ref {
             Some(ref self_ref) => {
-                self.fmt.ref_str(recorder::TypeRef,
+                self.fmt.ref_str(recorder::Row::TypeRef,
                                  item.span,
                                  Some(self_ref.span),
                                  self_ref.ref_id,
@@ -579,7 +634,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
             }
         }
         if let Some(ref trait_ref_data) = impl_data.trait_ref {
-            self.fmt.ref_str(recorder::TypeRef,
+            self.fmt.ref_str(recorder::Row::TypeRef,
                              item.span,
                              Some(trait_ref_data.span),
                              trait_ref_data.ref_id,
@@ -630,7 +685,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
             match self.lookup_type_ref(trait_ref.ref_id) {
                 Some(id) => {
                     let sub_span = self.span.sub_span_for_type_name(trait_ref.path.span);
-                    self.fmt.ref_str(recorder::TypeRef,
+                    self.fmt.ref_str(recorder::Row::TypeRef,
                                      trait_ref.path.span,
                                      sub_span,
                                      id,
@@ -672,7 +727,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
         }
 
         let path_data = self.save_ctxt.get_path_data(id, path);
-        let path_data = match path_data {
+        /*let path_data = match path_data {
             Some(pd) => pd,
             None => {
                 self.tcx.sess.span_bug(path.span,
@@ -680,10 +735,10 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
                                                  up path in `{}`",
                                                 self.span.snippet(path.span)))
             }
-        };
+        };*/
         match path_data {
             Data::VariableRefData(ref vrd) => {
-                self.fmt.ref_str(ref_kind.unwrap_or(recorder::VarRef),
+                self.fmt.ref_str(ref_kind.unwrap_or(recorder::Row::VarRef),
                                                     path.span,
                                                     Some(vrd.span),
                                                     vrd.ref_id,
@@ -691,7 +746,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
 
             }
             Data::TypeRefData(ref trd) => {
-                self.fmt.ref_str(recorder::TypeRef,
+                self.fmt.ref_str(recorder::Row::TypeRef,
                                  path.span,
                                  Some(trd.span),
                                  trd.ref_id,
@@ -752,7 +807,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
 
         if let Some(struct_lit_data) = self.save_ctxt.get_expr_data(ex) {
             down_cast_data!(struct_lit_data, TypeRefData, self, ex.span);
-            self.fmt.ref_str(recorder::TypeRef,
+            self.fmt.ref_str(recorder::Row::TypeRef,
                              ex.span,
                              Some(struct_lit_data.span),
                              struct_lit_data.ref_id,
@@ -768,7 +823,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
                 let field_data = self.save_ctxt.get_field_ref_data(field,
                                                                    struct_def,
                                                                    scope);
-                self.fmt.ref_str(recorder::VarRef,
+                self.fmt.ref_str(recorder::Row::VarRef,
                                  field.ident.span,
                                  Some(field_data.span),
                                  field_data.ref_id,
@@ -832,7 +887,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
                         let sub_span = self.span.span_for_first_ident(span);
                         for f in &struct_fields {
                             if f.name == field.ident.name {
-                                self.fmt.ref_str(recorder::VarRef,
+                                self.fmt.ref_str(recorder::Row::VarRef,
                                                  span,
                                                  sub_span,
                                                  f.id,
@@ -1060,7 +1115,7 @@ impl<'l, 'tcx, 'v> Visitor<'v> for DumpCsvVisitor<'l, 'tcx> {
                 match self.lookup_type_ref(t.id) {
                     Some(id) => {
                         let sub_span = self.span.sub_span_for_type_name(t.span);
-                        self.fmt.ref_str(recorder::TypeRef,
+                        self.fmt.ref_str(recorder::Row::TypeRef,
                                          t.span,
                                          sub_span,
                                          id,
@@ -1104,7 +1159,7 @@ impl<'l, 'tcx, 'v> Visitor<'v> for DumpCsvVisitor<'l, 'tcx> {
 
                 if let Some(field_data) = self.save_ctxt.get_expr_data(ex) {
                     down_cast_data!(field_data, VariableRefData, self, ex.span);
-                    self.fmt.ref_str(recorder::VarRef,
+                    self.fmt.ref_str(recorder::Row::VarRef,
                                      ex.span,
                                      Some(field_data.span),
                                      field_data.ref_id,
@@ -1125,7 +1180,7 @@ impl<'l, 'tcx, 'v> Visitor<'v> for DumpCsvVisitor<'l, 'tcx> {
                         for (i, f) in fields.iter().enumerate() {
                             if i == idx.node {
                                 let sub_span = self.span.sub_span_after_token(ex.span, token::Dot);
-                                self.fmt.ref_str(recorder::VarRef,
+                                self.fmt.ref_str(recorder::Row::VarRef,
                                                  ex.span,
                                                  sub_span,
                                                  f.id,
@@ -1275,5 +1330,10 @@ impl<'l, 'tcx, 'v> Visitor<'v> for DumpCsvVisitor<'l, 'tcx> {
         visit::walk_ty_opt(self, &l.ty);
         visit::walk_expr_opt(self, &l.init);
     }
+}
+
+// Helper function to escape quotes in a string
+fn escape(s: String) -> String {
+    s.replace("\"", "\"\"")
 }
 
