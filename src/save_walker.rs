@@ -28,12 +28,12 @@
 //! DumpCsvVisitor walks the AST and processes it.
 
 
-use super::{escape, generated_code, recorder, SaveContext, PathCollector, Data};
+use trans::save::{escape, generated_code, recorder, SaveContext, PathCollector, Data};
 
-use session::Session;
+use rustc::session::Session;
 
-use middle::def;
-use middle::ty::{self, Ty};
+use rustc::middle::def;
+use rustc::middle::ty::{self, Ty};
 
 use std::fs::File;
 use std::path::Path;
@@ -46,12 +46,13 @@ use syntax::visit::{self, Visitor};
 use syntax::print::pprust::{path_to_string, ty_to_string};
 use syntax::ptr::P;
 
-use super::span_utils::SpanUtils;
-use super::recorder::{Recorder, FmtStrs};
+use trans::save::span_utils::SpanUtils;
+//use trans::save::recorder::{Recorder, FmtStrs};
+use trans::save::recorder::*;
 
 macro_rules! down_cast_data {
     ($id:ident, $kind:ident, $this:ident, $sp:expr) => {
-        let $id = if let super::Data::$kind(data) = $id {
+        let $id = if let Data::$kind(data) = $id {
             data
         } else {
             $this.sess.span_bug($sp, &format!("unexpected data kind: {:?}", $id));

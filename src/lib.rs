@@ -12,13 +12,16 @@
 
 #[macro_use]
 extern crate log;
+
 extern crate getopts;
 extern crate rustc;
 extern crate rustc_driver;
 extern crate rustc_resolve;
+extern crate rustc_trans as trans;
 extern crate syntax;
 
 extern crate strings;
 
-pub mod refactor;
 pub mod loader;
+pub mod refactor;
+pub mod save_walker;
