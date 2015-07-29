@@ -30,6 +30,7 @@ use std::thread;
 
 use strings::src_rope::Rope;
 use loader::ReplaceLoader;
+use save_walker::DumpCsvVisitor;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -716,11 +717,11 @@ pub enum RefactorType {
 
 struct RefactorCalls {
     default_calls: RustcDefaultCalls,
-    rType: RefactorType,
+    r_type: RefactorType,
     new_name: String,
     node_to_find: NodeId,
     input: Option<(String, String)>,
-    isFull: bool,
+    is_full: bool,
 }
 
 impl RefactorCalls {
@@ -728,15 +729,15 @@ impl RefactorCalls {
            new_name: String,
            node: NodeId,
            new_file: Option<(String, String)>,
-           isFull: bool)
+           is_full: bool)
            -> RefactorCalls {
         RefactorCalls {
             default_calls: RustcDefaultCalls,
-            rType: t,
+            r_type: t,
             new_name: new_name,
             node_to_find: node,
             input: new_file,
-            isFull: isFull,
+            is_full: is_full,
         }
     }
 }
@@ -789,30 +790,45 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
     }
 
     fn build_controller(&mut self, _: &Session) -> driver::CompileController<'a> {
-        let rType = self.rType;
-        let isFull = self.isFull;
+        let r_type = self.r_type;
+        let is_full = self.is_full;
         let node_to_find = self.node_to_find;
 
         let mut control = driver::CompileController::basic();
-        if isFull {
+        if is_full {
             control.after_analysis.stop = Compilation::Stop;
             control.after_analysis.callback = box move |state| {
-                if rType == RefactorType::InlineLocal {
+                if r_type == RefactorType::InlineLocal {
                     let krate = state.expanded_crate.unwrap().clone();
                     let tcx = state.tcx.unwrap();
                     let anal = state.analysis.unwrap();
                     let ast_map = &tcx.map;
 
-                    debug!("{:?}", ast_map.get_parent(node_to_find));
+                    debug!("{:?}", ast_map.get(ast_map.get_parent(node_to_find)));
                     debug!("{:?}", ast_map.get(node_to_find));
 
-                    match ast_map.get(ast_map.get_parent(node_to_find)) {
+                    match ast_map.get(node_to_find) {
                         NodeLocal(ref pat) => {
 
                         },
-                            _ => {}
+                        _ => { panic!(); }
                     }
+
+                    match ast_map.get(ast_map.get_parent(node_to_find)) {
+                        NodeItem(ref item) => {},
+                        _ => {}
+                    }
+
                     // Build save walker
+                    let output_file = match File::create(&"out.out") {
+                        Ok(f) => box f,
+                        Err(e) => {
+                            panic!();
+                        }
+                    };
+
+                    let mut visitor = DumpCsvVisitor::new(tcx, anal,output_file);
+                    visit::walk_crate(&mut visitor, &krate);
                 }
             };
 
@@ -915,7 +931,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 false
             })));
 
-            match rType {
+            match r_type {
                 RefactorType::Type => {
                     let mut h = HashMap::new();
                     h.insert(String::new(), String::new());
