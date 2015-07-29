@@ -222,40 +222,11 @@ pub fn rename_type(input_file: &str,
     Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
 }
 
-fn run_compiler_resolution(root: String,
-                           file_override: Option<(String, String)>,
-                           kind: RefactorType,
-                           new_name: String,
-                           node: NodeId,
-                           full: bool)
-                           -> Result<(), i32> {
-    let key = "RUST_FOLDER";
-    let mut path = String::new();
-    let args = match env::var(key) {
-        Ok(val) => {
-            path.push_str("-L");
-            path.push_str(&val[..]);
-            vec!["refactor".to_owned(), 
-                path,
-                root]
-        }
-        Err(e) => {vec!["refactor".to_owned(), root]},
-    };
-
-    thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, full);
-        run_compiler(&args, &mut call_ctxt);
-    }).map_err(|any|
-        1
-    )
-}
-
 pub fn rename_function(input_file: &str,
                        analysis: &str,
                        new_name: &str,
                        rename_var: &str)
                        -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
     let analyzed_data = init(analysis);
 
     // method calls refer to top level trait function in declid
@@ -330,6 +301,62 @@ pub fn rename_function(input_file: &str,
     }
 
     Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
+}
+
+pub fn inline_local(input_file: &str,
+                    analysis: &str,
+                    rename_var: &str)
+                    -> Result<HashMap<String, String>, Response> {
+    let analyzed_data = init(analysis);
+
+    let dec_map = analyzed_data.func_map;
+    let ref_map = analyzed_data.func_ref_map;
+    let node: NodeId = rename_var.parse().unwrap();
+
+    let input_file_str = String::from_str(input_file);
+
+    let mut filename = String::from_str(input_file);
+    if let Some(decl) = dec_map.get(rename_var) {
+        if let Some(file) = decl.get("file_name") {
+            filename = file.clone();
+        }
+    }
+    let filename = filename;
+    match run_compiler_resolution(input_file_str, None, RefactorType::InlineLocal,
+                                  String::from_str(rename_var), node, true) {
+        Ok(()) => {},
+        Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
+    }
+
+    Ok(HashMap::new())
+}
+
+fn run_compiler_resolution(root: String,
+                           file_override: Option<(String, String)>,
+                           kind: RefactorType,
+                           new_name: String,
+                           node: NodeId,
+                           full: bool)
+                           -> Result<(), i32> {
+    let key = "RUST_FOLDER";
+    let mut path = String::new();
+    let args = match env::var(key) {
+        Ok(val) => {
+            path.push_str("-L");
+            path.push_str(&val[..]);
+            vec!["refactor".to_owned(),
+                path,
+                root]
+        }
+        Err(e) => {vec!["refactor".to_owned(), root]},
+    };
+
+    thread::catch_panic(move || {
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, full);
+        run_compiler(&args, &mut call_ctxt);
+    }).map_err(|any|
+        1
+    )
 }
 
 struct AnalysisData {

@@ -25,3 +25,4 @@ extern crate strings;
 pub mod loader;
 pub mod refactor;
 pub mod save_walker;
+pub mod folder;

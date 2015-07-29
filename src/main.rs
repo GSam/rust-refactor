@@ -28,7 +28,7 @@ fn main() {
 
     let args: Vec<_> = args.collect();
     let path = Path::new(&args[3]);
-    let mut s;
+    let s;
     let mut rename_var = &args[4];
 
     /*let mut file = match File::open(&path) {
