@@ -1022,15 +1022,3 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         control
     }
 }
-
-// Compare output to input.
-fn handle_result(result: HashMap<String, String>) {
-    let mut failures = HashMap::new();
-
-    for (file_name, fmt_text) in result {
-        failures.insert(String::new(), String::new());
-    }
-    if !failures.is_empty() {
-        panic!(failures);
-    }
-}
