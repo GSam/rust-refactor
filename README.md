@@ -23,8 +23,6 @@ Renaming enum, variants + struct variants
 Renaming traits
 
 #TESTS TODO:
-Simple static dispatch
-
 Simple parameterized static dispatch
 
 Dynamic dispatch
