@@ -7,18 +7,21 @@ use rustc::ast_map::Node::*;
 use rustc::session::Session;
 use rustc::session::config::{self, Input};
 use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, run_compiler};
+//use rustc_driver::pretty::{PpMode, PpSourceMode};
 use rustc::metadata::creader::CrateReader;
 use rustc_resolve as resolve;
 use rustc::middle::lang_items;
 use rustc::middle::ty;
-use syntax;
-use syntax::{ast, attr, diagnostics, visit};
+use syntax::{self, ast, attr, diagnostics, visit};
 use syntax::parse::token;
+use syntax::fold::Folder;
 use syntax::ast::NodeId;
 use syntax::ast::Item_::ItemImpl;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
+use syntax::ptr::P;
 use syntax::codemap::DUMMY_SP;
+use syntax::print::pprust;
 use std::collections::HashMap;
 use std::env;
 use std::io::prelude::*;
@@ -29,7 +32,9 @@ use std::fs::File;
 use std::thread;
 
 use strings::src_rope::Rope;
+
 use loader::ReplaceLoader;
+use folder::InlineFolder;
 use save_walker::DumpCsvVisitor;
 
 #[derive(Debug, PartialEq)]
@@ -809,13 +814,16 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     match ast_map.get(node_to_find) {
                         NodeLocal(ref pat) => {
-
                         },
                         _ => { panic!(); }
                     }
 
+                    let mut parent = None;
                     match ast_map.get(ast_map.get_parent(node_to_find)) {
-                        NodeItem(ref item) => {},
+                        NodeItem(ref item) => {
+                            parent = Some(P((*item).clone()));
+                            debug!("{:?}", pprust::item_to_string(item));
+                        },
                         _ => {}
                     }
 
@@ -827,8 +835,13 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         }
                     };
 
-                    let mut visitor = DumpCsvVisitor::new(tcx, anal,output_file);
-                    visit::walk_crate(&mut visitor, &krate);
+                    if let Some(par) = parent {
+                        let mut visitor = DumpCsvVisitor::new(tcx, anal, output_file);
+                        let mut folder = InlineFolder::new(tcx, anal);
+                        folder.fold_item(par);
+
+                        visit::walk_crate(&mut visitor, &krate);
+                    }
                 }
             };
 
