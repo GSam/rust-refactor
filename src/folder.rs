@@ -20,6 +20,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     span: SpanUtils<'l>,
 
     node_to_find: NodeId,
+    to_replace: Option<P<Expr>>,
 }
 
 impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
@@ -35,7 +36,8 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             analysis: analysis,
             span: span_utils.clone(),
 
-            node_to_find: node_to_find
+            node_to_find: node_to_find,
+            to_replace: None
         }
     }
 
