@@ -6,6 +6,7 @@ use syntax::codemap::{Span, Spanned};
 use rustc::middle::def;
 use rustc::middle::ty;
 use syntax::fold::Folder;
+use syntax::fold::noop_fold_expr;
 use syntax::ptr::P;
 use syntax::ast::*;
 use syntax::util::small_vector::SmallVector;
@@ -59,11 +60,90 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         })
     }
 
+    fn process_path(&mut self,
+                    id: NodeId,
+                    path: &Path,
+                    ref_kind: Option<recorder::Row>) -> bool {
+        if generated_code(path.span) {
+            return false;
+        }
+
+        let path_data = self.save_ctxt.get_path_data(id, path);
+        /*let path_data = match path_data {
+            Some(pd) => pd,
+            None => {
+                self.tcx.sess.span_bug(path.span,
+                                       &format!("Unexpected def kind while looking \
+                                                 up path in `{}`",
+                                                self.span.snippet(path.span)))
+            }
+        };*/
+        match path_data {
+            Data::VariableRefData(ref vrd) => {
+                /*self.fmt.ref_str(ref_kind.unwrap_or(recorder::Row::VarRef),
+                                                    path.span,
+                                                    Some(vrd.span),
+                                                    vrd.ref_id,
+                                                    vrd.scope);*/
+                let DefId { krate, node } = vrd.ref_id;
+                if krate == LOCAL_CRATE && node  == self.node_to_find {
+                    return true;
+                }
+            }
+            Data::TypeRefData(ref trd) => {
+                /*self.fmt.ref_str(recorder::Row::TypeRef,
+                                 path.span,
+                                 Some(trd.span),
+                                 trd.ref_id,
+                                 trd.scope);*/
+            }
+            Data::MethodCallData(ref mcd) => {
+                /*self.fmt.meth_call_str(path.span,
+                                       Some(mcd.span),
+                                       mcd.ref_id,
+                                       mcd.decl_id,
+                                       mcd.scope);*/
+            }
+            Data::FunctionCallData(fcd) => {
+                /*self.fmt.fn_call_str(path.span,
+                                     Some(fcd.span),
+                                     fcd.ref_id,
+                                     fcd.scope);*/
+            }
+            _ => {
+                self.sess.span_bug(path.span,
+                                   &format!("Unexpected data: {:?}", path_data));
+            }
+        }
+
+        false
+    }
+
+//pub fn noop_fold_expr<T: Folder>(Expr {id, node, span}: Expr, folder: &mut T) -> Expr {}
+
 }
 
 impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
     fn fold_decl(&mut self, d: P<Decl>) -> SmallVector<P<Decl>> {
         self.noop_fold_decl(d)
     }
-}
 
+    fn fold_expr(&mut self, e: P<Expr>) -> P<Expr> {
+        e.map(|e| {
+            match e.node {
+                ExprPath(ref q, ref path) => {
+                    if self.process_path(e.id, path, None) {
+                        let next = self.to_replace.clone();
+                        if let Some(replace) = next {
+                            return (*replace).clone()
+                        }
+                    }
+                    //visit::walk_expr(self, ex);
+                },
+                _ => {}
+
+            }
+            noop_fold_expr(e, self)
+        })
+    }
+}
