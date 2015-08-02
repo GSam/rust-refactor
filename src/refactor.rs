@@ -344,7 +344,7 @@ fn run_compiler_resolution(root: String,
                            new_name: String,
                            node: NodeId,
                            full: bool)
-                           -> Result<(), i32> {
+                           -> Result<(), String> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
@@ -362,7 +362,7 @@ fn run_compiler_resolution(root: String,
         let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, full);
         run_compiler(&args, &mut call_ctxt);
     }).map_err(|any|
-        1
+        *any.downcast().ok().unwrap_or_default()
     )
 }
 
