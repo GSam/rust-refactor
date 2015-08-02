@@ -331,8 +331,8 @@ pub fn inline_local(input_file: &str,
     let filename = filename;
     match run_compiler_resolution(input_file_str, None, RefactorType::InlineLocal,
                                   String::from_str(rename_var), node, true) {
-        Ok(()) => {},
-        Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
+        Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
+        Err(x) => { println!("{}", x); }
     }
 
     Ok(HashMap::new())
@@ -839,9 +839,9 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     if let Some(par) = parent {
                         let mut visitor = DumpCsvVisitor::new(tcx, anal, output_file);
                         let mut folder = InlineFolder::new(tcx, anal, node_to_find);
-                        debug!("{:?}", Vec::from_iter(folder.fold_item(par).into_iter()));
-
-                        visit::walk_crate(&mut visitor, &krate);
+                        debug!("{:?}", Vec::from_iter(folder.fold_item(par.clone()).into_iter()));
+                        panic!(pprust::item_to_string(folder.fold_item(par).get(0)));
+                        //visit::walk_crate(&mut visitor, &krate);
                     }
                 }
             };
