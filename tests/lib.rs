@@ -285,6 +285,19 @@ fn prevented_variable_12() {
 }
 
 #[test]
+fn prevented_variable_13() {
+    // Broken destructure
+    // Point {x, y} = Point{x:1, x:2}
+    // => Point {foo, y} = Point{x:1, x:2}
+    let file = "tests/variable/destructure_conflict.rs";
+    let analysis = read_to_string("tests/variable/destructure_conflict.csv");
+    match refactor::refactor::rename_variable(file, &analysis, "bar", "16") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn working_argument_1() {
     let file = "tests/variable/fn_args_1.rs";
     let output = read_to_string("tests/variable/fn_args_1_out.rs");
