@@ -44,11 +44,20 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
     // TODO: Need to make sure that double decl are not inlined...
     fn noop_fold_decl(&mut self, d: P<Decl>) -> SmallVector<P<Decl>> {
         d.and_then(|Spanned {node, span}| match node {
-            DeclLocal(ref l) if l.pat.id == self.node_to_find => SmallVector::zero(),
-            DeclLocal(l) => SmallVector::one(P(Spanned {
+            DeclLocal(ref l) if l.pat.id == self.node_to_find => {self.to_replace = l.init.clone(); SmallVector::zero()},
+            DeclLocal(l) => {
+                if l.pat.id == self.node_to_find {
+                    let c = l.clone();
+                    self.to_replace = l.init.clone();
+                    //self.to_replace = l.init.unwrap();
+                    return SmallVector::zero();
+                }
+
+                SmallVector::one(P(Spanned {
                 node: DeclLocal(self.fold_local(l)),
                 span: self.new_span(span)
-            })),
+                }))
+            },
             DeclItem(it) => self.fold_item(it).into_iter().map(|i| P(Spanned {
                 node: DeclItem(i),
                 span: self.new_span(span)
