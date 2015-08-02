@@ -26,6 +26,7 @@ use std::collections::HashMap;
 use std::env;
 use std::io::prelude::*;
 use std::io::stderr;
+use std::iter::FromIterator;
 use std::path::PathBuf;
 use std::path::Path;
 use std::fs::File;
@@ -837,8 +838,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     if let Some(par) = parent {
                         let mut visitor = DumpCsvVisitor::new(tcx, anal, output_file);
-                        let mut folder = InlineFolder::new(tcx, anal);
-                        folder.fold_item(par);
+                        let mut folder = InlineFolder::new(tcx, anal, node_to_find);
+                        debug!("{:?}", Vec::from_iter(folder.fold_item(par).into_iter()));
 
                         visit::walk_crate(&mut visitor, &krate);
                     }
