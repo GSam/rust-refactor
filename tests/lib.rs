@@ -516,6 +516,18 @@ fn working_fn_3() {
 }
 
 #[test]
+fn working_fn_4() {
+    let file = "tests/function/basic_trait_function.rs";
+    let output = read_to_string("tests/function/basic_trait_function_out.rs");
+    let analysis = read_to_string("tests/function/basic_trait_function.csv");
+
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn not_working_fn_1() {
     let file = "tests/function/basic_function.rs";
     let analysis = read_to_string("tests/function/basic_function.csv");
