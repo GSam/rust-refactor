@@ -608,6 +608,18 @@ fn working_fn_8() {
 }
 
 #[test]
+fn working_fn_9() {
+    let file = "tests/function/fn_local_mod_after.rs";
+    let output = read_to_string("tests/function/fn_local_mod_after_out.rs");
+    let analysis = read_to_string("tests/function/fn_local_mod_after.csv");
+
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "13") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn not_working_fn_1() {
     let file = "tests/function/basic_function.rs";
     let analysis = read_to_string("tests/function/basic_function.csv");
