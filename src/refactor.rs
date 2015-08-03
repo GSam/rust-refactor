@@ -82,9 +82,6 @@ pub fn rename_variable(input_file: &str,
         },
         Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
     }
-    try!(check_reduced_graph(String::from_str(input_file), filename,
-                             String::from_str(new_name), node,
-                             dec_map.get(rename_var).unwrap()));
     match dec_map.get(rename_var) {
         Some(x) => {
             for (key, value) in dec_map.iter() {
@@ -125,7 +122,7 @@ pub fn rename_variable(input_file: &str,
                                 }
                             }
 
-                            match run_compiler_resolution(String::from_str(input_file), Some((String::from_str(filename), answer)),
+                            match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
                                                           RefactorType::Variable, String::from_str(new_name),
                                                           node, true) {
                                 Ok(()) => {
@@ -155,7 +152,14 @@ pub fn rename_variable(input_file: &str,
         _ => { return Err(Response::Conflict); } //input.to_string(); }
     }
 
-    Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
+    let output = rename_dec_and_ref(new_name, rename_var, dec_map, ref_map);
+
+    try!(check_reduced_graph(String::from_str(input_file),
+                             output.iter().map(|(x,y)|
+                             (x.clone(), y.clone())).collect(),
+                             String::from_str(new_name), node));
+
+    Ok(output)
 }
 
 pub fn rename_type(input_file: &str,
@@ -216,7 +220,7 @@ pub fn rename_type(input_file: &str,
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), Some((String::from_str(filename), answer)),
+            match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
                                           RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
@@ -267,9 +271,6 @@ pub fn rename_function(input_file: &str,
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
 
-    try!(check_reduced_graph(String::from_str(input_file), filename,
-                             String::from_str(new_name), node,
-                             dec_map.get(rename_var).unwrap()));
     if let Some(references) = ref_map.get(rename_var) {
         for map in references.iter() {
             let filename = map.get("file_name").unwrap();
@@ -300,7 +301,7 @@ pub fn rename_function(input_file: &str,
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), Some((String::from_str(filename), answer)),
+            match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
                                           RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
@@ -313,7 +314,15 @@ pub fn rename_function(input_file: &str,
         }
     }
 
-    Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
+    let output = rename_dec_and_ref(new_name, rename_var, dec_map, ref_map);
+
+    println!("{:?}", output);
+    try!(check_reduced_graph(String::from_str(input_file),
+                             output.iter().map(|(x,y)|
+                             (x.clone(), y.clone())).collect(),
+                             String::from_str(new_name), node));
+
+    Ok(output)
 }
 
 pub fn inline_local(input_file: &str,
@@ -353,31 +362,11 @@ pub fn inline_local(input_file: &str,
     Ok(output)
 }
 
-fn check_reduced_graph(root: String, filename: String, new_name: String,
-                       node: NodeId, map: &HashMap<String, String>)
-                        -> Result<(), Response> {
-    let mut new_file = String::new();
-    File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
-    let file_str = &new_file[..];
+fn check_reduced_graph(root: String, files: Vec<(String, String)>,
+                       new_name: String, node: NodeId)
+                       -> Result<(), Response> {
 
-    let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
-    let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
-    let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
-    let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
-    let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
-
-    //let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
-    rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &new_name);
-    let mut answer = String::new();
-    let mut count = ropes.len();
-    for rope in &ropes {
-        answer.push_str(&rope.to_string());
-        if count > 1 {
-            answer.push_str("\n");
-            count -= 1;
-        }
-    }
-    match run_compiler_resolution(root, Some((filename.clone(), answer)), RefactorType::Reduced, String::new(), node, false) {
+    match run_compiler_resolution(root, Some(files), RefactorType::Reduced, new_name, node, false) {
         Ok(()) => Ok(()),
         Err(x) => Err(Response::Conflict)
 
@@ -385,7 +374,7 @@ fn check_reduced_graph(root: String, filename: String, new_name: String,
 }
 
 fn run_compiler_resolution(root: String,
-                           file_override: Option<(String, String)>,
+                           file_override: Option<Vec<(String, String)>>,
                            kind: RefactorType,
                            new_name: String,
                            node: NodeId,
@@ -773,7 +762,7 @@ struct RefactorCalls {
     r_type: RefactorType,
     new_name: String,
     node_to_find: NodeId,
-    input: Option<(String, String)>,
+    input: Option<Vec<(String, String)>>,
     is_full: bool,
 }
 
@@ -781,7 +770,7 @@ impl RefactorCalls {
     fn new(t: RefactorType,
            new_name: String,
            node: NodeId,
-           new_file: Option<(String, String)>,
+           new_file: Option<Vec<(String, String)>>,
            is_full: bool)
            -> RefactorCalls {
         RefactorCalls {
@@ -815,7 +804,9 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         // If there were multiple renamings per compile run, it would be added here
         match self.input.as_ref() {
             Some(input) => {
-                loader.add_file(input.0.clone(), input.1.clone());
+                for file in input {
+                    loader.add_file(file.0.clone(), file.1.clone());
+                }
             },
             None => ()
         }
