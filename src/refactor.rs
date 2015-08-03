@@ -82,6 +82,7 @@ pub fn rename_variable(input_file: &str,
         },
         Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
     }
+    try!(check_reduced_graph(String::from_str(input_file), filename, String::from_str(new_name), node, dec_map.get(rename_var).unwrap()));
     match dec_map.get(rename_var) {
         Some(x) => {
             for (key, value) in dec_map.iter() {
@@ -264,6 +265,7 @@ pub fn rename_function(input_file: &str,
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
 
+    try!(check_reduced_graph(String::from_str(input_file), filename, String::from_str(new_name), node, dec_map.get(rename_var).unwrap()));
     if let Some(references) = ref_map.get(rename_var) {
         for map in references.iter() {
             let filename = map.get("file_name").unwrap();
@@ -329,13 +331,53 @@ pub fn inline_local(input_file: &str,
         }
     }
     let filename = filename;
-    match run_compiler_resolution(input_file_str, None, RefactorType::InlineLocal,
+    let (x,y,z) = match run_compiler_resolution(input_file_str, None, RefactorType::InlineLocal,
                                   String::from_str(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
-        Err(x) => { println!("{:?}", x); }
-    }
+        Err(x) => { println!("{:?}", x); x }
+    };
 
-    Ok(HashMap::new())
+    let mut new_file = String::new();
+    File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
+    let mut rope = Rope::from_string(new_file);
+
+    rope.src_remove(x, y);
+    rope.src_insert(x, z);
+
+    let mut output = HashMap::new();
+    output.insert(filename, rope.to_string());
+    Ok(output)
+}
+
+fn check_reduced_graph(root: String, filename: String, new_name: String,
+                       node: NodeId, map: &HashMap<String, String>)
+                        -> Result<(), Response> {
+    let mut new_file = String::new();
+    File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
+    let file_str = &new_file[..];
+
+    let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+    let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
+    let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
+    let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
+    let file_line_end: usize = map.get("file_line_end").unwrap().parse().unwrap();
+
+    //let _ = writeln!(&mut stderr(), "{} {} {} {}", file_col, file_line, file_col_end, file_line_end);
+    rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, &new_name);
+    let mut answer = String::new();
+    let mut count = ropes.len();
+    for rope in &ropes {
+        answer.push_str(&rope.to_string());
+        if count > 1 {
+            answer.push_str("\n");
+            count -= 1;
+        }
+    }
+    match run_compiler_resolution(root, Some((filename.clone(), answer)), RefactorType::Reduced, String::new(), node, false) {
+        Ok(()) => Ok(()),
+        Err(x) => Err(Response::Conflict)
+
+    }
 }
 
 fn run_compiler_resolution(root: String,
@@ -718,6 +760,7 @@ pub enum RefactorType {
     Function,
     Type,
     InlineLocal,
+    Reduced,
     Nil,
 }
 
