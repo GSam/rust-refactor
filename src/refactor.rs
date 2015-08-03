@@ -979,6 +979,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         }
                         if item.id == node_to_find {
                             debug!("Found node");
+                            debug!("{:?}", item);
                             *resolved = true;
                             return true;
                         }
@@ -1074,19 +1075,19 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     //if resolver.resolve_path(node_to_find, &path) {
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::ValueNS, true).is_some() {
                         // unwind at this location
-                        debug!("BAD");
+                        debug!("BAD ValueNS");
                         panic!(h);
                     }
 
                     if resolver.resolve_path(node_to_find, &path, 0, resolve::Namespace::TypeNS, true).is_some() {
                         // unwind at this location
-                        debug!("BAD");
+                        debug!("BAD TypeNS");
                         panic!(h);
                     }
                     debug!("OK");
                     //println!("{:?}", mtwt::resolve( token::str_to_ident(&new_name[..])));
                 },
-                _ => {}              
+                _ => { debug!("HERE"); /* Reduced graph check falls here */ }
             }
         };
 
