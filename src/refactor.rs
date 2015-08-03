@@ -82,7 +82,9 @@ pub fn rename_variable(input_file: &str,
         },
         Err(x) => { debug!("BAD"); return Err(Response::Conflict); }
     }
-    try!(check_reduced_graph(String::from_str(input_file), filename, String::from_str(new_name), node, dec_map.get(rename_var).unwrap()));
+    try!(check_reduced_graph(String::from_str(input_file), filename,
+                             String::from_str(new_name), node,
+                             dec_map.get(rename_var).unwrap()));
     match dec_map.get(rename_var) {
         Some(x) => {
             for (key, value) in dec_map.iter() {
@@ -265,7 +267,9 @@ pub fn rename_function(input_file: &str,
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
 
-    try!(check_reduced_graph(String::from_str(input_file), filename, String::from_str(new_name), node, dec_map.get(rename_var).unwrap()));
+    try!(check_reduced_graph(String::from_str(input_file), filename,
+                             String::from_str(new_name), node,
+                             dec_map.get(rename_var).unwrap()));
     if let Some(references) = ref_map.get(rename_var) {
         for map in references.iter() {
             let filename = map.get("file_name").unwrap();
@@ -1002,10 +1006,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     path.fold(Vec::new(), |mut s, e| {
                         let e = itr.get(e.name());
                         s.push(token::str_to_ident(&e[..]));
-                        s
-                    })
-                    //ast_map::path_to_string(path)
-
+                        s })
+                        //ast_map::path_to_string(path)
                     });
 
 
