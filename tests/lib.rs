@@ -492,6 +492,30 @@ fn working_fn_1() {
 }
 
 #[test]
+fn working_fn_2() {
+    let file = "tests/function/basic_module_function.rs";
+    let output = read_to_string("tests/function/basic_module_function_out.rs");
+    let analysis = read_to_string("tests/function/basic_module_function.csv");
+
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "6") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_fn_3() {
+    let file = "tests/function/basic_generic_function.rs";
+    let output = read_to_string("tests/function/basic_generic_function_out.rs");
+    let analysis = read_to_string("tests/function/basic_generic_function.csv");
+
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn not_working_fn_1() {
     let file = "tests/function/basic_function.rs";
     let analysis = read_to_string("tests/function/basic_function.csv");
