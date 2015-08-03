@@ -727,7 +727,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
         }
 
         let path_data = self.save_ctxt.get_path_data(id, path);
-        /*let path_data = match path_data {
+        let path_data = match path_data {
             Some(pd) => pd,
             None => {
                 self.tcx.sess.span_bug(path.span,
@@ -735,7 +735,7 @@ impl <'l, 'tcx> DumpCsvVisitor<'l, 'tcx> {
                                                  up path in `{}`",
                                                 self.span.snippet(path.span)))
             }
-        };*/
+        };
         match path_data {
             Data::VariableRefData(ref vrd) => {
                 self.fmt.ref_str(ref_kind.unwrap_or(recorder::Row::VarRef),
