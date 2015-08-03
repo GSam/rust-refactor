@@ -650,6 +650,16 @@ fn not_working_fn_3() {
 }
 
 #[test]
+fn not_working_fn_4() {
+    let file = "tests/function/conflict_fn_with_var.rs";
+    let analysis = read_to_string("tests/function/conflict_fn_with_var.csv");
+    match refactor::refactor::rename_function(&file, &analysis, "a", "8") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn multi_file_1() {
     let file = "tests/multi-file/simple_function_1/main.rs";
     let changed1 = file;
