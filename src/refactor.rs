@@ -902,7 +902,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
             let krate = ast_map.krate();
             CrateReader::new(&state.session).read_crates(krate);
             let lang_items = lang_items::collect_language_items(krate, &state.session);
-            let resolve::CrateMap {
+            /*let resolve::CrateMap {
                 def_map,
                 freevars,
                 export_map,
@@ -910,7 +910,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 external_exports,
                 glob_map,
             } = resolve::resolve_crate(&state.session, &ast_map, resolve::MakeGlobMap::No);
-            debug!("{:?}", def_map);
+            debug!("{:?}", def_map);*/
 
             // According to some condition !
             //let ps = syntax::parse::ParseSess::new();
