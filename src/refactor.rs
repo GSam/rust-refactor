@@ -13,15 +13,15 @@ use rustc_resolve as resolve;
 use rustc::middle::lang_items;
 use rustc::middle::ty;
 use syntax::{self, ast, attr, diagnostics, visit};
-use syntax::parse::token;
-use syntax::fold::Folder;
 use syntax::ast::NodeId;
 use syntax::ast::Item_::ItemImpl;
+use syntax::codemap::{DUMMY_SP, Pos};
+use syntax::fold::Folder;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
-use syntax::ptr::P;
-use syntax::codemap::DUMMY_SP;
+use syntax::parse::token;
 use syntax::print::pprust;
+use syntax::ptr::P;
 use std::collections::HashMap;
 use std::env;
 use std::io::prelude::*;
@@ -332,7 +332,7 @@ pub fn inline_local(input_file: &str,
     match run_compiler_resolution(input_file_str, None, RefactorType::InlineLocal,
                                   String::from_str(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
-        Err(x) => { println!("{}", x); }
+        Err(x) => { println!("{:?}", x); }
     }
 
     Ok(HashMap::new())
@@ -344,7 +344,7 @@ fn run_compiler_resolution(root: String,
                            new_name: String,
                            node: NodeId,
                            full: bool)
-                           -> Result<(), String> {
+                           -> Result<(), (usize, usize, String)> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
@@ -837,10 +837,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     };
 
                     if let Some(par) = parent {
-                        let mut visitor = DumpCsvVisitor::new(tcx, anal, output_file);
+                        let outer_span = par.span;
+                        //let mut visitor = DumpCsvVisitor::new(tcx, anal, output_file);
                         let mut folder = InlineFolder::new(tcx, anal, node_to_find);
                         debug!("{:?}", Vec::from_iter(folder.fold_item(par.clone()).into_iter()));
-                        panic!(pprust::item_to_string(folder.fold_item(par).get(0)));
+                        panic!((outer_span.lo.to_usize(), outer_span.hi.to_usize(), pprust::item_to_string(folder.fold_item(par).get(0))));
                         //visit::walk_crate(&mut visitor, &krate);
                     }
                 }
