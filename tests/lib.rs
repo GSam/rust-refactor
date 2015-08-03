@@ -526,6 +526,26 @@ fn not_working_fn_1() {
 }
 
 #[test]
+fn not_working_fn_2() {
+    let file = "tests/function/conflict_module_function.rs";
+    let analysis = read_to_string("tests/function/conflict_module_function.csv");
+    match refactor::refactor::rename_function(&file, &analysis, "foo", "9") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
+fn not_working_fn_3() {
+    let file = "tests/function/conflict_module_function.rs";
+    let analysis = read_to_string("tests/function/conflict_module_function.csv");
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "6") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
 fn multi_file_1() {
     let file = "tests/multi-file/simple_function_1/main.rs";
     let changed1 = file;
