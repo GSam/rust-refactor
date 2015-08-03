@@ -151,6 +151,18 @@ fn working_variable_11() {
 }
 
 #[test]
+fn working_variable_12() {
+    let file = "tests/variable/conflict_var_use_mod.rs";
+    let output = read_to_string("tests/variable/conflict_var_use_mod_out.rs");
+    let analysis = read_to_string("tests/variable/conflict_var_use_mod.csv");
+
+    match refactor::refactor::rename_variable(file, &analysis, "BIT3", "6") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn prevented_variable_1() {
     let file = "tests/variable/basic_rename.rs";
     let analysis = read_to_string("tests/variable/basic_rename.csv");
@@ -292,6 +304,26 @@ fn prevented_variable_13() {
     let file = "tests/variable/destructure_conflict.rs";
     let analysis = read_to_string("tests/variable/destructure_conflict.csv");
     match refactor::refactor::rename_variable(file, &analysis, "bar", "16") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
+fn prevented_variable_14() {
+    let file = "tests/variable/conflict_var_use_mod.rs";
+    let analysis = read_to_string("tests/variable/conflict_var_use_mod.csv");
+    match refactor::refactor::rename_variable(file, &analysis, "BIT2", "6") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
+fn prevented_variable_15() {
+    let file = "tests/variable/conflict_var_use_mod.rs";
+    let analysis = read_to_string("tests/variable/conflict_var_use_mod.csv");
+    match refactor::refactor::rename_variable(file, &analysis, "BIT1", "11") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
