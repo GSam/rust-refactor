@@ -584,12 +584,24 @@ fn working_fn_6() {
 }
 
 #[test]
-fn working_fn_6() {
+fn working_fn_7() {
     let file = "tests/function/extern_stdcall_function.rs";
     let output = read_to_string("tests/function/extern_stdcall_function_out.rs");
     let analysis = read_to_string("tests/function/extern_stdcall_function.csv");
 
     match refactor::refactor::rename_function(&file, &analysis, "bar", "4") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_fn_8() {
+    let file = "tests/function/fn_local_mod.rs";
+    let output = read_to_string("tests/function/fn_local_mod_out.rs");
+    let analysis = read_to_string("tests/function/fn_local_mod.csv");
+
+    match refactor::refactor::rename_function(&file, &analysis, "bar", "10") {
         Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
         Err(_) => assert!(false)
     }
