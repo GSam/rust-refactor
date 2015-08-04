@@ -6,7 +6,7 @@ use rustc::ast_map;
 use rustc::ast_map::Node::*;
 use rustc::session::Session;
 use rustc::session::config::{self, Input};
-use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, run_compiler};
+use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, run_compiler, monitor};
 //use rustc_driver::pretty::{PpMode, PpSourceMode};
 use rustc::metadata::creader::CrateReader;
 use rustc_resolve as resolve;
@@ -395,7 +395,7 @@ fn run_compiler_resolution(root: String,
 
     thread::catch_panic(move || {
         let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, full);
-        run_compiler(&args, &mut call_ctxt);
+        monitor(move || run_compiler(&args, &mut call_ctxt));
     }).map_err(|any|
         *any.downcast().ok().unwrap_or_default()
     )
