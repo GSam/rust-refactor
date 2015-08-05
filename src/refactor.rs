@@ -4,18 +4,20 @@ extern crate csv;
 use getopts;
 use rustc::ast_map;
 use rustc::ast_map::Node::*;
-use rustc::session::Session;
+use rustc::session::{self, Session};
 use rustc::session::config::{self, Input};
-use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, run_compiler, monitor};
-//use rustc_driver::pretty::{PpMode, PpSourceMode};
+use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, monitor, handle_options, diagnostics_registry};
+use rustc_driver::pretty::{PpMode, PpSourceMode};
 use rustc::metadata::creader::CrateReader;
 use rustc_resolve as resolve;
+use rustc::lint;
+use rustc_lint;
 use rustc::middle::lang_items;
 use rustc::middle::ty;
-use syntax::{self, ast, attr, diagnostics, visit};
+use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
 use syntax::ast::NodeId;
 use syntax::ast::Item_::ItemImpl;
-use syntax::codemap::{DUMMY_SP, Pos};
+use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos};
 use syntax::fold::Folder;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
@@ -24,6 +26,7 @@ use syntax::print::pprust;
 use syntax::ptr::P;
 use std::collections::HashMap;
 use std::env;
+use std::io;
 use std::io::prelude::*;
 use std::io::stderr;
 use std::iter::FromIterator;
@@ -393,12 +396,81 @@ fn run_compiler_resolution(root: String,
         Err(e) => {vec!["refactor".to_owned(), root]},
     };
 
+    let mut loader = ReplaceLoader::new();
+    let mut changed_file = String::from("");
+    match file_override.as_ref() {
+        Some(input) => {
+            for file in input.iter() {
+                loader.add_file(file.0.clone(), file.1.clone());
+                changed_file = file.0.clone();
+            }
+        },
+        None => ()
+    }
+
     thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, full);
-        monitor(move || run_compiler(&args, &mut call_ctxt));
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, changed_file, full);
+        monitor(move || run_compiler(&args, &mut call_ctxt, Box::new(loader)));
     }).map_err(|any|
         *any.downcast().ok().unwrap_or_default()
     )
+}
+
+fn run_compiler<'a>(args: &[String],
+                    callbacks: &mut CompilerCalls<'a>, loader: Box<FileLoader>) {
+    macro_rules! do_or_return {($expr: expr) => {
+        match $expr {
+            Compilation::Stop => return,
+            Compilation::Continue => {}
+        }
+    }}
+
+    let matches = match handle_options(args.to_vec()) {
+        Some(matches) => matches,
+        None => return
+    };
+
+    let descriptions = diagnostics_registry();
+
+    do_or_return!(callbacks.early_callback(&matches, &descriptions));
+
+    let sopts = config::build_session_options(&matches);
+
+    let (odir, ofile) = make_output(&matches);
+    let (input, input_file_path) = match make_input(&matches.free) {
+        Some((input, input_file_path)) => callbacks.some_input(input, input_file_path),
+        None => match callbacks.no_input(&matches, &sopts, &odir, &ofile, &descriptions) {
+            Some((input, input_file_path)) => (input, input_file_path),
+            None => return
+        }
+    };
+
+    let can_print_warnings = sopts.lint_opts
+        .iter()
+        .filter(|&&(ref key, _)| *key == "warnings")
+        .map(|&(_, ref level)| *level != lint::Allow)
+        .last()
+        .unwrap_or(true);
+
+
+    let codemap = codemap::CodeMap::with_file_loader(loader);
+    let diagnostic_handler =
+        diagnostic::Handler::new(sopts.color, Some(descriptions), can_print_warnings);
+    let span_diagnostic_handler =
+        diagnostic::SpanHandler::new(diagnostic_handler, codemap);
+
+    let mut sess = session::build_session_(sopts, input_file_path, span_diagnostic_handler);
+    rustc_lint::register_builtins(&mut sess.lint_store.borrow_mut(), Some(&sess));
+    if sess.unstable_options() {
+        sess.opts.show_span = matches.opt_str("show-span");
+    }
+    let cfg = config::build_configuration(&sess);
+
+    do_or_return!(callbacks.late_callback(&matches, &sess, &input, &odir, &ofile));
+
+    let plugins = sess.opts.debugging_opts.extra_plugins.clone();
+    let control = callbacks.build_controller(&sess);
+    driver::compile_input(sess, cfg, &input, &odir, &ofile, Some(plugins), control);
 }
 
 struct AnalysisData {
@@ -763,6 +835,7 @@ struct RefactorCalls {
     new_name: String,
     node_to_find: NodeId,
     input: Option<Vec<(String, String)>>,
+    root: String,
     is_full: bool,
 }
 
@@ -771,6 +844,7 @@ impl RefactorCalls {
            new_name: String,
            node: NodeId,
            new_file: Option<Vec<(String, String)>>,
+           root: String,
            is_full: bool)
            -> RefactorCalls {
         RefactorCalls {
@@ -779,6 +853,7 @@ impl RefactorCalls {
             new_name: new_name,
             node_to_find: node,
             input: new_file,
+            root: root,
             is_full: is_full,
         }
     }
@@ -800,17 +875,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                      ofile: &Option<PathBuf>)
                      -> Compilation {
         self.default_calls.late_callback(m, s, i, odir, ofile);
-        let mut loader = ReplaceLoader::new();
-        // If there were multiple renamings per compile run, it would be added here
-        match self.input.as_ref() {
-            Some(input) => {
-                for file in input {
-                    loader.add_file(file.0.clone(), file.1.clone());
-                }
-            },
-            None => ()
-        }
-        s.codemap().set_file_loader(Box::new(loader));
         Compilation::Continue
     }
 
@@ -837,6 +901,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         let r_type = self.r_type;
         let is_full = self.is_full;
         let node_to_find = self.node_to_find;
+        let input = self.root.clone();
 
         let mut control = driver::CompileController::basic();
         if is_full {
@@ -865,6 +930,18 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         },
                         _ => {}
                     }
+
+                    let src;
+                    src = state.session.codemap().get_filemap(&input[..])
+                                                 .src
+                                                 .as_ref()
+                                                 .unwrap()
+                                                 .as_bytes()
+                                                 .to_vec();
+                    // need to distinguish internal errors
+
+                    //let mut rdr = &src[..];
+                    //let mut out = Vec::new();
 
                     // Build save walker
                     let output_file = match File::create(&"out.out") {
@@ -1087,5 +1164,28 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         };
 
         control
+    }
+}
+
+// Extract output directory and file from matches.
+fn make_output(matches: &getopts::Matches) -> (Option<PathBuf>, Option<PathBuf>) {
+    let odir = matches.opt_str("out-dir").map(|o| PathBuf::from(&o));
+    let ofile = matches.opt_str("o").map(|o| PathBuf::from(&o));
+    (odir, ofile)
+}
+
+// Extract input (string or file and optional path) from matches.
+fn make_input(free_matches: &[String]) -> Option<(Input, Option<PathBuf>)> {
+    if free_matches.len() == 1 {
+        let ifile = &free_matches[0][..];
+        if ifile == "-" {
+            let mut src = String::new();
+            io::stdin().read_to_string(&mut src).unwrap();
+            Some((Input::Str(src), None))
+        } else {
+            Some((Input::File(PathBuf::from(ifile)), Some(PathBuf::from(ifile))))
+        }
+    } else {
+        None
     }
 }
