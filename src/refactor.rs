@@ -6,7 +6,8 @@ use rustc::ast_map;
 use rustc::ast_map::Node::*;
 use rustc::session::{self, Session};
 use rustc::session::config::{self, Input};
-use rustc_driver::{driver, CompilerCalls, Compilation, RustcDefaultCalls, monitor, handle_options, diagnostics_registry};
+use rustc_driver::{CompilerCalls, Compilation, diagnostics_registry, driver,
+                   handle_options, monitor, RustcDefaultCalls};
 use rustc_driver::pretty::{PpMode, PpSourceMode};
 use rustc::metadata::creader::CrateReader;
 use rustc_resolve as resolve;
