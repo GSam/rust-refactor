@@ -79,7 +79,7 @@ pub fn rename_variable(input_file: &str,
     let node: NodeId = rename_var.parse().unwrap();
 
     match run_compiler_resolution(String::from_str(input_file), None, //Some(filename, String::from_str(input)),
-                                  RefactorType::Variable, String::from_str(new_name),
+                                  None, RefactorType::Variable, String::from_str(new_name),
                                   node, false) {
         Ok(()) => {
             debug!("GOOD");
@@ -127,7 +127,7 @@ pub fn rename_variable(input_file: &str,
                             }
 
                             match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
-                                                          RefactorType::Variable, String::from_str(new_name),
+                                                          None, RefactorType::Variable, String::from_str(new_name),
                                                           node, true) {
                                 Ok(()) => {
                                     debug!("Unexpected success!");
@@ -189,7 +189,7 @@ pub fn rename_type(input_file: &str,
         }
     }
     let filename = filename;
-    match run_compiler_resolution(input_file_str, None, RefactorType::Type,
+    match run_compiler_resolution(input_file_str, None, None, RefactorType::Type,
                                   String::from_str(new_name), node, false) {
         Ok(()) => {},
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
@@ -225,7 +225,7 @@ pub fn rename_type(input_file: &str,
             }
 
             match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
-                                          RefactorType::Variable, String::from_str(new_name),
+                                          None, RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
                     debug!("Unexpected success!");
@@ -269,7 +269,7 @@ pub fn rename_function(input_file: &str,
         }
     }
     let filename = filename;
-    match run_compiler_resolution(input_file_str, None, RefactorType::Function,
+    match run_compiler_resolution(input_file_str, None, None, RefactorType::Function,
                                   String::from_str(new_name), node, false) {
         Ok(()) => {},
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
@@ -306,7 +306,7 @@ pub fn rename_function(input_file: &str,
             }
 
             match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
-                                          RefactorType::Variable, String::from_str(new_name),
+                                          None, RefactorType::Variable, String::from_str(new_name),
                                           node, true) {
                 Ok(()) => {
                     debug!("Unexpected success!");
@@ -348,7 +348,7 @@ pub fn inline_local(input_file: &str,
         }
     }
     let filename = filename;
-    let (x,y,z) = match run_compiler_resolution(input_file_str, None, RefactorType::InlineLocal,
+    let (x,y,z) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::InlineLocal,
                                   String::from_str(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
         Err(x) => { println!("{:?}", x); x }
@@ -370,7 +370,7 @@ fn check_reduced_graph(root: String, files: Vec<(String, String)>,
                        new_name: String, node: NodeId)
                        -> Result<(), Response> {
 
-    match run_compiler_resolution(root, Some(files), RefactorType::Reduced, new_name, node, false) {
+    match run_compiler_resolution(root, Some(files), None, RefactorType::Reduced, new_name, node, false) {
         Ok(()) => Ok(()),
         Err(x) => Err(Response::Conflict)
 
@@ -379,6 +379,7 @@ fn check_reduced_graph(root: String, files: Vec<(String, String)>,
 
 fn run_compiler_resolution(root: String,
                            file_override: Option<Vec<(String, String)>>,
+                           working_file: Option<String>,
                            kind: RefactorType,
                            new_name: String,
                            node: NodeId,
@@ -398,20 +399,22 @@ fn run_compiler_resolution(root: String,
     };
 
     let mut loader = ReplaceLoader::new();
-    let mut changed_file = String::from("");
     match file_override.as_ref() {
         Some(input) => {
             for file in input.iter() {
                 loader.add_file(file.0.clone(), file.1.clone());
-                changed_file = file.0.clone();
             }
         },
         None => ()
     }
 
     thread::catch_panic(move || {
-        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override, changed_file, full);
-        monitor(move || run_compiler(&args, &mut call_ctxt, Box::new(loader)));
+        let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override,
+                                               working_file, full);
+        match kind {
+            RefactorType::InlineLocal => run_compiler(&args, &mut call_ctxt, Box::new(loader)),
+            _ => monitor(move || run_compiler(&args, &mut call_ctxt, Box::new(loader)))
+        }
     }).map_err(|any|
         *any.downcast().ok().unwrap_or_default()
     )
@@ -836,7 +839,7 @@ struct RefactorCalls {
     new_name: String,
     node_to_find: NodeId,
     input: Option<Vec<(String, String)>>,
-    root: String,
+    working_file: Option<String>,
     is_full: bool,
 }
 
@@ -845,7 +848,7 @@ impl RefactorCalls {
            new_name: String,
            node: NodeId,
            new_file: Option<Vec<(String, String)>>,
-           root: String,
+           working_file: Option<String>,
            is_full: bool)
            -> RefactorCalls {
         RefactorCalls {
@@ -854,7 +857,7 @@ impl RefactorCalls {
             new_name: new_name,
             node_to_find: node,
             input: new_file,
-            root: root,
+            working_file: working_file,
             is_full: is_full,
         }
     }
@@ -902,7 +905,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         let r_type = self.r_type;
         let is_full = self.is_full;
         let node_to_find = self.node_to_find;
-        let input = self.root.clone();
+        let input = self.working_file.clone().unwrap();
 
         let mut control = driver::CompileController::basic();
         if is_full {
