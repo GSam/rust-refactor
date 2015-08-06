@@ -23,7 +23,8 @@ use syntax::fold::Folder;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
 use syntax::parse::token;
-use syntax::print::pprust;
+use syntax::print::pprust::{self, State};
+use syntax::print::pp::{eof};
 use syntax::ptr::P;
 use std::collections::HashMap;
 use std::env;
@@ -929,9 +930,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     }
 
                     let mut parent = None;
+                    let mut other = None;
                     match ast_map.get(ast_map.get_parent(node_to_find)) {
                         NodeItem(ref item) => {
                             parent = Some(P((*item).clone()));
+                            other = Some((*item).clone());
                             debug!("{:?}", pprust::item_to_string(item));
                         },
                         _ => {}
@@ -946,9 +949,31 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                                  .to_vec();
                     // need to distinguish internal errors
 
-                    //let mut rdr = &src[..];
-                    //let mut out = Vec::new();
+                    let mut rdr = &src[..];
+                    let mut out = Vec::new();
+                    {
+                        let mut out_borrow: &mut Write = &mut out;
+                        let ann = pprust::NoAnn;
 
+                        let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr, box out_borrow, &ann, true);
+
+                        if let Some(other) = other {
+                            debug!("ABOUT TO PRINT");
+                            let v = pp_state.print_item(&other);
+                            //debug!("{:?}", v);
+                        //    pp_state.print_mod(&krate.module, &krate.attrs);
+                        }
+                        eof(&mut pp_state.s);
+                    }
+                    out.flush();
+                    debug!("{:?}", out);
+                    {
+                        let mut out_borrow: &mut Write = &mut out;
+                        let ann = pprust::NoAnn;
+                        pprust::print_crate(state.session.codemap(), state.session.diagnostic(), &krate, input.clone(), &mut rdr, box out_borrow, &ann, true);
+                    }
+
+                    debug!("{:?}", out);
                     // Build save walker
                     let output_file = match File::create(&"out.out") {
                         Ok(f) => box f,
