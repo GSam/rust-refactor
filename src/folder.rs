@@ -2,7 +2,7 @@ use trans::save::{generated_code, recorder, SaveContext, Data};
 
 use rustc::session::Session;
 
-use syntax::codemap::{Span, Spanned};
+use syntax::codemap::{Span, Spanned, NO_EXPANSION};
 use rustc::middle::def;
 use rustc::middle::ty;
 use syntax::fold::Folder;
@@ -22,6 +22,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
 
     node_to_find: NodeId,
     to_replace: Option<P<Expr>>,
+    pub usages: u32,
 }
 
 impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
@@ -38,7 +39,8 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             span: span_utils.clone(),
 
             node_to_find: node_to_find,
-            to_replace: None
+            to_replace: None,
+            usages: 0
         }
     }
 
@@ -64,8 +66,11 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
                     id: NodeId,
                     path: &Path,
                     ref_kind: Option<recorder::Row>) -> bool {
+        let mut not_generated = path.clone();
+        let mut path = path;
         if generated_code(path.span) {
-            return false;
+            not_generated.span = Span { lo: path.span.lo, hi: path.span.hi, expn_id: NO_EXPANSION };
+            path = &not_generated;
         }
 
         let path_data = self.save_ctxt.get_path_data(id, path);
@@ -87,6 +92,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
                                                     vrd.scope);*/
                 let DefId { krate, node } = vrd.ref_id;
                 if krate == LOCAL_CRATE && node  == self.node_to_find {
+                    self.usages += 1;
                     return true;
                 }
             }

@@ -962,6 +962,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         //let mut visitor = DumpCsvVisitor::new(tcx, anal, output_file);
                         let mut folder = InlineFolder::new(tcx, anal, node_to_find);
                         debug!("{:?}", Vec::from_iter(folder.fold_item(par.clone()).into_iter()));
+                        debug!("Number of usages: {}", folder.usages);
                         panic!((outer_span.lo.to_usize(), outer_span.hi.to_usize(), pprust::item_to_string(folder.fold_item(par).get(0))));
                         //visit::walk_crate(&mut visitor, &krate);
                     }
