@@ -411,6 +411,8 @@ fn run_compiler_resolution(root: String,
     thread::catch_panic(move || {
         let mut call_ctxt = RefactorCalls::new(kind, new_name, node, file_override,
                                                working_file, full);
+        // Calling monitor fixes a bug where this process is put into an
+        // invalid (logging) state.
         match kind {
             RefactorType::InlineLocal => run_compiler(&args, &mut call_ctxt, Box::new(loader)),
             _ => monitor(move || run_compiler(&args, &mut call_ctxt, Box::new(loader)))
@@ -905,7 +907,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         let r_type = self.r_type;
         let is_full = self.is_full;
         let node_to_find = self.node_to_find;
-        let input = self.working_file.clone().unwrap();
+        let input = self.working_file.clone().unwrap_or_default();
 
         let mut control = driver::CompileController::basic();
         if is_full {
