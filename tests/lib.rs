@@ -696,3 +696,15 @@ fn multi_file_2() {
     }
 
 }
+
+#[test]
+fn working_inline_1() {
+    let file = "tests/inline/inline_single.rs";
+    let output = read_to_string("tests/inline/inline_single_out.rs");
+    let analysis = read_to_string("tests/inline/inline_single.csv");
+
+    match refactor::refactor::inline_local(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
