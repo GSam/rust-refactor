@@ -9,7 +9,7 @@ use rustc::session::config::{self, Input};
 use rustc_driver::{CompilerCalls, Compilation, diagnostics_registry, driver,
                    handle_options, monitor, RustcDefaultCalls};
 use rustc_driver::pretty::{PpMode, PpSourceMode};
-use rustc::metadata::creader::CrateReader;
+use rustc::metadata::creader::LocalCrateReader;
 use rustc_resolve as resolve;
 use rustc::lint;
 use rustc_lint;
@@ -41,7 +41,6 @@ use strings::src_rope::Rope;
 
 use loader::ReplaceLoader;
 use folder::InlineFolder;
-use save_walker::DumpCsvVisitor;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -1001,10 +1000,10 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
         control.after_write_deps.stop = Compilation::Stop;
         control.after_write_deps.callback = box move |state| {
-            let krate =  state.expanded_crate.unwrap().clone();
+            let krate = state.expanded_crate.unwrap().clone();
             let ast_map = state.ast_map.unwrap();
             let krate = ast_map.krate();
-            CrateReader::new(&state.session).read_crates(krate);
+            LocalCrateReader::new(&state.session, &ast_map).read_crates(krate);
             let lang_items = lang_items::collect_language_items(krate, &state.session);
             /*let resolve::CrateMap {
                 def_map,
