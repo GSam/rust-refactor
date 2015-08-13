@@ -46,7 +46,10 @@ use folder::InlineFolder;
 pub enum Response {
     Error,
     Conflict,
+    Possible,
 }
+
+type ErrorCode = i32;
 
 pub fn rename_variable(input_file: &str,
                        analysis: &str,
@@ -348,7 +351,7 @@ pub fn inline_local(input_file: &str,
         }
     }
     let filename = filename;
-    let (x,y,z) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::InlineLocal,
+    let (x,y,z,_) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::InlineLocal,
                                   String::from_str(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
         Err(x) => { println!("{:?}", x); x }
@@ -386,7 +389,7 @@ fn run_compiler_resolution(root: String,
                            new_name: String,
                            node: NodeId,
                            full: bool)
-                           -> Result<(), (usize, usize, String)> {
+                           -> Result<(), (usize, usize, String, ErrorCode)> {
     let key = "RUST_FOLDER";
     let mut path = String::new();
     let args = match env::var(key) {
@@ -1010,7 +1013,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         debug!("{:?}", out);
                         let hi_pos = state.session.codemap().lookup_byte_offset(outer_span.hi).pos.to_usize();
                         let lo_pos = state.session.codemap().lookup_byte_offset(outer_span.lo).pos.to_usize();
-                        panic!((lo_pos, hi_pos, String::from_utf8(out).ok().expect("Pretty printer didn't output UTF-8")));
+                        panic!((lo_pos, hi_pos, String::from_utf8(out).ok().expect("Pretty printer didn't output UTF-8"), 0));
                         //pprust::item_to_string(folder.fold_item(par).get(0))
                         //visit::walk_crate(&mut visitor, &krate);
                     }
