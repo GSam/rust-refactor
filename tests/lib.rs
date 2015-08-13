@@ -708,3 +708,15 @@ fn working_inline_1() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn working_field_1() {
+    let file = "tests/field/simple_field.rs";
+    let output = read_to_string("tests/field/simple_field_out.rs");
+    let analysis = read_to_string("tests/field/simple_field.csv");
+
+    match refactor::refactor::rename_variable(&file, &analysis, "z", "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
