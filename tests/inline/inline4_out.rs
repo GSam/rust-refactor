@@ -1,0 +1,1 @@
+fn main() { let _ = (1 + 2) as usize; }
