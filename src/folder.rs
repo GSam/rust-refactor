@@ -1,3 +1,4 @@
+
 use trans::save::{generated_code, recorder, SaveContext, Data};
 
 use rustc::session::Session;
@@ -17,9 +18,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     sess: &'l Session,
     tcx: &'l ty::ctxt<'tcx>,
     analysis: &'l ty::CrateAnalysis,
-
     span: SpanUtils<'l>,
-
     node_to_find: NodeId,
     to_replace: Option<P<Expr>>,
     pub usages: u32,
@@ -37,10 +36,9 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             save_ctxt: SaveContext::from_span_utils(tcx, span_utils.clone()),
             analysis: analysis,
             span: span_utils.clone(),
-
             node_to_find: node_to_find,
             to_replace: None,
-            usages: 0
+            usages: 0,
         }
     }
 
@@ -62,10 +60,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         })
     }
 
-    fn process_path(&mut self,
-                    id: NodeId,
-                    path: &Path,
-                    ref_kind: Option<recorder::Row>) -> bool {
+    fn process_path(&mut self, id: NodeId, path: &Path, ref_kind: Option<recorder::Row>) -> bool {
         let mut not_generated = path.clone();
         let mut path = path;
         if generated_code(path.span) {

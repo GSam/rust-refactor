@@ -24,7 +24,7 @@ use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
 use syntax::parse::token;
 use syntax::print::pprust::{self, State};
-use syntax::print::pp::{eof};
+use syntax::print::pp::eof;
 use syntax::ptr::P;
 use std::collections::HashMap;
 use std::env;
@@ -366,8 +366,10 @@ pub fn inline_local(input_file: &str,
     Ok(output)
 }
 
-fn check_reduced_graph(root: String, files: Vec<(String, String)>,
-                       new_name: String, node: NodeId)
+fn check_reduced_graph(root: String,
+                       files: Vec<(String, String)>,
+                       new_name: String,
+                       node: NodeId)
                        -> Result<(), Response> {
 
     match run_compiler_resolution(root, Some(files), None, RefactorType::Reduced, new_name, node, false) {
@@ -422,8 +424,7 @@ fn run_compiler_resolution(root: String,
     )
 }
 
-fn run_compiler<'a>(args: &[String],
-                    callbacks: &mut CompilerCalls<'a>, loader: Box<FileLoader>) {
+fn run_compiler<'a>(args: &[String], callbacks: &mut CompilerCalls<'a>, loader: Box<FileLoader>) {
     macro_rules! do_or_return {($expr: expr) => {
         match $expr {
             Compilation::Stop => return,
