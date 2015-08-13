@@ -6,10 +6,11 @@ use rustc::session::Session;
 use syntax::codemap::{Span, Spanned, NO_EXPANSION};
 use rustc::middle::def;
 use rustc::middle::ty;
+use syntax::ast::*;
 use syntax::fold::Folder;
 use syntax::fold::noop_fold_expr;
 use syntax::ptr::P;
-use syntax::ast::*;
+use syntax::visit::{self, Visitor};
 use syntax::util::small_vector::SmallVector;
 use trans::save::span_utils::SpanUtils;
 
@@ -23,6 +24,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     to_replace: Option<P<Expr>>,
     pub usages: u32,
     pub mutable: bool,
+    pub paths: Vec<Path>,
 }
 
 impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
@@ -41,6 +43,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             to_replace: None,
             usages: 0,
             mutable: false,
+            paths: Vec::new(),
         }
     }
 
@@ -49,6 +52,8 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         d.and_then(|Spanned {node, span}| match node {
             DeclLocal(ref l) if l.pat.id == self.node_to_find => {
                 self.to_replace = l.init.clone();
+                l.init.clone().unwrap().and_then(|expr|{visit::walk_expr(self, &expr);});
+//                visit::walk_expr(self, &*l.init.unwrap());
                 match l.pat.node {
                     PatIdent(ref binding, ref path, ref optpat) => {
                         self.mutable = match *binding {
@@ -162,13 +167,13 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
 }
 
 impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
-    fn visit_expr(&mut self, ex: &ast::Expr) {
+    fn visit_expr(&mut self, ex: &Expr) {
         match ex.node {
-            ast::ExprPath(_, ref path) => {
+            ExprPath(_, ref path) => {
                 self.process_path(ex.id, path, None);
                 visit::walk_expr(self, ex);
             },
-            _ => visit::walk_expr(self, ex);
+            _ => visit::walk_expr(self, ex)
         }
     }
 }
