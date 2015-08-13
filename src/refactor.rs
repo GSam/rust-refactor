@@ -1008,8 +1008,9 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         }
                         out.flush();
                         debug!("{:?}", out);
-
-                        panic!((outer_span.lo.to_usize(), outer_span.hi.to_usize(), String::from_utf8(out).ok().expect("Pretty printer didn't output UTF-8")));
+                        let hi_pos = state.session.codemap().lookup_byte_offset(outer_span.hi).pos.to_usize();
+                        let lo_pos = state.session.codemap().lookup_byte_offset(outer_span.lo).pos.to_usize();
+                        panic!((lo_pos, hi_pos, String::from_utf8(out).ok().expect("Pretty printer didn't output UTF-8")));
                         //pprust::item_to_string(folder.fold_item(par).get(0))
                         //visit::walk_crate(&mut visitor, &krate);
                     }
