@@ -17,7 +17,7 @@ use rustc::middle::lang_items;
 use rustc::middle::ty;
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
 use syntax::ast::NodeId;
-use syntax::ast::Item_::ItemImpl;
+use syntax::ast::Item_::{ItemImpl, ItemStruct};
 use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos};
 use syntax::fold::Folder;
 use syntax::ext::build::AstBuilder;
@@ -1051,24 +1051,27 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
             debug!("{:?}", token::str_to_ident(&new_name[..]));
             //let ast_node = ast_map.get(ast_map.get_parent(node_to_find));
             //println!("{:?}", ast_node);
-            let ast_node = ast_map.get(node_to_find);
-            debug!("{:?}", ast_node);
             debug!("{}", node_to_find);
+            let ast_node = ast_map.find(node_to_find);
+            debug!("{:?}", ast_node);
             debug!("{:?}", token::str_to_ident(&new_name[..]));
 
             // find current path and syntax context
             let mut syntax_ctx = 0;
-            match ast_node {
-                NodeLocal(pat) => {
-                    match pat.node {
-                        ast::PatIdent(_, path, _) => {
-                            syntax_ctx = path.node.ctxt;
-                        },
-                        _ => {}
-                    }
-                },
+            // If None, then it is probably a field.
+            if let Some(ast_node) = ast_node {
+                match ast_node {
+                    NodeLocal(pat) => {
+                        match pat.node {
+                            ast::PatIdent(_, path, _) => {
+                                syntax_ctx = path.node.ctxt;
+                            },
+                                _ => {}
+                        }
+                    },
 
-                _ => {}
+                        _ => {}
+                }
             }
 
             let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
@@ -1094,6 +1097,14 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                     if i.id == node_to_find {
                                         debug!("{:?}", i);
                                         debug!("Found node");
+                                        *resolved = true;
+                                        return true;
+                                    }
+                                }
+                            },
+                            ItemStruct(ref def, _) => {
+                                for field in def.fields.iter() {
+                                    if field.node.id == node_to_find {
                                         *resolved = true;
                                         return true;
                                     }
