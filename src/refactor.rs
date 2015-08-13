@@ -950,30 +950,36 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     let mut rdr = &src[..];
                     let mut out = Vec::new();
+                    let ann = pprust::NoAnn;
                     {
                         let mut out_borrow: &mut Write = &mut out;
-                        let ann = pprust::NoAnn;
-
                         let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr, box out_borrow, &ann, true);
 
                         if let Some(other) = other {
-                            debug!("ABOUT TO PRINT");
                             let v = pp_state.print_item(&other);
                             //debug!("{:?}", v);
-                        //    pp_state.print_mod(&krate.module, &krate.attrs);
+                            pp_state.print_mod(&krate.module, &krate.attrs);
                         }
                         eof(&mut pp_state.s);
                     }
                     out.flush();
                     debug!("{:?}", out);
-                    {
+                    /*{
                         let mut out_borrow: &mut Write = &mut out;
                         let ann = pprust::NoAnn;
                         pprust::print_crate(state.session.codemap(), state.session.diagnostic(), &krate, input.clone(), &mut rdr, box out_borrow, &ann, true);
                     }
+                    debug!("{:?}", out);*/
 
-                    debug!("{:?}", out);
                     // Build save walker
+                    let src2;
+                    src2 = state.session.codemap().get_filemap(&input[..])
+                                                 .src
+                                                 .as_ref()
+                                                 .unwrap()
+                                                 .as_bytes()
+                                                 .to_vec();
+                    let mut rdr2 = &src2[..];
                     let output_file = match File::create(&"out.out") {
                         Ok(f) => box f,
                         Err(e) => {
@@ -987,7 +993,23 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         let mut folder = InlineFolder::new(tcx, anal, node_to_find);
                         debug!("{:?}", Vec::from_iter(folder.fold_item(par.clone()).into_iter()));
                         debug!("Number of usages: {}", folder.usages);
-                        panic!((outer_span.lo.to_usize(), outer_span.hi.to_usize(), pprust::item_to_string(folder.fold_item(par).get(0))));
+
+                        let mut out = Vec::new();
+                        {
+                            let mut out_borrow: &mut Write = &mut out;
+                            let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr2, box out_borrow, &ann, true);
+
+                            pp_state.print_item(&folder.fold_item(par).get(0));
+                            //debug!("{:?}", v);
+                            //pp_state.print_mod(&krate.module, &krate.attrs);
+                            //pp_state.print_remaining_comments();
+                            eof(&mut pp_state.s);
+                        }
+                        out.flush();
+                        debug!("{:?}", out);
+
+                        panic!((outer_span.lo.to_usize(), outer_span.hi.to_usize(), String::from_utf8(out).ok().expect("Pretty printer didn't output UTF-8")));
+                        //pprust::item_to_string(folder.fold_item(par).get(0))
                         //visit::walk_crate(&mut visitor, &krate);
                     }
                 }
