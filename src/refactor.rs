@@ -998,6 +998,63 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         debug!("{:?}", Vec::from_iter(folder.fold_item(par.clone()).into_iter()));
                         debug!("Number of usages: {}", folder.usages);
 
+                        // First we want to ignore destructuring locals, this has issues with lifetimes + type info.
+                        // It should also actually BE a local, not just some variable-like item.
+                        // TODO
+                        // What about sensible destructors, operator overloading?
+                        if folder.usages <= 1 {
+                            // This is generally OK, unless the expression contains an impure function/constructor
+                            // e.g. let a = <changes external state>
+                            //      <change external state some other way>
+                            // Now if we move the first change after the second change, behaviour might change.
+                            // If doesn't matter here if we have copy, move, borrow etc.
+                            //
+                            // Due to uniqueness constraints in Rust, if there is just a single usage, there really
+                            // is just a single usage without any aliases.
+
+                            // BUT if we get a 'consider using a let binding error', then, we cannot inline.
+                        } else {
+                            // Otherwise, multiple references:
+                            //
+                            // If the variable is a direct alias, then it might be alright.
+                            // In this case, movements or borrows are irrelevant.
+                            // e.g. let a = 2;
+                            //      let b = a; // it doesn't matter if this is a copy
+                            //   or let a = &2;
+                            //      let b = a; // this duplicates the reference
+                            //   or let a = &mut 2;
+                            //      let b = a; // this moves &mut into b
+                            //   or let a = vec![0];
+                            //      let b = a; // this moves a into b
+                            // Whether or not a is inlined, it must follow the normal lifetime rules.
+                            // Whatever a refers to must exists for the right scopes.
+                            // However, you must check no one redeclares a in the meantime!
+
+                            if folder.mutable {
+                                debug!("IS MUTABLE");
+                            } else {
+                                debug!("IS NOT MUTABLE");
+                            }
+                            // Mutable case:
+                            // If the variable is mutable, inlining is a bad idea!!!
+                            // e.g. let mut a = 2;
+                            // a = 3; // Now the expression is made the lvalue, but this holds no meaning
+                            // Same again with *&mut a modifying the internal value.
+
+                            // CAVEAT:
+                            // If the mutable was never used, then it might be fine again.
+
+                            // Immutable case:
+                            // If the final type implements the copy trait, then this should always be OK!
+                            // Either way check which paths compose the initializer and ensure they resolve
+                            // to the same item at the new call site.
+                            // e.g. b = 2;
+                            // let a = b + c
+                            // let b = 3;
+                            // println!("{}", a);
+
+                        }
+
                         let mut out = Vec::new();
                         {
                             let mut out_borrow: &mut Write = &mut out;

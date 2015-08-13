@@ -22,6 +22,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     node_to_find: NodeId,
     to_replace: Option<P<Expr>>,
     pub usages: u32,
+    pub mutable: bool,
 }
 
 impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
@@ -39,6 +40,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             node_to_find: node_to_find,
             to_replace: None,
             usages: 0,
+            mutable: false,
         }
     }
 
@@ -47,6 +49,16 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         d.and_then(|Spanned {node, span}| match node {
             DeclLocal(ref l) if l.pat.id == self.node_to_find => {
                 self.to_replace = l.init.clone();
+                match l.pat.node {
+                    PatIdent(ref binding, ref path, ref optpat) => {
+                        self.mutable = match *binding {
+                            BindByRef(MutMutable) => true,
+                            BindByValue(MutMutable) => true,
+                            _ => false
+                        };
+                    },
+                    _ => ()
+                }
                 SmallVector::zero()
             },
             DeclLocal(l) => SmallVector::one(P(Spanned {
@@ -148,3 +160,16 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
         })
     }
 }
+
+impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
+    fn visit_expr(&mut self, ex: &ast::Expr) {
+        match ex.node {
+            ast::ExprPath(_, ref path) => {
+                self.process_path(ex.id, path, None);
+                visit::walk_expr(self, ex);
+            },
+            _ => visit::walk_expr(self, ex);
+        }
+    }
+}
+
