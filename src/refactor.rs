@@ -1060,6 +1060,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
             // find current path and syntax context
             let mut syntax_ctx = 0;
             // If None, then it is probably a field.
+            // TODO fields have no super/sub-block conflict
+            // Can we remove the compiler runs afterwards?
             if let Some(ast_node) = ast_node {
                 match ast_node {
                     NodeLocal(pat) => {
