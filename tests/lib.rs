@@ -408,6 +408,19 @@ fn working_struct_2() {
 }
 
 #[test]
+fn working_struct_3() {
+    // Tuple struct
+    let file = "tests/type/tuple_struct.rs";
+    let output = read_to_string("tests/type/tuple_struct_out.rs");
+    let analysis = read_to_string("tests/type/tuple_struct.csv");
+
+    match refactor::refactor::rename_type(&file, &analysis, "Pointer", "4") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn working_enum_1() {
     let file = "tests/type/basic_enum.rs";
     let output = read_to_string("tests/type/working_enum_1_out.rs");
