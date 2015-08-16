@@ -792,3 +792,14 @@ fn working_field_1() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn prevented_field_1() {
+    let file = "tests/field/simple_field.rs";
+    let analysis = read_to_string("tests/field/simple_field.csv");
+
+    match refactor::refactor::rename_variable(&file, &analysis, "y", "5") {
+        Ok(_) => assert!(false),
+        Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
