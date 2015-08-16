@@ -1002,6 +1002,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         // It should also actually BE a local, not just some variable-like item.
                         // TODO
                         // What about sensible destructors, operator overloading?
+                        // BUT if we get a 'consider using a let binding error', then, we cannot inline.
                         if folder.usages <= 1 {
                             // This is generally OK, unless the expression contains an impure function/constructor
                             // e.g. let a = <changes external state>
@@ -1012,7 +1013,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // Due to uniqueness constraints in Rust, if there is just a single usage, there really
                             // is just a single usage without any aliases.
 
-                            // BUT if we get a 'consider using a let binding error', then, we cannot inline.
                         } else {
                             // Otherwise, multiple references:
                             //
@@ -1030,20 +1030,20 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // Whatever a refers to must exists for the right scopes.
                             // However, you must check no one redeclares a in the meantime!
 
-                            if folder.mutable {
-                                debug!("IS MUTABLE");
-                            } else {
-                                debug!("IS NOT MUTABLE");
-                            }
                             // Mutable case:
                             // If the variable is mutable, inlining is a bad idea!!!
                             // e.g. let mut a = 2;
                             // a = 3; // Now the expression is made the lvalue, but this holds no meaning
                             // Same again with *&mut a modifying the internal value.
-
+                            let used_mutables = tcx.used_mut_nodes.borrow();
                             // CAVEAT:
-                            // If the mutable was never used, then it might be fine again.
+                            // If the mutable was never used, then it should be considered mutable.
+                            if folder.mutable && used_mutables.contains(&node_to_find) {
+                                debug!("IS MUTABLE");
+                                return;
+                            }
 
+                            debug!("IS NOT MUTABLE");
                             // Immutable case:
                             // If the final type implements the copy trait, then this should always be OK!
                             // Either way check which paths compose the initializer and ensure they resolve
