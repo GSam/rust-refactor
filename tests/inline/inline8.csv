@@ -1,0 +1,12 @@
+crate,file_name,"tests/inline/inline8.rs",file_line,1,file_col,0,extent_start,0,extent_start_bytes,0,file_line_end,4,file_col_end,0,extent_end,97,extent_end_bytes,97,name,"unknown_crate"
+external_crate,name,"alloc",crate,"5",file_name,"tests/inline/inline8.rs"
+external_crate,name,"rand",crate,"7",file_name,"tests/inline/inline8.rs"
+external_crate,name,"std",crate,"1",file_name,"tests/inline/inline8.rs"
+external_crate,name,"collections",crate,"3",file_name,"tests/inline/inline8.rs"
+external_crate,name,"rustc_unicode",crate,"4",file_name,"tests/inline/inline8.rs"
+external_crate,name,"libc",crate,"6",file_name,"tests/inline/inline8.rs"
+external_crate,name,"core",crate,"2",file_name,"tests/inline/inline8.rs"
+end_external_crates
+function,file_name,"tests/inline/inline8.rs",file_line,1,file_col,3,extent_start,3,extent_start_bytes,3,file_line_end,1,file_col_end,7,extent_end,7,extent_end_bytes,7,id,"4",qualname,"::main",declid,"",declidcrate,"",scopeid,"0"
+variable,file_name,"tests/inline/inline8.rs",file_line,2,file_col,8,extent_start,20,extent_start_bytes,20,file_line_end,2,file_col_end,9,extent_end,21,extent_end_bytes,21,id,"9",name,"a",qualname,"a$9",value,"a = /* comment */ 2 + 1",type,"i32",scopeid,"0"
+var_ref,file_name,"tests/inline/inline8.rs",file_line,3,file_col,26,extent_start,90,extent_start_bytes,90,file_line_end,3,file_col_end,27,extent_end,91,extent_end_bytes,91,refid,"9",refidcrate,"0",qualname,"",scopeid,"6"
