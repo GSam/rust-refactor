@@ -795,6 +795,23 @@ fn working_inline_7() {
 }
 
 #[test]
+fn working_inline_8() {
+    // Multi-file
+    let file = "tests/multi-file/simple_inline_1/main.rs";
+    let changed = "tests/multi-file/simple_inline_1/foo.rs";
+    let output = read_to_string("tests/multi-file/simple_inline_1/foo_out.rs");
+    let analysis = read_to_string("tests/multi-file/simple_inline_1/main.csv");
+
+    match refactor::refactor::inline_local(&file, &analysis, "11") {
+        Ok(x) => {
+            assert_eq!(output.trim(), x.get(changed).unwrap().trim());
+        },
+        Err(_) => assert!(false)
+    }
+
+}
+
+#[test]
 fn working_field_1() {
     let file = "tests/field/simple_field.rs";
     let output = read_to_string("tests/field/simple_field_out.rs");
