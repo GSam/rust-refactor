@@ -4,7 +4,7 @@ use trans::save::{generated_code, recorder, SaveContext, Data};
 use rustc::session::Session;
 
 use rustc::ast_map;
-use rustc::middle::def;
+use rustc::middle::def::{self, PathResolution};
 use rustc::middle::ty;
 use rustc_resolve as resolve;
 use syntax::ast::*;
@@ -27,6 +27,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     pub usages: u32,
     pub mutable: bool,
     pub paths: Vec<Path>,
+    pub base_def: Option<def::Def>,
 }
 
 impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
@@ -46,6 +47,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             usages: 0,
             mutable: false,
             paths: Vec::new(),
+            base_def: None,
         }
     }
 
@@ -175,7 +177,9 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                     if self.process_path(e.id, path, None) {
                         // Run the resolver to get the defid
                         visit::walk_crate(&mut resolver, &self.tcx.map.krate());
-                        resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true);
+                        let PathResolution {base_def, ..} = resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true).unwrap();
+                        debug!("BASEDEF {:?}", base_def);
+                        self.base_def = Some(base_def);
                         let next = self.to_replace.clone();
                         if let Some(replace) = next {
                             return (*replace).clone()
