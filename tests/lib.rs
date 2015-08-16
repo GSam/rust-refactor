@@ -746,6 +746,42 @@ fn working_inline_4() {
 }
 
 #[test]
+fn working_inline_5() {
+    let file = "tests/inline/inline6.rs";
+    let output = read_to_string("tests/inline/inline6_out.rs");
+    let analysis = read_to_string("tests/inline/inline6.csv");
+
+    match refactor::refactor::inline_local(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_inline_6() {
+    let file = "tests/inline/inline7.rs";
+    let output = read_to_string("tests/inline/inline7_out.rs");
+    let analysis = read_to_string("tests/inline/inline7.csv");
+
+    match refactor::refactor::inline_local(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_inline_7() {
+    let file = "tests/inline/inline8.rs";
+    let output = read_to_string("tests/inline/inline8_out.rs");
+    let analysis = read_to_string("tests/inline/inline8.csv");
+
+    match refactor::refactor::inline_local(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn working_field_1() {
     let file = "tests/field/simple_field.rs";
     let output = read_to_string("tests/field/simple_field_out.rs");
