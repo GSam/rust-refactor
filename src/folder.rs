@@ -57,8 +57,9 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         d.and_then(|Spanned {node, span}| match node {
             DeclLocal(ref l) if l.pat.id == self.node_to_find => {
                 self.to_replace = l.init.clone();
-                l.init.clone().unwrap().and_then(|expr|{visit::walk_expr(self, &expr);});
-//                visit::walk_expr(self, &*l.init.unwrap());
+                l.init.clone().unwrap().and_then(
+                    |expr|{ visit::walk_expr(self, &expr); }
+                );
                 match l.pat.node {
                     PatIdent(ref binding, ref path, ref optpat) => {
                         self.mutable = match *binding {
@@ -223,8 +224,22 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
             ExprPath(_, ref path) => {
                 self.process_path(ex.id, path, None);
                 visit::walk_crate(&mut resolver, &self.tcx.map.krate());
-                let PathResolution {base_def, ..} = resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true).unwrap();
-                self.paths.insert(path.clone(), base_def);
+                let resolution = resolver.resolve_path(self.node_to_find, &path,
+                                                       0, resolve::Namespace::ValueNS,
+                                                       true);
+                if let Some(resolution) = resolution {
+                    let PathResolution {base_def, ..} = resolution;
+                    self.paths.insert(path.clone(), base_def);
+                }
+
+                let resolution = resolver.resolve_path(self.node_to_find, &path,
+                                                       0, resolve::Namespace::TypeNS,
+                                                       true);
+                if let Some(resolution) = resolution {
+                    let PathResolution {base_def, ..} = resolution;
+                    self.paths.insert(path.clone(), base_def);
+                }
+
                 visit::walk_expr(self, ex);
             },
             _ => visit::walk_expr(self, ex)
