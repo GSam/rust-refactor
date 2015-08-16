@@ -3,10 +3,12 @@ use trans::save::{generated_code, recorder, SaveContext, Data};
 
 use rustc::session::Session;
 
-use syntax::codemap::{Span, Spanned, NO_EXPANSION};
+use rustc::ast_map;
 use rustc::middle::def;
 use rustc::middle::ty;
+use rustc_resolve as resolve;
 use syntax::ast::*;
+use syntax::codemap::{Span, Spanned, NO_EXPANSION};
 use syntax::fold::Folder;
 use syntax::fold::noop_fold_expr;
 use syntax::ptr::P;
@@ -147,10 +149,33 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
     }
 
     fn fold_expr(&mut self, e: P<Expr>) -> P<Expr> {
+        let node_to_find = self.node_to_find;
+        let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
+                                                    &self.tcx.map.krate(),
+                                                    resolve::MakeGlobMap::No,
+            Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                if *resolved {
+                    return true;
+                }
+                match node {
+                    ast_map::NodeLocal(pat) => {
+                        if pat.id == node_to_find {
+                            *resolved = true;
+                            return true;
+                        }
+                    },
+                    _ => ()
+                }
+                false
+            }
+        )));
         e.map(|e| {
             match e.node {
                 ExprPath(ref q, ref path) => {
                     if self.process_path(e.id, path, None) {
+                        // Run the resolver to get the defid
+                        visit::walk_crate(&mut resolver, &self.tcx.map.krate());
+                        resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true);
                         let next = self.to_replace.clone();
                         if let Some(replace) = next {
                             return (*replace).clone()
@@ -171,6 +196,7 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
         match ex.node {
             ExprPath(_, ref path) => {
                 self.process_path(ex.id, path, None);
+                self.paths.push(path.clone());
                 visit::walk_expr(self, ex);
             },
             _ => visit::walk_expr(self, ex)
