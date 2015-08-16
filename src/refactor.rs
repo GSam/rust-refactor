@@ -338,8 +338,8 @@ pub fn inline_local(input_file: &str,
                     -> Result<HashMap<String, String>, Response> {
     let analyzed_data = init(analysis);
 
-    let dec_map = analyzed_data.func_map;
-    let ref_map = analyzed_data.func_ref_map;
+    let dec_map = analyzed_data.var_map;
+    let ref_map = analyzed_data.var_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from_str(input_file);
