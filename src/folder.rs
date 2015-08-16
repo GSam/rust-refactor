@@ -7,6 +7,7 @@ use rustc::ast_map;
 use rustc::middle::def::{self, PathResolution};
 use rustc::middle::ty;
 use rustc_resolve as resolve;
+use std::collections::HashMap;
 use syntax::ast::*;
 use syntax::codemap::{Span, Spanned, NO_EXPANSION};
 use syntax::fold::Folder;
@@ -26,7 +27,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     pub to_replace: Option<P<Expr>>,
     pub usages: u32,
     pub mutable: bool,
-    pub paths: Vec<Path>,
+    pub paths: HashMap<Path, def::Def>,
     pub base_def: Option<def::Def>,
 }
 
@@ -46,7 +47,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             to_replace: None,
             usages: 0,
             mutable: false,
-            paths: Vec::new(),
+            paths: HashMap::new(),
             base_def: None,
         }
     }
@@ -151,30 +152,31 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
     }
 
     fn fold_expr(&mut self, e: P<Expr>) -> P<Expr> {
-        let node_to_find = self.node_to_find;
-        let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
-                                                    &self.tcx.map.krate(),
-                                                    resolve::MakeGlobMap::No,
-            Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
-                if *resolved {
-                    return true;
-                }
-                match node {
-                    ast_map::NodeLocal(pat) => {
-                        if pat.id == node_to_find {
-                            *resolved = true;
-                            return true;
-                        }
-                    },
-                    _ => ()
-                }
-                false
-            }
-        )));
+        debug!("{:?}", e);
         e.map(|e| {
             match e.node {
                 ExprPath(ref q, ref path) => {
                     if self.process_path(e.id, path, None) {
+                        let node_to_find = self.node_to_find;
+                        let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
+                                                                    &self.tcx.map.krate(),
+                                                                    resolve::MakeGlobMap::No,
+                            Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                                if *resolved {
+                                    return true;
+                                }
+                                match node {
+                                    ast_map::NodeLocal(pat) => {
+                                        if pat.id == node_to_find {
+                                            *resolved = true;
+                                            return true;
+                                        }
+                                    },
+                                    _ => ()
+                                }
+                                false
+                            }
+                        )));
                         // Run the resolver to get the defid
                         visit::walk_crate(&mut resolver, &self.tcx.map.krate());
                         let PathResolution {base_def, ..} = resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true).unwrap();
@@ -197,10 +199,32 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
 
 impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
     fn visit_expr(&mut self, ex: &Expr) {
+        let node_to_find = self.node_to_find;
+        let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
+                                                    &self.tcx.map.krate(),
+                                                    resolve::MakeGlobMap::No,
+            Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
+                if *resolved {
+                    return true;
+                }
+                match node {
+                    ast_map::NodeLocal(pat) => {
+                        if pat.id == node_to_find {
+                            *resolved = true;
+                            return true;
+                        }
+                    },
+                    _ => ()
+                }
+                false
+            }
+        )));
         match ex.node {
             ExprPath(_, ref path) => {
                 self.process_path(ex.id, path, None);
-                self.paths.push(path.clone());
+                visit::walk_crate(&mut resolver, &self.tcx.map.krate());
+                let PathResolution {base_def, ..} = resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true).unwrap();
+                self.paths.insert(path.clone(), base_def);
                 visit::walk_expr(self, ex);
             },
             _ => visit::walk_expr(self, ex)
