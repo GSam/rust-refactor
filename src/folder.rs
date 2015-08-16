@@ -21,7 +21,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     analysis: &'l ty::CrateAnalysis,
     span: SpanUtils<'l>,
     node_to_find: NodeId,
-    to_replace: Option<P<Expr>>,
+    pub to_replace: Option<P<Expr>>,
     pub usages: u32,
     pub mutable: bool,
     pub paths: Vec<Path>,

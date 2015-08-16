@@ -966,7 +966,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         }
                         eof(&mut pp_state.s);
                     }
-                    out.flush();
+                    let _ = out.flush();
                     debug!("{:?}", out);
                     /*{
                         let mut out_borrow: &mut Write = &mut out;
@@ -1029,19 +1029,29 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // Whether or not a is inlined, it must follow the normal lifetime rules.
                             // Whatever a refers to must exists for the right scopes.
                             // However, you must check no one redeclares a in the meantime!
+                            if let Some(ref to_replace) = folder.to_replace {
+                                match (**to_replace).node {
+                                    ast::ExprPath(..) => {
+                                        // Alias case:
 
-                            // Mutable case:
-                            // If the variable is mutable, inlining is a bad idea!!!
-                            // e.g. let mut a = 2;
-                            // a = 3; // Now the expression is made the lvalue, but this holds no meaning
-                            // Same again with *&mut a modifying the internal value.
-                            let used_mutables = tcx.used_mut_nodes.borrow();
-                            // CAVEAT:
-                            // If the mutable was never used, then it should be considered mutable.
-                            if folder.mutable && used_mutables.contains(&node_to_find) {
-                                debug!("IS MUTABLE");
-                                return;
+                                    },
+                                    _ => {
+                                        // Otherwise mutable case:
+                                        // If the variable is mutable, inlining is a bad idea!!!
+                                        // e.g. let mut a = 2;
+                                        // a = 3; // Now the expression is made the lvalue, but this holds no meaning
+                                        // Same again with *&mut a modifying the internal value.
+                                        let used_mutables = tcx.used_mut_nodes.borrow();
+                                        // CAVEAT:
+                                        // If the mutable was never used, then it should be considered mutable.
+                                        if folder.mutable && used_mutables.contains(&node_to_find) {
+                                            debug!("IS MUTABLE");
+                                            return;
+                                        }
+                                    }
+                                }
                             }
+
 
                             debug!("IS NOT MUTABLE");
                             // Immutable case:
@@ -1066,7 +1076,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             //pp_state.print_remaining_comments();
                             eof(&mut pp_state.s);
                         }
-                        out.flush();
+                        let _ = out.flush();
                         debug!("{:?}", out);
                         let hi_pos = state.session.codemap().lookup_byte_offset(outer_span.hi).pos.to_usize();
                         let lo_pos = state.session.codemap().lookup_byte_offset(outer_span.lo).pos.to_usize();
