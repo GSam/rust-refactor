@@ -710,6 +710,18 @@ fn working_inline_1() {
 }
 
 #[test]
+fn working_inline_2() {
+    let file = "tests/inline/inline3.rs";
+    let output = read_to_string("tests/inline/inline3_out.rs");
+    let analysis = read_to_string("tests/inline/inline3.csv");
+
+    match refactor::refactor::inline_local(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
 fn working_field_1() {
     let file = "tests/field/simple_field.rs";
     let output = read_to_string("tests/field/simple_field_out.rs");
