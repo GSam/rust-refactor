@@ -10,7 +10,9 @@ use rustc_resolve as resolve;
 use rustc_resolve::Namespace;
 use std::collections::HashMap;
 use syntax::ast::*;
-use syntax::codemap::{Span, Spanned, NO_EXPANSION};
+use syntax::codemap::{DUMMY_SP, Span, Spanned, NO_EXPANSION};
+use syntax::ext::{base, expand};
+use syntax::ext::build::AstBuilder;
 use syntax::fold::Folder;
 use syntax::fold::noop_fold_expr;
 use syntax::ptr::P;
@@ -61,7 +63,9 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
                 l.init.clone().unwrap().and_then(
                     |expr|{ visit::walk_expr(self, &expr); }
                 );
-                self.type_node_id = l.ty.clone().unwrap().id;
+                if let Some(def_type) = l.ty.as_ref() {
+                    self.type_node_id = def_type.id;
+                }
                 match l.pat.node {
                     PatIdent(ref binding, ref path, ref optpat) => {
                         self.mutable = match *binding {
@@ -161,6 +165,7 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                 ExprPath(ref q, ref path) => {
                     if self.process_path(e.id, path, None) {
                         let node_to_find = e.id;
+                        let s_ctx = path.segments[0].clone().identifier.ctxt;
                         let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
                                                                     &self.tcx.map.krate(),
                                                                     resolve::MakeGlobMap::No,
@@ -185,7 +190,23 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                         visit::walk_crate(&mut resolver, &self.tcx.map.krate());
                         debug!("DID RESOLVE");
                         for (path, def) in self.paths.iter() {
-                            let resolution = resolver.resolve_path(self.node_to_find, &path.0, 0, path.1, true);
+                            let mut resolution = None;
+                            // Syntax contexts prevent resolution at different places
+                            // Fix for the current simple variable case
+                            if path.1 == Namespace::ValueNS && path.0.segments.len() == 1 {
+                                let mut t = path.0.segments[0].clone().identifier;
+                                let krate = self.tcx.map.krate();
+                                let ps = &self.sess.parse_sess;
+
+                                let mut cx = base::ExtCtxt::new(ps, krate.config.clone(),
+                                                                expand::ExpansionConfig::default("".to_string()));
+
+                                t.ctxt = s_ctx;
+                                let path = cx.path(DUMMY_SP, vec![t]);
+                                resolution = resolver.resolve_path(self.node_to_find, &path, 0, Namespace::ValueNS, true);
+                            } else {
+                                resolution = resolver.resolve_path(self.node_to_find, &path.0, 0, path.1, true);
+                            }
                             if let Some(resolution) = resolution {
                                 let PathResolution {base_def, ..} = resolution;
                                 debug!("BASEDEF {:?}", base_def);
