@@ -7,6 +7,7 @@ use rustc::ast_map;
 use rustc::middle::def::{self, PathResolution};
 use rustc::middle::ty;
 use rustc_resolve as resolve;
+use rustc_resolve::Namespace;
 use std::collections::HashMap;
 use syntax::ast::*;
 use syntax::codemap::{Span, Spanned, NO_EXPANSION};
@@ -27,7 +28,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     pub to_replace: Option<P<Expr>>,
     pub usages: u32,
     pub mutable: bool,
-    pub paths: HashMap<Path, def::Def>,
+    pub paths: HashMap<(Path, Namespace), def::Def>,
     pub base_def: Option<def::Def>,
 }
 
@@ -158,7 +159,7 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
             match e.node {
                 ExprPath(ref q, ref path) => {
                     if self.process_path(e.id, path, None) {
-                        let node_to_find = self.node_to_find;
+                        let node_to_find = e.id;
                         let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
                                                                     &self.tcx.map.krate(),
                                                                     resolve::MakeGlobMap::No,
@@ -167,8 +168,8 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                                     return true;
                                 }
                                 match node {
-                                    ast_map::NodeLocal(pat) => {
-                                        if pat.id == node_to_find {
+                                    ast_map::NodeExpr(expr) => {
+                                        if expr.id == node_to_find {
                                             *resolved = true;
                                             return true;
                                         }
@@ -179,10 +180,21 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                             }
                         )));
                         // Run the resolver to get the defid
+                        debug!("DID RESOLVE");
                         visit::walk_crate(&mut resolver, &self.tcx.map.krate());
-                        let PathResolution {base_def, ..} = resolver.resolve_path(self.node_to_find, &path, 0, resolve::Namespace::ValueNS, true).unwrap();
-                        debug!("BASEDEF {:?}", base_def);
-                        self.base_def = Some(base_def);
+                        debug!("DID RESOLVE");
+                        for (path, def) in self.paths.iter() {
+                            let resolution = resolver.resolve_path(self.node_to_find, &path.0, 0, path.1, true);
+                            if let Some(resolution) = resolution {
+                                let PathResolution {base_def, ..} = resolution;
+                                debug!("BASEDEF {:?}", base_def);
+                                if base_def != *def {
+                                    debug!("OH DEAR, DEF IS NOW DIFFERENT");
+                                }
+                            } else {
+                                debug!("OH DEAR, NO DEF PRESENT");
+                            }
+                        }
                         let next = self.to_replace.clone();
                         if let Some(replace) = next {
                             return (*replace).clone()
@@ -222,14 +234,15 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
         )));
         match ex.node {
             ExprPath(_, ref path) => {
-                self.process_path(ex.id, path, None);
+                //self.process_path(ex.id, path, None);
                 visit::walk_crate(&mut resolver, &self.tcx.map.krate());
                 let resolution = resolver.resolve_path(self.node_to_find, &path,
-                                                       0, resolve::Namespace::ValueNS,
+                                                       0, Namespace::ValueNS,
                                                        true);
                 if let Some(resolution) = resolution {
                     let PathResolution {base_def, ..} = resolution;
-                    self.paths.insert(path.clone(), base_def);
+                    debug!("{:?}", base_def);
+                    self.paths.insert((path.clone(), Namespace::ValueNS), base_def);
                 }
 
                 let resolution = resolver.resolve_path(self.node_to_find, &path,
@@ -237,7 +250,8 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
                                                        true);
                 if let Some(resolution) = resolution {
                     let PathResolution {base_def, ..} = resolution;
-                    self.paths.insert(path.clone(), base_def);
+                    debug!("{:?}", base_def);
+                    self.paths.insert((path.clone(), Namespace::TypeNS), base_def);
                 }
 
                 visit::walk_expr(self, ex);
