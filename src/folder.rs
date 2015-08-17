@@ -29,7 +29,6 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     pub usages: u32,
     pub mutable: bool,
     pub paths: HashMap<(Path, Namespace), def::Def>,
-    pub base_def: Option<def::Def>,
 }
 
 impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
@@ -49,7 +48,6 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             usages: 0,
             mutable: false,
             paths: HashMap::new(),
-            base_def: None,
         }
     }
 
