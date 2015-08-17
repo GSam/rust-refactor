@@ -26,6 +26,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     span: SpanUtils<'l>,
     node_to_find: NodeId,
     pub to_replace: Option<P<Expr>>,
+    pub type_node_id: NodeId,
     pub usages: u32,
     pub mutable: bool,
     pub paths: HashMap<(Path, Namespace), def::Def>,
@@ -45,6 +46,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             span: span_utils.clone(),
             node_to_find: node_to_find,
             to_replace: None,
+            type_node_id: 0,
             usages: 0,
             mutable: false,
             paths: HashMap::new(),
@@ -59,6 +61,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
                 l.init.clone().unwrap().and_then(
                     |expr|{ visit::walk_expr(self, &expr); }
                 );
+                self.type_node_id = l.ty.clone().unwrap().id;
                 match l.pat.node {
                     PatIdent(ref binding, ref path, ref optpat) => {
                         self.mutable = match *binding {

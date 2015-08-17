@@ -1051,7 +1051,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                         // If there is a refcell, or interior mutability, then it really is mutable.
                                         let ty_cache = tcx.ast_ty_to_ty_cache.borrow();
                                         let interior_unsafe = 0b0000_0000__0000_0000__0010;
-                                        if let Some(node_ctx) = ty_cache.get(&node_to_find) {
+                                        if let Some(node_ctx) = ty_cache.get(&folder.type_node_id) {
+                                            debug!("BITS: {:?}", node_ctx.type_contents(tcx).bits);
                                             if node_ctx.type_contents(tcx).bits & interior_unsafe != 0 {
                                                 debug!("IS MUTABLE (REFCELL)");
                                                 return;
