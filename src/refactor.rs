@@ -1013,9 +1013,39 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // Due to uniqueness constraints in Rust, if there is just a single usage, there really
                             // is just a single usage without any aliases.
 
+                            // If any variables composing the initializer were redeclared in the meantime, return
+                            if folder.changed_paths {
+                                return;
+                            }
+
+
                         } else {
                             // Otherwise, multiple references:
-                            //
+
+                            // Mutable case:
+                            // If the variable is mutable, inlining is a bad idea!!!
+                            // e.g. let mut a = 2;
+                            // a = 3; // Now the expression is made the lvalue, but this holds no meaning
+                            // Same again with *&mut a modifying the internal value.
+                            let used_mutables = tcx.used_mut_nodes.borrow();
+                            // CAVEAT:
+                            // If the mutable was never used, then it should be considered mutable.
+                            if folder.mutable && used_mutables.contains(&node_to_find) {
+                                debug!("IS MUTABLE");
+                                return;
+                            }
+                            // CAVEAT:
+                            // If there is a refcell, or interior mutability, then it really is mutable.
+                            let ty_cache = tcx.ast_ty_to_ty_cache.borrow();
+                            let interior_unsafe = 0b0000_0000__0000_0000__0010;
+                            if let Some(node_ctx) = ty_cache.get(&folder.type_node_id) {
+                                debug!("BITS: {:?}", node_ctx.type_contents(tcx).bits);
+                                if node_ctx.type_contents(tcx).bits & interior_unsafe != 0 {
+                                    debug!("IS MUTABLE (REFCELL)");
+                                    return;
+                                }
+                            }
+
                             // If the variable is a direct alias, then it might be alright.
                             // In this case, movements or borrows are irrelevant.
                             // e.g. let a = 2;
@@ -1035,29 +1065,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                         // Alias case:
                                     },
                                     _ => {
-                                        // Otherwise mutable case:
-                                        // If the variable is mutable, inlining is a bad idea!!!
-                                        // e.g. let mut a = 2;
-                                        // a = 3; // Now the expression is made the lvalue, but this holds no meaning
-                                        // Same again with *&mut a modifying the internal value.
-                                        let used_mutables = tcx.used_mut_nodes.borrow();
-                                        // CAVEAT:
-                                        // If the mutable was never used, then it should be considered mutable.
-                                        if folder.mutable && used_mutables.contains(&node_to_find) {
-                                            debug!("IS MUTABLE");
-                                            return;
-                                        }
-                                        // CAVEAT:
-                                        // If there is a refcell, or interior mutability, then it really is mutable.
-                                        let ty_cache = tcx.ast_ty_to_ty_cache.borrow();
-                                        let interior_unsafe = 0b0000_0000__0000_0000__0010;
-                                        if let Some(node_ctx) = ty_cache.get(&folder.type_node_id) {
-                                            debug!("BITS: {:?}", node_ctx.type_contents(tcx).bits);
-                                            if node_ctx.type_contents(tcx).bits & interior_unsafe != 0 {
-                                                debug!("IS MUTABLE (REFCELL)");
-                                                return;
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -1072,6 +1079,14 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // let a = b + c
                             // let b = 3;
                             // println!("{}", a);
+
+                            // If any variables composing the initializer were redeclared in the meantime, return
+                            if folder.changed_paths {
+                                return;
+                            }
+
+                            // If any variables composing the initializer mutated in the meantime, return
+                            // TODO
 
                         }
 
