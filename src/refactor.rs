@@ -14,9 +14,12 @@ use rustc_resolve as resolve;
 use rustc::lint;
 use rustc_lint;
 use rustc::middle::lang_items;
+use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty;
+use rustc::middle::ty::BoundRegion::*;
+use rustc::middle::infer::error_reporting::{Rebuilder, LifeGiver};
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
-use syntax::ast::NodeId;
+use syntax::ast::{Name, NodeId, DefId};
 use syntax::ast::Item_::{ItemImpl, ItemStruct};
 use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos};
 use syntax::fold::Folder;
@@ -329,6 +332,95 @@ pub fn rename_function(input_file: &str,
                              (x.clone(), y.clone())).collect(),
                              String::from_str(new_name), node));
 
+    Ok(output)
+}
+
+fn lifetimes_in_scope(map: &ast_map::Map,
+                      scope_id: ast::NodeId)
+                      -> Vec<ast::LifetimeDef> {
+    let mut taken = Vec::new();
+    let parent = map.get_parent(scope_id);
+    let method_id_opt = match map.find(parent) {
+        Some(node) => match node {
+            ast_map::NodeItem(item) => match item.node {
+                ast::ItemFn(_, _, _, _, ref gen, _) => {
+                    taken.push_all(&gen.lifetimes);
+                    None
+                },
+                _ => None
+            },
+            ast_map::NodeImplItem(ii) => {
+                match ii.node {
+                    ast::MethodImplItem(ref sig, _) => {
+                        taken.push_all(&sig.generics.lifetimes);
+                        Some(ii.id)
+                    }
+                    //ast::MacImplItem(_) => tcx.sess.bug("unexpanded macro"),
+                    _ => None,
+                }
+            }
+            _ => None
+        },
+        None => None
+    };
+    if method_id_opt.is_some() {
+        let method_id = method_id_opt.unwrap();
+        let parent = map.get_parent(method_id);
+        match map.find(parent) {
+            Some(node) => match node {
+                ast_map::NodeItem(item) => match item.node {
+                    ast::ItemImpl(_, _, ref gen, _, _, _) => {
+                        taken.push_all(&gen.lifetimes);
+                    }
+                    _ => ()
+                },
+                _ => ()
+            },
+            None => ()
+        }
+    }
+    return taken;
+}
+
+pub fn restore_fn_lifetime(input_file: &str,
+                           analysis: &str,
+                           rename_var: &str)
+                           -> Result<HashMap<String, String>, Response> {
+    let analyzed_data = init(analysis);
+
+    let dec_map = analyzed_data.func_map;
+    let ref_map = analyzed_data.func_ref_map;
+
+    let node: NodeId = rename_var.parse().unwrap();
+
+    let input_file_str = String::from_str(input_file);
+
+    let mut filename = String::from_str(input_file);
+    if let Some(decl) = dec_map.get(rename_var) {
+        if let Some(file) = decl.get("file_name") {
+            filename = file.clone();
+        }
+    }
+    let filename = filename;
+    debug!("{}", filename);
+    let (x,y,z,_) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::ReifyLifetime,
+                                  String::from_str(rename_var), node, true) {
+        Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
+        Err(x) => { println!("{:?}", x); x }
+    };
+
+    let mut new_file = String::new();
+    File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
+    let mut rope = Rope::from_string(new_file);
+
+    debug!("{}", filename);
+    debug!("{}", rope.to_string());
+    rope.src_remove(x, y);
+    rope.src_insert(x, z);
+
+    let mut output = HashMap::new();
+    output.insert(filename, rope.to_string());
+    debug!("{}", rope.to_string());
     Ok(output)
 }
 
@@ -836,6 +928,7 @@ pub enum RefactorType {
     Type,
     InlineLocal,
     Reduced,
+    ReifyLifetime,
     Nil,
 }
 
@@ -917,11 +1010,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         if is_full {
             control.after_analysis.stop = Compilation::Stop;
             control.after_analysis.callback = box move |state| {
+                let krate = state.expanded_crate.unwrap().clone();
+                let tcx = state.tcx.unwrap();
+                let anal = state.analysis.unwrap();
+                let ast_map = &tcx.map;
                 if r_type == RefactorType::InlineLocal {
-                    let krate = state.expanded_crate.unwrap().clone();
-                    let tcx = state.tcx.unwrap();
-                    let anal = state.analysis.unwrap();
-                    let ast_map = &tcx.map;
 
                     debug!("{:?}", ast_map.get(ast_map.get_parent(node_to_find)));
                     debug!("{:?}", ast_map.get(node_to_find));
@@ -1109,6 +1202,75 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         //pprust::item_to_string(folder.fold_item(par).get(0))
                         //visit::walk_crate(&mut visitor, &krate);
                     }
+                } else if r_type == RefactorType::ReifyLifetime {
+                    debug!("{:?}", ast_map.get(node_to_find));
+
+                    let scope_id = 0;//same_regions[0].scope_id;
+                    let parent = tcx.map.get_parent(scope_id);
+                    let parent_node = tcx.map.find(parent);
+                    let taken = lifetimes_in_scope(&tcx.map, scope_id);
+                    let life_giver = LifeGiver::with_taken(&taken[..]);
+                    let node_inner = match ast_map.find(node_to_find) {//parent_node {
+                        Some(ref node) => match *node {
+                            ast_map::NodeItem(ref item) => {
+                                match item.node {
+                                    ast::ItemFn(ref fn_decl, unsafety, constness, _, ref gen, _) => {
+                                        Some((fn_decl, gen, unsafety, constness,
+                                              item.ident, None, item.span))
+                                    },
+                                    _ => None
+                                }
+                            }
+                            ast_map::NodeImplItem(item) => {
+                                match item.node {
+                                    ast::MethodImplItem(ref sig, _) => {
+                                        Some((&sig.decl,
+                                              &sig.generics,
+                                              sig.unsafety,
+                                              sig.constness,
+                                              item.ident,
+                                              Some(&sig.explicit_self.node),
+                                              item.span))
+                                    }
+                                    //ast::MacImplItem(_) => self.tcx.sess.bug("unexpanded macro"),
+                                    _ => None,
+                                }
+                            },
+                            ast_map::NodeTraitItem(item) => {
+                                match item.node {
+                                    ast::MethodTraitItem(ref sig, Some(_)) => {
+                                        Some((&sig.decl,
+                                              &sig.generics,
+                                              sig.unsafety,
+                                              sig.constness,
+                                              item.ident,
+                                              Some(&sig.explicit_self.node),
+                                              item.span))
+                                    }
+                                    _ => None
+                                }
+                            }
+                            _ => None
+                        },
+                        None => None
+                    };
+                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
+
+//                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrNamed(DefId{krate:0, node:13},token::intern(&"'a"))]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
+                    let (fn_decl, generics, unsafety, constness, ident, expl_self, span)
+                                                = node_inner.expect("expect item fn");
+                    let rebuilder = Rebuilder::new(tcx, fn_decl, expl_self,
+                                                   generics, &a/*same_regions*/, &life_giver);
+                    let (fn_decl, expl_self, generics) = rebuilder.rebuild();
+                    //self.give_expl_lifetime_param(&fn_decl, unsafety, constness, ident,
+                    //                              expl_self.as_ref(), &generics, span);
+                    debug!("{}", pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self.as_ref(), &generics));
+                    println!("{}", pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self.as_ref(), &generics));
+                    //debug!("{:?}", tcx.region_maps);
+                    debug!("{:?}", tcx.named_region_map);
+                    //debug!("{:?}", tcx.free_region_maps.borrow());
+
+
                 }
             };
 

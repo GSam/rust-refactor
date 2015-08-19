@@ -9,6 +9,7 @@
 #![feature(rustc_private)]
 #![feature(result_expect)]
 #![feature(unicode)]
+#![feature(vec_push_all)] 
 
 #[macro_use]
 extern crate log;
