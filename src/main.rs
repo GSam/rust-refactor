@@ -20,7 +20,7 @@ use std::collections::HashMap;
 fn main() {
     let args = env::args();
 
-    if args.len() < 6 {
+    if args.len() < 6 || args.len() >= 5 && (args[1] == "lifetime" || args[1] == "elide") {
         let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
         let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
@@ -86,6 +86,13 @@ fn main() {
         },
         "lifetime" => {
             let result = refactor::refactor::restore_fn_lifetime(&args[3], &analysis_str, rename_var);
+            match result {
+                Ok(x) => println!("{}", better_string(x)),
+                Err(x) => println!("{:?}", x)
+            }
+        },
+        "elide" => {
+            let result = refactor::refactor::elide_fn_lifetime(&args[3], &analysis_str, rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
