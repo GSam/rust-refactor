@@ -17,7 +17,6 @@ use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty;
 use rustc::middle::ty::BoundRegion::*;
-use rustc::middle::infer::error_reporting::{Rebuilder, LifeGiver};
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
 use syntax::ast::{Name, NodeId, DefId};
 use syntax::ast::Item_::{ItemImpl, ItemStruct};
@@ -42,8 +41,9 @@ use std::thread;
 
 use strings::src_rope::Rope;
 
-use loader::ReplaceLoader;
 use folder::InlineFolder;
+use loader::ReplaceLoader;
+use rebuilder::{Rebuilder, LifeGiver};
 
 #[derive(Debug, PartialEq)]
 pub enum Response {

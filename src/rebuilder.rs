@@ -39,7 +39,7 @@ struct RebuildPathInfo<'a> {
     region_names: &'a HashSet<ast::Name>
 }
 
-struct Rebuilder<'a, 'tcx: 'a> {
+pub struct Rebuilder<'a, 'tcx: 'a> {
     tcx: &'a ty::ctxt<'tcx>,
     fn_decl: &'a ast::FnDecl,
     expl_self_opt: Option<&'a ast::ExplicitSelf_>,
@@ -56,7 +56,7 @@ enum FreshOrKept {
 }
 
 impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
-    fn new(tcx: &'a ty::ctxt<'tcx>,
+    pub fn new(tcx: &'a ty::ctxt<'tcx>,
            fn_decl: &'a ast::FnDecl,
            expl_self_opt: Option<&'a ast::ExplicitSelf_>,
            generics: &'a ast::Generics,
@@ -75,7 +75,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
         }
     }
 
-    fn rebuild(&self)
+    pub fn rebuild(&self)
                -> (ast::FnDecl, Option<ast::ExplicitSelf_>, ast::Generics) {
         let mut expl_self_opt = self.expl_self_opt.cloned();
         let mut inputs = self.fn_decl.inputs.clone();
@@ -648,14 +648,14 @@ fn lifetimes_in_scope(tcx: &ty::ctxt,
 }
 
 // LifeGiver is responsible for generating fresh lifetime names
-struct LifeGiver {
+pub struct LifeGiver {
     taken: HashSet<String>,
     counter: Cell<usize>,
     generated: RefCell<Vec<ast::Lifetime>>,
 }
 
 impl LifeGiver {
-    fn with_taken(taken: &[ast::LifetimeDef]) -> LifeGiver {
+    pub fn with_taken(taken: &[ast::LifetimeDef]) -> LifeGiver {
         let mut taken_ = HashSet::new();
         for lt in taken {
             let lt_name = lt.lifetime.name.to_string();
@@ -701,7 +701,7 @@ impl LifeGiver {
         }
     }
 
-    fn get_generated_lifetimes(&self) -> Vec<ast::Lifetime> {
+    pub fn get_generated_lifetimes(&self) -> Vec<ast::Lifetime> {
         self.generated.borrow().clone()
     }
 }
