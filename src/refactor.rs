@@ -424,6 +424,49 @@ pub fn restore_fn_lifetime(input_file: &str,
     Ok(output)
 }
 
+pub fn elide_fn_lifetime(input_file: &str,
+                         analysis: &str,
+                         rename_var: &str)
+                         -> Result<HashMap<String, String>, Response> {
+    let analyzed_data = init(analysis);
+
+    let dec_map = analyzed_data.func_map;
+    let ref_map = analyzed_data.func_ref_map;
+
+    let node: NodeId = rename_var.parse().unwrap();
+
+    let input_file_str = String::from_str(input_file);
+
+    let mut filename = String::from_str(input_file);
+    if let Some(decl) = dec_map.get(rename_var) {
+        if let Some(file) = decl.get("file_name") {
+            filename = file.clone();
+        }
+    }
+    let filename = filename;
+    debug!("{}", filename);
+    let (x,y,z,_) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::ElideLifetime,
+                                  String::from_str(rename_var), node, true) {
+        Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
+        Err(x) => { println!("{:?}", x); x }
+    };
+
+    let mut new_file = String::new();
+    File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
+    let mut rope = Rope::from_string(new_file);
+
+    debug!("{}", filename);
+    debug!("{}", rope.to_string());
+    rope.src_remove(x, y);
+    rope.src_insert(x, z);
+
+    let mut output = HashMap::new();
+    output.insert(filename, rope.to_string());
+    debug!("{}", rope.to_string());
+    Ok(output)
+}
+
+
 pub fn inline_local(input_file: &str,
                     analysis: &str,
                     rename_var: &str)
@@ -511,7 +554,9 @@ fn run_compiler_resolution(root: String,
         // Calling monitor fixes a bug where this process is put into an
         // invalid (logging) state.
         match kind {
-            RefactorType::InlineLocal | RefactorType::ReifyLifetime => run_compiler(&args, &mut call_ctxt, Box::new(loader)),
+            RefactorType::InlineLocal |
+            RefactorType::ReifyLifetime |
+            RefactorType::ElideLifetime => run_compiler(&args, &mut call_ctxt, Box::new(loader)),
             _ => monitor(move || run_compiler(&args, &mut call_ctxt, Box::new(loader)))
         }
     }).map_err(|any|
@@ -929,6 +974,7 @@ pub enum RefactorType {
     InlineLocal,
     Reduced,
     ReifyLifetime,
+    ElideLifetime,
     Nil,
 }
 
