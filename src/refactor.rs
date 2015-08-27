@@ -1301,9 +1301,10 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let (fn_decl, generics, unsafety, constness, ident, expl_self, span, body_span)
                                                 = node_inner.expect("expect item fn");
 
-                    debug!("{}", pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self, &generics));
-                    let mut folder = LifetimeFolder;
-                    folder.fold_fn_decl(fn_decl.clone());
+                    let mut folder = LifetimeFolder{ has_bounds: false };
+                    let elided_fn_decl = folder.fold_fn_decl(fn_decl.clone());
+                    let elided_expl_self_tmp;
+                    let mut elided_expl_self = None;
 
                     // Count input lifetimes and count output lifetimes.
                     let mut in_walker = LifetimeWalker::new();
@@ -1311,14 +1312,32 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     if let Some(expl_self) = expl_self {
                         visit::walk_explicit_self(&mut in_walker, &Spanned {node: expl_self.clone(), span: DUMMY_SP});
-                        folder.fold_explicit_self(Spanned {node: expl_self.clone(), span: DUMMY_SP});
+                        elided_expl_self_tmp = folder.fold_explicit_self(Spanned {node: expl_self.clone(), span: DUMMY_SP});
+                        elided_expl_self = Some(&elided_expl_self_tmp.node);
                     }
 
                     for argument in fn_decl.inputs.iter() {
+                        debug!("FN DECL: {:?}", argument);
                         visit::walk_ty(&mut in_walker, &*argument.ty);
                     }
 
                     visit::walk_fn_ret_ty(&mut out_walker, &fn_decl.output);
+
+                    if r_type == RefactorType::ElideLifetime {
+                        let elided_generics = folder.fold_generics(generics.clone());
+                        if folder.has_bounds {
+                            return;
+                        }
+
+                        let mut answer = pprust::fun_to_string(&elided_fn_decl, unsafety, constness, ident, elided_expl_self, &elided_generics);
+
+                        // Add some likely spacing
+                        answer.push_str(" ");
+
+                        let hi_pos = state.session.codemap().lookup_byte_offset(body_span.lo).pos.to_usize();
+                        let lo_pos = state.session.codemap().lookup_byte_offset(span.lo).pos.to_usize();
+                        panic!((lo_pos, hi_pos, answer, 0));
+                    }
 
                     // Count anonymous and count total.
                     // CASE 1: fn <'a> (x: &'a) -> &out

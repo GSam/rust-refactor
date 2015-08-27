@@ -287,10 +287,25 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
     }
 }
 
-pub struct LifetimeFolder;
+pub struct LifetimeFolder {
+    pub has_bounds: bool
+}
 
 impl Folder for LifetimeFolder {
     fn fold_opt_lifetime(&mut self, o_lt: Option<Lifetime>) -> Option<Lifetime> {
         None
+    }
+
+    fn fold_generics(&mut self, Generics {ty_params, lifetimes, where_clause}: Generics) -> Generics {
+        for lifetime in lifetimes.iter() {
+            if lifetime.bounds.len() > 0 {
+                self.has_bounds = true;
+            }
+        }
+        Generics {
+            ty_params: self.fold_ty_params(ty_params),
+            lifetimes: Vec::new(),
+            where_clause: self.fold_where_clause(where_clause),
+        }
     }
 }
