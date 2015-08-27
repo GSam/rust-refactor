@@ -1311,6 +1311,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     if let Some(expl_self) = expl_self {
                         visit::walk_explicit_self(&mut in_walker, &Spanned {node: expl_self.clone(), span: DUMMY_SP});
+                        folder.fold_explicit_self(Spanned {node: expl_self.clone(), span: DUMMY_SP});
                     }
 
                     for argument in fn_decl.inputs.iter() {
