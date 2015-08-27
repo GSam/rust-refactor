@@ -1330,9 +1330,12 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     //debug!("{:?}", tcx.region_maps);
                     debug!("{:?}", tcx.named_region_map);
                     //debug!("{:?}", tcx.free_region_maps.borrow());
-                    let answer = pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self.as_ref(), &generics);
+                    let mut answer = pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self.as_ref(), &generics);
 
-                    let hi_pos = state.session.codemap().lookup_byte_offset(span.hi).pos.to_usize();
+                    // Add some likely spacing
+                    answer.push_str(" ");
+
+                    let hi_pos = state.session.codemap().lookup_byte_offset(body_span.lo).pos.to_usize();
                     let lo_pos = state.session.codemap().lookup_byte_offset(span.lo).pos.to_usize();
                     panic!((lo_pos, hi_pos, answer, 0));
                 }
