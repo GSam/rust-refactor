@@ -1263,7 +1263,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     // Count anonymous and count total.
                     // CASE 1: fn <'a> (x: &'a) -> &out
-                    // CASE 2: fn (x: &a) -> &out 
+                    // CASE 2: fn (x: &a) -> &out
                     // If there is exactly 1 input lifetime, then reuse that lifetime for output (possibly multiple).
                     if in_walker.total == 1 {
                         let mut regions = Vec::new();
