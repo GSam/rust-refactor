@@ -1248,7 +1248,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         //pprust::item_to_string(folder.fold_item(par).get(0))
                         //visit::walk_crate(&mut visitor, &krate);
                     }
-                } else if r_type == RefactorType::ReifyLifetime {
+                } else if r_type == RefactorType::ReifyLifetime || r_type == RefactorType::ElideLifetime {
                     debug!("{:?}", ast_map.get(node_to_find));
 
                     let taken = lifetimes_in_scope(&tcx.map, node_to_find);
