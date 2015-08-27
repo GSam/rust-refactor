@@ -20,13 +20,20 @@ use std::collections::HashMap;
 fn main() {
     let args = env::args();
 
-    if args.len() < 6 || args.len() >= 5 && (args[1] == "lifetime" || args[1] == "elide") {
-        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
+    if args.len() < 5 {
+        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn|lifetime|elide> <analysis> <src> <var> [<outvar>]");
         let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
     }
 
     let args: Vec<_> = args.collect();
+
+    if args.len() < 6 && &*args[1] != "lifetime" && &*args[1] != "elide" {
+        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
+        let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
+        return;
+    }
+
     let path = Path::new(&args[3]);
     let s;
     let mut rename_var = &args[4];
