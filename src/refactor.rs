@@ -1330,6 +1330,17 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             parameterized.insert(lifetimes.lifetime.name);
                         }
 
+                        // Can't elide if returning multiple lifetimes
+                        if out_walker.names.len() > 1 {
+                            return;
+                        }
+
+                        let intersect: HashSet<_> = out_walker.names.intersection(&parameterized).cloned().collect();
+                        if out_walker.names.len() > 0 && intersect.len() == 0 {
+                            return;
+                        }
+
+                        // TODO move has_bounds out of the folder
                         if folder.has_bounds {
                             return;
                         }
