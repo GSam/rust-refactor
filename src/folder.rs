@@ -287,3 +287,10 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
     }
 }
 
+pub struct LifetimeFolder;
+
+impl Folder for LifetimeFolder {
+    fn fold_opt_lifetime(&mut self, o_lt: Option<Lifetime>) -> Option<Lifetime> {
+        None
+    }
+}

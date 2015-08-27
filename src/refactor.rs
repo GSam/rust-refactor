@@ -41,7 +41,7 @@ use std::thread;
 
 use strings::src_rope::Rope;
 
-use folder::InlineFolder;
+use folder::{InlineFolder, LifetimeFolder};
 use loader::ReplaceLoader;
 use rebuilder::{Rebuilder, LifeGiver};
 use lifetime_walker::LifetimeWalker;
@@ -1298,11 +1298,12 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         None => None
                     };
                     let mut a = Vec::new();
-                    //SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
-
-//                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrNamed(DefId{krate:0, node:13},token::intern(&"'a"))]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
                     let (fn_decl, generics, unsafety, constness, ident, expl_self, span, body_span)
                                                 = node_inner.expect("expect item fn");
+
+                    debug!("{}", pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self, &generics));
+                    let mut folder = LifetimeFolder;
+                    folder.fold_fn_decl(fn_decl.clone());
 
                     // Count input lifetimes and count output lifetimes.
                     let mut in_walker = LifetimeWalker::new();
