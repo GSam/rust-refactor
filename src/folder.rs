@@ -14,7 +14,7 @@ use syntax::codemap::{DUMMY_SP, Span, Spanned, NO_EXPANSION};
 use syntax::ext::{base, expand};
 use syntax::ext::build::AstBuilder;
 use syntax::fold::Folder;
-use syntax::fold::noop_fold_expr;
+use syntax::fold::{noop_fold_expr, noop_fold_explicit_self_underscore};
 use syntax::ptr::P;
 use syntax::visit::{self, Visitor};
 use syntax::util::small_vector::SmallVector;
@@ -288,7 +288,8 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
 }
 
 pub struct LifetimeFolder {
-    pub has_bounds: bool
+    pub has_bounds: bool,
+    pub expl_self: Name,
 }
 
 impl Folder for LifetimeFolder {
@@ -307,5 +308,16 @@ impl Folder for LifetimeFolder {
             lifetimes: Vec::new(),
             where_clause: self.fold_where_clause(where_clause),
         }
+    }
+
+    fn fold_explicit_self_underscore(&mut self, es: ExplicitSelf_) -> ExplicitSelf_ {
+        match es {
+            SelfRegion(Some(lifetime), m, ident) => {
+                self.expl_self = lifetime.name;
+            }
+            _ => ()
+        }
+
+        noop_fold_explicit_self_underscore(es, self)
     }
 }

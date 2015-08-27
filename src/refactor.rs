@@ -1301,7 +1301,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let (fn_decl, generics, unsafety, constness, ident, expl_self, span, body_span)
                                                 = node_inner.expect("expect item fn");
 
-                    let mut folder = LifetimeFolder{ has_bounds: false };
+                    let mut folder = LifetimeFolder{ has_bounds: false, expl_self: Name(0) };
                     let elided_fn_decl = folder.fold_fn_decl(fn_decl.clone());
                     let elided_expl_self_tmp;
                     let mut elided_expl_self = None;
@@ -1335,8 +1335,27 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             return;
                         }
 
+                        // Don't elide if return doesn't appear in generics (trait lifetime?)
                         let intersect: HashSet<_> = out_walker.names.intersection(&parameterized).cloned().collect();
                         if out_walker.names.len() > 0 && intersect.len() == 0 {
+                            return;
+                        }
+
+                        // Make sure that each input lifetime is never used more than once
+                        if in_walker.names.len() as u32 + in_walker.anon != in_walker.total {
+                            return;
+                        }
+
+                        // If you have a return, either it has the same name as the only input, or that of self
+                        let intersect: HashSet<_> = out_walker.names.intersection(&in_walker.names).cloned().collect();
+                        if out_walker.names.len() > 0 && !out_walker.names.contains(&folder.expl_self)
+                                           && (in_walker.names.len() > 1 || intersect.len() == 0) {
+                            return;
+                        }
+
+                        // Make sure that input lifetimes are all parameterized
+                        // TODO delete only unparameterized?
+                        if !in_walker.names.is_subset(&parameterized) {
                             return;
                         }
 
