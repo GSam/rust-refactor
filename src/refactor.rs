@@ -339,8 +339,7 @@ fn lifetimes_in_scope(map: &ast_map::Map,
                       scope_id: ast::NodeId)
                       -> Vec<ast::LifetimeDef> {
     let mut taken = Vec::new();
-    let parent = map.get_parent(scope_id);
-    let method_id_opt = match map.find(parent) {
+    let method_id_opt = match map.find(scope_id) {
         Some(node) => match node {
             ast_map::NodeItem(item) => match item.node {
                 ast::ItemFn(_, _, _, _, ref gen, _) => {
@@ -1206,9 +1205,9 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     debug!("{:?}", ast_map.get(node_to_find));
 
                     let scope_id = 0;//same_regions[0].scope_id;
-                    let parent = tcx.map.get_parent(scope_id);
-                    let parent_node = tcx.map.find(parent);
-                    let taken = lifetimes_in_scope(&tcx.map, scope_id);
+                    //let parent = tcx.map.get_parent(scope_id);
+                    //let parent_node = tcx.map.find(parent);
+                    let taken = lifetimes_in_scope(&tcx.map, node_to_find);
                     let life_giver = LifeGiver::with_taken(&taken[..]);
                     let node_inner = match ast_map.find(node_to_find) {//parent_node {
                         Some(ref node) => match *node {
