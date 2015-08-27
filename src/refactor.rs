@@ -28,7 +28,7 @@ use syntax::parse::token;
 use syntax::print::pprust::{self, State};
 use syntax::print::pp::eof;
 use syntax::ptr::P;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::env;
 use std::io;
 use std::io::prelude::*;
@@ -1325,6 +1325,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     if r_type == RefactorType::ElideLifetime {
                         let elided_generics = folder.fold_generics(generics.clone());
+                        let mut parameterized = HashSet::new();
+                        for lifetimes in generics.lifetimes.iter() {
+                            parameterized.insert(lifetimes.lifetime.name);
+                        }
+
                         if folder.has_bounds {
                             return;
                         }
