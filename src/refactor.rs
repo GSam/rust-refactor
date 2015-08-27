@@ -20,7 +20,7 @@ use rustc::middle::ty::BoundRegion::*;
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
 use syntax::ast::{Name, NodeId, DefId, ExplicitSelf_};
 use syntax::ast::Item_::{ItemImpl, ItemStruct};
-use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos};
+use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos, Spanned};
 use syntax::fold::Folder;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
@@ -1261,6 +1261,10 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     // Count input lifetimes and count output lifetimes.
                     let mut in_walker = LifetimeWalker::new();
                     let mut out_walker = LifetimeWalker::new();
+
+                    if let Some(expl_self) = expl_self {
+                        visit::walk_explicit_self(&mut in_walker, &Spanned {node: expl_self.clone(), span: DUMMY_SP});
+                    }
 
                     for argument in fn_decl.inputs.iter() {
                         visit::walk_ty(&mut in_walker, &*argument.ty);
