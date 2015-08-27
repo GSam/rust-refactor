@@ -1317,12 +1317,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                         a.push(SameRegions{scope_id: 0, regions: regions});
                                     } else {
                                         // self is anonymous
-                                        let mut regions = Vec::new();
-                                        regions.push(BrAnon(in_walker.expl_self));
+                                        // TODO remove expl_self
+                                        let mut regions = &mut a.get_mut(in_walker.expl_self as usize).expect("Missing expl self").regions;
                                         for x in 0..out_walker.anon {
                                             regions.push(BrAnon(in_walker.anon + x));
                                         }
-                                        a.push(SameRegions{scope_id: 0, regions: regions});
                                     }
                                 }
                                 _ => ()
