@@ -1251,15 +1251,22 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         },
                         None => None
                     };
-                    let mut a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
+                    let mut a = Vec::new();
+                    //SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
 
 //                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrNamed(DefId{krate:0, node:13},token::intern(&"'a"))]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
                     let (fn_decl, generics, unsafety, constness, ident, expl_self, span, body_span)
                                                 = node_inner.expect("expect item fn");
 
                     // Count input lifetimes and count output lifetimes.
-                    let in_walker = LifetimeWalker::new();
-                    let out_walker = LifetimeWalker::new();
+                    let mut in_walker = LifetimeWalker::new();
+                    let mut out_walker = LifetimeWalker::new();
+
+                    for argument in fn_decl.inputs.iter() {
+                        visit::walk_ty(&mut in_walker, &*argument.ty);
+                    }
+
+                    visit::walk_fn_ret_ty(&mut out_walker, &fn_decl.output);
 
                     // Count anonymous and count total.
                     // CASE 1: fn <'a> (x: &'a) -> &out

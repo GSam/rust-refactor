@@ -1,5 +1,6 @@
 
 use syntax::ast::*;
+use syntax::codemap::Span;
 use syntax::visit::{self, Visitor};
 
 pub struct LifetimeWalker {
@@ -19,8 +20,15 @@ impl LifetimeWalker {
 }
 
 impl<'v> Visitor<'v> for LifetimeWalker {
-    fn visit_expr(&mut self, ex: &Expr) {
 
+    fn visit_opt_lifetime_ref(&mut self,
+                              _span: Span,
+                              opt_lifetime: &'v Option<Lifetime>) {
+        self.total += 1;
+        match *opt_lifetime {
+            Some(ref l) => self.visit_lifetime_ref(l),
+            None => self.anon += 1
+        }
     }
 
     fn visit_explicit_self(&mut self, es: &'v ExplicitSelf) {
