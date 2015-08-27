@@ -29,7 +29,10 @@ impl<'v> Visitor<'v> for LifetimeWalker {
                               opt_lifetime: &'v Option<Lifetime>) {
         self.total += 1;
         match *opt_lifetime {
-            Some(ref l) => self.visit_lifetime_ref(l),
+            Some(ref l) => {
+               self.names.insert(l.name);
+               self.visit_lifetime_ref(l);
+            }
             None => self.anon += 1
         }
     }
