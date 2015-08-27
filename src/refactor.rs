@@ -18,7 +18,7 @@ use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty;
 use rustc::middle::ty::BoundRegion::*;
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
-use syntax::ast::{Name, NodeId, DefId};
+use syntax::ast::{Name, NodeId, DefId, ExplicitSelf_};
 use syntax::ast::Item_::{ItemImpl, ItemStruct};
 use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos};
 use syntax::fold::Folder;
@@ -44,6 +44,7 @@ use strings::src_rope::Rope;
 use folder::InlineFolder;
 use loader::ReplaceLoader;
 use rebuilder::{Rebuilder, LifeGiver};
+use lifetime_walker::LifetimeWalker;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -1204,12 +1205,9 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 } else if r_type == RefactorType::ReifyLifetime {
                     debug!("{:?}", ast_map.get(node_to_find));
 
-                    let scope_id = 0;//same_regions[0].scope_id;
-                    //let parent = tcx.map.get_parent(scope_id);
-                    //let parent_node = tcx.map.find(parent);
                     let taken = lifetimes_in_scope(&tcx.map, node_to_find);
                     let life_giver = LifeGiver::with_taken(&taken[..]);
-                    let node_inner = match ast_map.find(node_to_find) {//parent_node {
+                    let node_inner = match ast_map.find(node_to_find) {
                         Some(ref node) => match *node {
                             ast_map::NodeItem(ref item) => {
                                 match item.node {
@@ -1253,11 +1251,75 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         },
                         None => None
                     };
-                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
+                    let mut a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
 
 //                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrNamed(DefId{krate:0, node:13},token::intern(&"'a"))]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
                     let (fn_decl, generics, unsafety, constness, ident, expl_self, span)
                                                 = node_inner.expect("expect item fn");
+
+                    // Count input lifetimes and count output lifetimes.
+                    let in_walker = LifetimeWalker::new();
+                    let out_walker = LifetimeWalker::new();
+
+                    // Count anonymous and count total.
+                    // CASE 1: fn <'a> (x: &'a) -> &out
+                    // CASE 2: fn (x: &a) -> &out 
+                    // If there is exactly 1 input lifetime, then reuse that lifetime for output (possibly multiple).
+                    if in_walker.total == 1 {
+                        let mut regions = Vec::new();
+                        if in_walker.anon == 0 {
+                            // CASE 1
+                            regions.push(BrNamed(DefId{krate: 0, node: 0}, generics.lifetimes.get(0).unwrap().lifetime.name));
+                            for x in 0..out_walker.anon {
+                                regions.push(BrAnon(x));
+                            }
+                        } else {
+                            // CASE 2
+                            regions.push(BrAnon(0));
+                            for x in 0..out_walker.anon {
+                                regions.push(BrAnon(x+1));
+                            }
+                        }
+                        a.push(SameRegions{scope_id: 0, regions: regions});
+
+                    } else if in_walker.total > 1 {
+                        // If there is more than one lifetime, then:
+                        // fn <'a, 'b> (x: &'a, y: &'b, z: &) -> &'a out
+                        // We can make concrete the anonymous input lifetimes but not the output.
+                        for x in 0..in_walker.anon {
+                            a.push(SameRegions{scope_id: 0, regions: vec![BrAnon(x)]});
+                        }
+
+                        // Unless, there is a self lifetime, then:
+                        // fn <'a, 'b> (self: &'a, ...) -> &out
+                        // We can make concrete the output lifetime as well (which may be multiple).
+                        if let Some(expl_self) = expl_self {
+                            match *expl_self {
+                                ExplicitSelf_::SelfRegion(ref life, _, _) => {
+                                    if life.is_some() {
+                                        // self has a named lifetime
+                                        let mut regions = Vec::new();
+                                        regions.push(BrNamed(DefId{krate: 0, node: 0}, life.unwrap().name));
+                                        for x in 0..out_walker.anon {
+                                            regions.push(BrAnon(in_walker.anon + x));
+                                        }
+                                        a.push(SameRegions{scope_id: 0, regions: regions});
+                                    } else {
+                                        // self is anonymous
+                                        let mut regions = Vec::new();
+                                        regions.push(BrAnon(in_walker.expl_self));
+                                        for x in 0..out_walker.anon {
+                                            regions.push(BrAnon(in_walker.anon + x));
+                                        }
+                                        a.push(SameRegions{scope_id: 0, regions: regions});
+                                    }
+                                }
+                                _ => ()
+                            }
+                        }
+
+                    }
+
                     let rebuilder = Rebuilder::new(tcx, fn_decl, expl_self,
                                                    generics, &a/*same_regions*/, &life_giver);
                     let (fn_decl, expl_self, generics) = rebuilder.rebuild();
@@ -1268,7 +1330,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     //debug!("{:?}", tcx.region_maps);
                     debug!("{:?}", tcx.named_region_map);
                     //debug!("{:?}", tcx.free_region_maps.borrow());
-
 
                 }
             };

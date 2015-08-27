@@ -26,6 +26,7 @@ extern crate syntax;
 extern crate strings;
 
 pub mod folder;
+pub mod lifetime_walker;
 pub mod loader;
 pub mod rebuilder;
 pub mod refactor;
