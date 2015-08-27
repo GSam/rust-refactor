@@ -8,8 +8,9 @@
 #![feature(path)]
 #![feature(rustc_private)]
 #![feature(result_expect)]
+#![feature(slice_splits)]
 #![feature(unicode)]
-#![feature(vec_push_all)] 
+#![feature(vec_push_all)]
 
 #[macro_use]
 extern crate log;
@@ -24,6 +25,7 @@ extern crate syntax;
 
 extern crate strings;
 
-pub mod loader;
-pub mod refactor;
 pub mod folder;
+pub mod loader;
+pub mod rebuilder;
+pub mod refactor;
