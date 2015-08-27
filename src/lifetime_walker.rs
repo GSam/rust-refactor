@@ -22,4 +22,9 @@ impl<'v> Visitor<'v> for LifetimeWalker {
     fn visit_expr(&mut self, ex: &Expr) {
 
     }
+
+    fn visit_explicit_self(&mut self, es: &'v ExplicitSelf) {
+        self.expl_self = self.anon;
+        visit::walk_explicit_self(self, es);
+    }
 }

@@ -511,7 +511,7 @@ fn run_compiler_resolution(root: String,
         // Calling monitor fixes a bug where this process is put into an
         // invalid (logging) state.
         match kind {
-            RefactorType::InlineLocal => run_compiler(&args, &mut call_ctxt, Box::new(loader)),
+            RefactorType::InlineLocal | RefactorType::ReifyLifetime => run_compiler(&args, &mut call_ctxt, Box::new(loader)),
             _ => monitor(move || run_compiler(&args, &mut call_ctxt, Box::new(loader)))
         }
     }).map_err(|any|
@@ -1211,23 +1211,23 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         Some(ref node) => match *node {
                             ast_map::NodeItem(ref item) => {
                                 match item.node {
-                                    ast::ItemFn(ref fn_decl, unsafety, constness, _, ref gen, _) => {
+                                    ast::ItemFn(ref fn_decl, unsafety, constness, _, ref gen, ref body) => {
                                         Some((fn_decl, gen, unsafety, constness,
-                                              item.ident, None, item.span))
+                                              item.ident, None, item.span, body.span))
                                     },
                                     _ => None
                                 }
                             }
                             ast_map::NodeImplItem(item) => {
                                 match item.node {
-                                    ast::MethodImplItem(ref sig, _) => {
+                                    ast::MethodImplItem(ref sig, ref body) => {
                                         Some((&sig.decl,
                                               &sig.generics,
                                               sig.unsafety,
                                               sig.constness,
                                               item.ident,
                                               Some(&sig.explicit_self.node),
-                                              item.span))
+                                              item.span, body.span))
                                     }
                                     //ast::MacImplItem(_) => self.tcx.sess.bug("unexpanded macro"),
                                     _ => None,
@@ -1235,14 +1235,14 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             },
                             ast_map::NodeTraitItem(item) => {
                                 match item.node {
-                                    ast::MethodTraitItem(ref sig, Some(_)) => {
+                                    ast::MethodTraitItem(ref sig, Some(ref body)) => {
                                         Some((&sig.decl,
                                               &sig.generics,
                                               sig.unsafety,
                                               sig.constness,
                                               item.ident,
                                               Some(&sig.explicit_self.node),
-                                              item.span))
+                                              item.span, body.span))
                                     }
                                     _ => None
                                 }
@@ -1254,7 +1254,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let mut a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrAnon(1)]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
 
 //                    let a = vec![SameRegions{scope_id: 0, regions: vec![BrAnon(0), BrNamed(DefId{krate:0, node:13},token::intern(&"'a"))]}];//BrNamed(DefId{krate:0, node:13},token::intern(&"a"))]}];
-                    let (fn_decl, generics, unsafety, constness, ident, expl_self, span)
+                    let (fn_decl, generics, unsafety, constness, ident, expl_self, span, body_span)
                                                 = node_inner.expect("expect item fn");
 
                     // Count input lifetimes and count output lifetimes.
@@ -1330,7 +1330,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     //debug!("{:?}", tcx.region_maps);
                     debug!("{:?}", tcx.named_region_map);
                     //debug!("{:?}", tcx.free_region_maps.borrow());
+                    let answer = pprust::fun_to_string(&fn_decl, unsafety, constness, ident, expl_self.as_ref(), &generics);
 
+                    let hi_pos = state.session.codemap().lookup_byte_offset(span.hi).pos.to_usize();
+                    let lo_pos = state.session.codemap().lookup_byte_offset(span.lo).pos.to_usize();
+                    panic!((lo_pos, hi_pos, answer, 0));
                 }
             };
 
