@@ -5,6 +5,7 @@ use rustc::session::Session;
 
 use rustc::ast_map;
 use rustc::middle::def::{self, PathResolution};
+use rustc::middle::def_id::{DefId, LOCAL_CRATE};
 use rustc::middle::ty;
 use rustc_resolve as resolve;
 use rustc_resolve::Namespace;
@@ -200,8 +201,10 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                                 let krate = self.tcx.map.krate();
                                 let ps = &self.sess.parse_sess;
 
+                                let mut tmp = vec![];
                                 let mut cx = base::ExtCtxt::new(ps, krate.config.clone(),
-                                                                expand::ExpansionConfig::default("".to_string()));
+                                                                expand::ExpansionConfig::default("".to_string()),
+                                                                &mut tmp);
 
                                 t.ctxt = s_ctx;
                                 let path = cx.path(DUMMY_SP, vec![t]);
