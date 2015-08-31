@@ -13,12 +13,13 @@ use rustc::metadata::creader::LocalCrateReader;
 use rustc_resolve as resolve;
 use rustc::lint;
 use rustc_lint;
+use rustc::middle::def_id::DefId;
 use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty;
 use rustc::middle::ty::BoundRegion::*;
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
-use syntax::ast::{Name, NodeId, DefId, ExplicitSelf_};
+use syntax::ast::{Name, NodeId, ExplicitSelf_};
 use syntax::ast::Item_::{ItemImpl, ItemStruct};
 use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos, Spanned};
 use syntax::fold::Folder;
@@ -73,8 +74,8 @@ pub fn rename_variable(input_file: &str,
     let dec_map = analyzed_data.var_map;
     let ref_map = analyzed_data.var_ref_map;
 
-    let input_file_str = String::from_str(input_file);
-    let mut filename = String::from_str(input_file);
+    let input_file_str = String::from(input_file);
+    let mut filename = String::from(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
             filename = file.clone();
@@ -85,8 +86,8 @@ pub fn rename_variable(input_file: &str,
     // Check if renaming will cause conflicts
     let node: NodeId = rename_var.parse().unwrap();
 
-    match run_compiler_resolution(String::from_str(input_file), None, //Some(filename, String::from_str(input)),
-                                  None, RefactorType::Variable, String::from_str(new_name),
+    match run_compiler_resolution(String::from(input_file), None, //Some(filename, String::from(input)),
+                                  None, RefactorType::Variable, String::from(new_name),
                                   node, false) {
         Ok(()) => {
             debug!("GOOD");
@@ -115,7 +116,7 @@ pub fn rename_variable(input_file: &str,
                             let mut file_str = String::new();
                             let _ = file.read_to_string(&mut file_str);
                             let file_str = &file_str[..];
-                            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+                            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from(x))).collect();
                             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
                             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
                             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
@@ -133,8 +134,8 @@ pub fn rename_variable(input_file: &str,
                                 }
                             }
 
-                            match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
-                                                          None, RefactorType::Variable, String::from_str(new_name),
+                            match run_compiler_resolution(String::from(input_file), Some(vec![(String::from(filename.clone()), answer)]),
+                                                          None, RefactorType::Variable, String::from(new_name),
                                                           node, true) {
                                 Ok(()) => {
                                     debug!("Unexpected success!");
@@ -165,10 +166,10 @@ pub fn rename_variable(input_file: &str,
 
     let output = rename_dec_and_ref(new_name, rename_var, dec_map, ref_map);
 
-    try!(check_reduced_graph(String::from_str(input_file),
+    try!(check_reduced_graph(String::from(input_file),
                              output.iter().map(|(x,y)|
                              (x.clone(), y.clone())).collect(),
-                             String::from_str(new_name), node));
+                             String::from(new_name), node));
 
     Ok(output)
 }
@@ -188,8 +189,8 @@ pub fn rename_type(input_file: &str,
     let ref_map = analyzed_data.type_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-    let input_file_str = String::from_str(input_file);
-    let mut filename = String::from_str(input_file);
+    let input_file_str = String::from(input_file);
+    let mut filename = String::from(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
             filename = file.clone();
@@ -197,7 +198,7 @@ pub fn rename_type(input_file: &str,
     }
     let filename = filename;
     match run_compiler_resolution(input_file_str, None, None, RefactorType::Type,
-                                  String::from_str(new_name), node, false) {
+                                  String::from(new_name), node, false) {
         Ok(()) => {},
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
@@ -213,7 +214,7 @@ pub fn rename_type(input_file: &str,
             let mut file_str = String::new();
             let _ = file.read_to_string(&mut file_str);
             let file_str = &file_str[..];
-            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from(x))).collect();
             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
@@ -231,8 +232,8 @@ pub fn rename_type(input_file: &str,
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
-                                          None, RefactorType::Variable, String::from_str(new_name),
+            match run_compiler_resolution(String::from(input_file), Some(vec![(String::from(filename.clone()), answer)]),
+                                          None, RefactorType::Variable, String::from(new_name),
                                           node, true) {
                 Ok(()) => {
                     debug!("Unexpected success!");
@@ -267,9 +268,9 @@ pub fn rename_function(input_file: &str,
     let ref_map = analyzed_data.func_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-    let input_file_str = String::from_str(input_file);
+    let input_file_str = String::from(input_file);
 
-    let mut filename = String::from_str(input_file);
+    let mut filename = String::from(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
             filename = file.clone();
@@ -277,7 +278,7 @@ pub fn rename_function(input_file: &str,
     }
     let filename = filename;
     match run_compiler_resolution(input_file_str, None, None, RefactorType::Function,
-                                  String::from_str(new_name), node, false) {
+                                  String::from(new_name), node, false) {
         Ok(()) => {},
         Err(x) => { debug!("Unexpected failure!"); return Err(Response::Conflict) }
     }
@@ -294,7 +295,7 @@ pub fn rename_function(input_file: &str,
             let _ = file.read_to_string(&mut file_str);
             let file_str = &file_str[..];
 
-            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let mut ropes: Vec<Rope> = file_str.lines().map(|x| Rope::from_string(String::from(x))).collect();
             let file_col: usize = map.get("file_col").unwrap().parse().unwrap();
             let file_line: usize = map.get("file_line").unwrap().parse().unwrap();
             let file_col_end: usize = map.get("file_col_end").unwrap().parse().unwrap();
@@ -312,8 +313,8 @@ pub fn rename_function(input_file: &str,
                 }
             }
 
-            match run_compiler_resolution(String::from_str(input_file), Some(vec![(String::from_str(filename), answer)]),
-                                          None, RefactorType::Variable, String::from_str(new_name),
+            match run_compiler_resolution(String::from(input_file), Some(vec![(String::from(filename.clone()), answer)]),
+                                          None, RefactorType::Variable, String::from(new_name),
                                           node, true) {
                 Ok(()) => {
                     debug!("Unexpected success!");
@@ -328,10 +329,10 @@ pub fn rename_function(input_file: &str,
     let output = rename_dec_and_ref(new_name, rename_var, dec_map, ref_map);
 
     println!("{:?}", output);
-    try!(check_reduced_graph(String::from_str(input_file),
+    try!(check_reduced_graph(String::from(input_file),
                              output.iter().map(|(x,y)|
                              (x.clone(), y.clone())).collect(),
-                             String::from_str(new_name), node));
+                             String::from(new_name), node));
 
     Ok(output)
 }
@@ -393,9 +394,9 @@ pub fn restore_fn_lifetime(input_file: &str,
 
     let node: NodeId = rename_var.parse().unwrap();
 
-    let input_file_str = String::from_str(input_file);
+    let input_file_str = String::from(input_file);
 
-    let mut filename = String::from_str(input_file);
+    let mut filename = String::from(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
             filename = file.clone();
@@ -404,7 +405,7 @@ pub fn restore_fn_lifetime(input_file: &str,
     let filename = filename;
     debug!("{}", filename);
     let (x,y,z,_) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::ReifyLifetime,
-                                  String::from_str(rename_var), node, true) {
+                                  String::from(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
         Err(x) => { println!("{:?}", x); x }
     };
@@ -435,9 +436,9 @@ pub fn elide_fn_lifetime(input_file: &str,
 
     let node: NodeId = rename_var.parse().unwrap();
 
-    let input_file_str = String::from_str(input_file);
+    let input_file_str = String::from(input_file);
 
-    let mut filename = String::from_str(input_file);
+    let mut filename = String::from(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
             filename = file.clone();
@@ -446,7 +447,7 @@ pub fn elide_fn_lifetime(input_file: &str,
     let filename = filename;
     debug!("{}", filename);
     let (x,y,z,_) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::ElideLifetime,
-                                  String::from_str(rename_var), node, true) {
+                                  String::from(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
         Err(x) => { println!("{:?}", x); x }
     };
@@ -477,9 +478,9 @@ pub fn inline_local(input_file: &str,
     let ref_map = analyzed_data.var_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
-    let input_file_str = String::from_str(input_file);
+    let input_file_str = String::from(input_file);
 
-    let mut filename = String::from_str(input_file);
+    let mut filename = String::from(input_file);
     if let Some(decl) = dec_map.get(rename_var) {
         if let Some(file) = decl.get("file_name") {
             filename = file.clone();
@@ -487,7 +488,7 @@ pub fn inline_local(input_file: &str,
     }
     let filename = filename;
     let (x,y,z,_) = match run_compiler_resolution(input_file_str, None, Some(filename.clone()), RefactorType::InlineLocal,
-                                  String::from_str(rename_var), node, true) {
+                                  String::from(rename_var), node, true) {
         Ok(()) => { debug!("Unexpected success!"); return Err(Response::Conflict) },
         Err(x) => { println!("{:?}", x); x }
     };
@@ -830,7 +831,7 @@ fn rename_dec_and_ref(new_name: &str,
     let mut new_file = String::new();
     File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
 
-    let mut ropes: Vec<Rope> = new_file.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+    let mut ropes: Vec<Rope> = new_file.lines().map(|x| Rope::from_string(String::from(x))).collect();
     rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
 
     output.insert(filename.clone(), ropes);
@@ -848,7 +849,7 @@ fn rename_dec_and_ref(new_name: &str,
             }
             let mut new_file = String::new();
             File::open(&filename).expect("Missing file").read_to_string(&mut new_file);
-            let mut ropes: Vec<Rope> = new_file.lines().map(|x| Rope::from_string(String::from_str(x))).collect();
+            let mut ropes: Vec<Rope> = new_file.lines().map(|x| Rope::from_string(String::from(x))).collect();
             rename(&mut ropes, file_col, file_line, file_col_end, file_line_end, new_name);
             output.insert(filename.clone(), ropes);
 
@@ -1480,12 +1481,14 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
             let ps = &state.session.parse_sess;
             let cratename = match attr::find_crate_name(&krate.attrs[..]) {
                 Some(name) => name.to_string(),
-                None => String::from_str("unknown_crate"),
+                None => String::from("unknown_crate"),
             };
 
+            let mut tmp = vec![];
             debug!("{:?}", token::str_to_ident(&new_name[..]));
             let mut cx = syntax::ext::base::ExtCtxt::new(ps, krate.config.clone(), //vec![],
-                                                         syntax::ext::expand::ExpansionConfig::default(cratename));
+                                                         syntax::ext::expand::ExpansionConfig::default(cratename),
+                                                         &mut tmp);
             debug!("{:?}", token::str_to_ident(&new_name[..]));
             //let ast_node = ast_map.get(ast_map.get_parent(node_to_find));
             //println!("{:?}", ast_node);
