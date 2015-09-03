@@ -1479,7 +1479,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
             let mut tmp = vec![];
             debug!("{:?}", token::str_to_ident(&new_name[..]));
-            let mut cx = syntax::ext::base::ExtCtxt::new(ps, krate.config.clone(), //vec![],
+            let cx = syntax::ext::base::ExtCtxt::new(ps, krate.config.clone(), //vec![],
                                                          syntax::ext::expand::ExpansionConfig::default(cratename),
                                                          &mut tmp);
             debug!("{:?}", token::str_to_ident(&new_name[..]));
