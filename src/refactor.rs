@@ -1115,12 +1115,6 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                                  .as_bytes()
                                                  .to_vec();
                     let mut rdr2 = &src2[..];
-                    let output_file = match File::create(&"out.out") {
-                        Ok(f) => box f,
-                        Err(e) => {
-                            panic!();
-                        }
-                    };
 
                     if let Some(par) = parent {
                         let outer_span = par.span;
