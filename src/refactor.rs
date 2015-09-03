@@ -59,12 +59,10 @@ pub enum Response {
 type ErrorCode = i32;
 
 pub fn rename_variable(input_file: &str,
-                       analysis: &str,
+                       analyzed_data: &AnalysisData,
                        new_name: &str,
                        rename_var: &str)
                        -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
-
     //for (key, value) in analyzed_data.type_map.iter() {
     //    println!("{}: \"{}\"", *key, value.get("id").unwrap());
     //}
@@ -73,8 +71,8 @@ pub fn rename_variable(input_file: &str,
     //  println!("{}: \"{:?}\"", *key, value);
     //}
 
-    let dec_map = analyzed_data.var_map;
-    let ref_map = analyzed_data.var_ref_map;
+    let dec_map = &analyzed_data.var_map;
+    let ref_map = &analyzed_data.var_ref_map;
 
     let input_file_str = String::from(input_file);
     let mut filename = String::from(input_file);
@@ -177,18 +175,16 @@ pub fn rename_variable(input_file: &str,
 }
 
 pub fn rename_type(input_file: &str,
-                   analysis: &str,
+                   analyzed_data: &AnalysisData,
                    new_name: &str,
                    rename_var: &str)
                    -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
-
     //for (key, value) in analyzed_data.type_map.iter() {
     //  println!("{}: \"{:?}\"", *key, value);
     //}
 
-    let dec_map = analyzed_data.type_map;
-    let ref_map = analyzed_data.type_ref_map;
+    let dec_map = &analyzed_data.type_map;
+    let ref_map = &analyzed_data.type_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from(input_file);
@@ -251,12 +247,10 @@ pub fn rename_type(input_file: &str,
 }
 
 pub fn rename_function(input_file: &str,
-                       analysis: &str,
+                       analyzed_data: &AnalysisData,
                        new_name: &str,
                        rename_var: &str)
                        -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
-
     // method calls refer to top level trait function in declid
 
     // rename original function
@@ -266,8 +260,8 @@ pub fn rename_function(input_file: &str,
     // then rename all functions with declid = id
     // assuming mutual exclusion, these should all be covered in func_ref_map
 
-    let dec_map = analyzed_data.func_map;
-    let ref_map = analyzed_data.func_ref_map;
+    let dec_map = &analyzed_data.func_map;
+    let ref_map = &analyzed_data.func_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from(input_file);
@@ -386,13 +380,11 @@ fn lifetimes_in_scope(map: &ast_map::Map,
 }
 
 pub fn restore_fn_lifetime(input_file: &str,
-                           analysis: &str,
+                           analyzed_data: &AnalysisData,
                            rename_var: &str)
                            -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
-
-    let dec_map = analyzed_data.func_map;
-    let ref_map = analyzed_data.func_ref_map;
+    let dec_map = &analyzed_data.func_map;
+    let ref_map = &analyzed_data.func_ref_map;
 
     let node: NodeId = rename_var.parse().unwrap();
 
@@ -428,13 +420,11 @@ pub fn restore_fn_lifetime(input_file: &str,
 }
 
 pub fn elide_fn_lifetime(input_file: &str,
-                         analysis: &str,
+                         analyzed_data: &AnalysisData,
                          rename_var: &str)
                          -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
-
-    let dec_map = analyzed_data.func_map;
-    let ref_map = analyzed_data.func_ref_map;
+    let dec_map = &analyzed_data.func_map;
+    let ref_map = &analyzed_data.func_ref_map;
 
     let node: NodeId = rename_var.parse().unwrap();
 
@@ -471,13 +461,11 @@ pub fn elide_fn_lifetime(input_file: &str,
 
 
 pub fn inline_local(input_file: &str,
-                    analysis: &str,
+                    analyzed_data: &AnalysisData,
                     rename_var: &str)
                     -> Result<HashMap<String, String>, Response> {
-    let analyzed_data = init(analysis);
-
-    let dec_map = analyzed_data.var_map;
-    let ref_map = analyzed_data.var_ref_map;
+    let dec_map = &analyzed_data.var_map;
+    let ref_map = &analyzed_data.var_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from(input_file);
@@ -623,7 +611,7 @@ fn run_compiler<'a>(args: &[String], callbacks: &mut CompilerCalls<'a>, loader: 
     driver::compile_input(sess, cfg, &input, &odir, &ofile, Some(plugins), control);
 }
 
-struct AnalysisData {
+pub struct AnalysisData {
     var_map: HashMap<String, HashMap<String, String>>,
     var_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
     type_map: HashMap<String, HashMap<String, String>>,
@@ -632,7 +620,7 @@ struct AnalysisData {
     func_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
 }
 
-fn init(analysis: &str) -> AnalysisData {
+pub fn init(analysis: &str) -> AnalysisData {
     let mut var_map = HashMap::new();
     let mut var_ref_map = HashMap::new();
     let mut type_map = HashMap::new();
@@ -811,14 +799,14 @@ fn init(analysis: &str) -> AnalysisData {
         }
     }
 
-    return AnalysisData{ var_map: var_map, var_ref_map: var_ref_map, type_map: type_map,
+    AnalysisData{ var_map: var_map, var_ref_map: var_ref_map, type_map: type_map,
                          type_ref_map: type_ref_map, func_map: func_map, func_ref_map: func_ref_map }
 }
 
 fn rename_dec_and_ref(new_name: &str,
                       rename_var: &str,
-                      dec_map: HashMap<String, HashMap<String, String>>,
-                      ref_map: HashMap<String, Vec<HashMap<String, String>>>)
+                      dec_map: &HashMap<String, HashMap<String, String>>,
+                      ref_map: &HashMap<String, Vec<HashMap<String, String>>>)
                       -> HashMap<String, String> {
     let mut output = HashMap::new();
 
@@ -905,31 +893,28 @@ fn rename(ropes: &mut Vec<Rope>,
 }
 
 // TODO more efficient, perhaps better indexed and given type of node as arg
-// Factor out the init.
 pub fn identify_id(input_filename: &str,
-                   analysis: &str,
+                   analyzed_data: &AnalysisData,
                    rename_var: &str,
                    row: i32,
                    col: i32)
                    -> String {
-    let analyzed_data = init(analysis);
-
     let _ = writeln!(&mut stderr(), "{} {} {}", rename_var, row, col);
-    for (key, value) in analyzed_data.var_map {
+    for (key, value) in &analyzed_data.var_map {
         if check_match(rename_var, input_filename, row, col, value) {
-            return key;
+            return key.clone();
         }
     }
 
-    for (key, value) in analyzed_data.type_map {
+    for (key, value) in &analyzed_data.type_map {
         if check_match(rename_var, input_filename, row, col, value) {
-            return key;
+            return key.clone();
         }
     }
 
-    for (key, value) in analyzed_data.func_map {
+    for (key, value) in &analyzed_data.func_map {
         if check_match(rename_var, input_filename, row, col, value) {
-            return key;
+            return key.clone();
         }
     }
 
@@ -940,7 +925,7 @@ fn check_match(name: &str,
                input_filename: &str,
                row: i32,
                col: i32,
-               record: HashMap<String, String>)
+               record: &HashMap<String, String>)
                -> bool {
 
     let c: i32 = record.get("file_col").unwrap().parse().unwrap();
