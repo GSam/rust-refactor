@@ -8,12 +8,12 @@ use refactor::refactor::Response;
 
 fn read_to_string(filename: &str) -> String {
     let mut file = match File::open(filename) {
-        Err(why) => panic!("couldn't open file {}", why),
+        Err(why) => panic!("couldn't open file {} {}", filename, why),
         Ok(file) => file,
     };
 
     let mut output = String::new();
-    file.read_to_string(&mut output);
+    let _ = file.read_to_string(&mut output);
 
     return output;
 }
