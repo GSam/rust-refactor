@@ -833,3 +833,15 @@ fn prevented_field_1() {
         Err(x) => assert_eq!(Response::Conflict, x)
     }
 }
+
+#[test]
+fn working_reify_1() {
+    let file = "tests/lifetime/reify_single_in.rs";
+    let output = read_to_string("tests/lifetime/reify_single_in_out.rs");
+    let analysis = read_to_string("tests/lifetime/reify_single_in.csv");
+
+    match refactor::refactor::rename_variable(&file, &analysis, "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
