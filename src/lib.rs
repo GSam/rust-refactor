@@ -4,7 +4,6 @@
 #![feature(collections)]
 #![feature(core)]
 #![feature(env)]
-#![feature(io)]
 #![feature(path)]
 #![feature(rustc_private)]
 #![feature(result_expect)]
