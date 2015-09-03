@@ -8,7 +8,6 @@ use rustc::session::{self, Session};
 use rustc::session::config::{self, Input};
 use rustc_driver::{CompilerCalls, Compilation, diagnostics_registry, driver,
                    handle_options, monitor, RustcDefaultCalls};
-use rustc_driver::pretty::{PpMode, PpSourceMode};
 use rustc::metadata::creader::LocalCrateReader;
 use rustc_resolve as resolve;
 use rustc::lint;
@@ -16,7 +15,6 @@ use rustc_lint;
 use rustc::middle::def_id::DefId;
 use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
-use rustc::middle::ty;
 use rustc::middle::ty::BoundRegion::*;
 use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
 use syntax::ast::{Name, NodeId, ExplicitSelf_};
