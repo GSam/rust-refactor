@@ -916,3 +916,15 @@ fn working_reify_7() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn working_elide_1() {
+    let file = "tests/lifetime/elide_single_in.rs";
+    let output = read_to_string("tests/lifetime/elide_single_in_out.rs");
+    let analysis = read_to_string("tests/lifetime/elide_single_in.csv");
+
+    match refactor::refactor::elide_fn_lifetime(&file, &analysis, "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
