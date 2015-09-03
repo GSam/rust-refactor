@@ -840,7 +840,19 @@ fn working_reify_1() {
     let output = read_to_string("tests/lifetime/reify_single_in_out.rs");
     let analysis = read_to_string("tests/lifetime/reify_single_in.csv");
 
-    match refactor::refactor::rename_variable(&file, &analysis, "5") {
+    match refactor::refactor::restore_fn_lifetime(&file, &analysis, "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_reify_2() {
+    let file = "tests/lifetime/reify_single_in_ret.rs";
+    let output = read_to_string("tests/lifetime/reify_single_in_ret_out.rs");
+    let analysis = read_to_string("tests/lifetime/reify_single_in_ret.csv");
+
+    match refactor::refactor::restore_fn_lifetime(&file, &analysis, "5") {
         Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
         Err(_) => assert!(false)
     }
