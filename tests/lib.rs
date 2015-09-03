@@ -892,3 +892,15 @@ fn working_reify_5() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn working_reify_6() {
+    let file = "tests/lifetime/reify_multi_named_self_ret.rs";
+    let output = read_to_string("tests/lifetime/reify_multi_named_self_ret_out.rs");
+    let analysis = read_to_string("tests/lifetime/reify_multi_named_self_ret.csv");
+
+    match refactor::refactor::restore_fn_lifetime(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
