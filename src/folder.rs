@@ -14,7 +14,7 @@ use rustc_resolve as resolve;
 use rustc_resolve::Namespace;
 use std::collections::HashMap;
 use syntax;
-use syntax::ast::{Ident, Name, NodeId};
+use syntax::ast::{Name, NodeId};
 use syntax::codemap::{DUMMY_SP, Span, Spanned, NO_EXPANSION};
 use syntax::ext::{base, expand};
 use syntax::ext::build::AstBuilder;
@@ -23,7 +23,7 @@ use rustc_front::visit::{self, Visitor};
 use syntax::util::small_vector::SmallVector;
 use trans::save::span_utils::SpanUtils;
 
-use refactor::{build_path, build_path_ident};
+use refactor::build_path;
 
 pub struct InlineFolder<'l, 'tcx: 'l> {
     save_ctxt: SaveContext<'l, 'tcx>,
@@ -157,7 +157,6 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
     }
 
     fn front_to_ast(&self, input: &Path) -> syntax::ast::Path {
-        let krate = self.tcx.map.krate();
         let ps = &self.sess.parse_sess;
         let mut tmp = vec![];
         let cx = base::ExtCtxt::new(ps, Vec::new(),//krate.config.clone(),

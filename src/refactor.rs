@@ -18,10 +18,9 @@ use rustc::middle::def_id::DefId;
 use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty::BoundRegion::*;
-use syntax::{self, diagnostic, diagnostics};
+use syntax::{diagnostic, diagnostics};
 use rustc_front::{attr, visit};
 use rustc_front::hir as ast;
-use rustc_front::hir::ExplicitSelf;
 use rustc_front::hir::Item_::{ItemImpl, ItemStruct};
 use syntax::ast::{Name, NodeId, Ident};
 use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos, Span, Spanned};
@@ -1096,11 +1095,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr, box out_borrow, &ann, true);
 
                         if let Some(other) = other {
-                            let v = pp_state.print_item(&other);
+                            let _ = pp_state.print_item(&other);
                             //debug!("{:?}", v);
                             //pp_state.print_mod(&krate.module, &krate.attrs);
                         }
-                        eof(&mut pp_state.s);
+                        let _ = eof(&mut pp_state.s);
                     }
                     let _ = out.flush();
                     debug!("{:?}", out);
@@ -1225,11 +1224,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             let out_borrow: &mut Write = &mut out;
                             let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr2, box out_borrow, &ann, true);
 
-                            pp_state.print_item(&folder.fold_item(par).get(0));
+                            let _ = pp_state.print_item(&folder.fold_item(par).get(0));
                             //debug!("{:?}", v);
                             //pp_state.print_mod(&krate.module, &krate.attrs);
                             //pp_state.print_remaining_comments();
-                            eof(&mut pp_state.s);
+                            let _ = eof(&mut pp_state.s);
                         }
                         let _ = out.flush();
                         debug!("{:?}", out);
@@ -1473,6 +1472,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 Some(name) => name.to_string(),
                 None => String::from("unknown_crate"),
             };
+            debug!("{}", cratename);
 
             debug!("{:?}", token::str_to_ident(&new_name[..]));
             debug!("{:?}", token::str_to_ident(&new_name[..]));
