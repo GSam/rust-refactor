@@ -1002,3 +1002,15 @@ fn working_elide_7() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn working_elide_8() {
+    let file = "tests/lifetime/elide_multi_anon_self_ret.rs";
+    let output = read_to_string("tests/lifetime/elide_multi_anon_self_ret_out.rs");
+    let analysis = read_to_string("tests/lifetime/elide_multi_anon_self_ret.csv");
+
+    match refactor::refactor::elide_fn_lifetime(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
