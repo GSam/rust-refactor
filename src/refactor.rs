@@ -1451,11 +1451,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
         control.after_write_deps.stop = Compilation::Stop;
         control.after_write_deps.callback = box move |state| {
-            let krate = state.krate.unwrap().clone();
+            //let krate = state.krate.unwrap().clone();
             let ast_map = state.ast_map.unwrap();
             let krate = ast_map.krate();
             LocalCrateReader::new(&state.session, &ast_map).read_crates(krate);
-            let lang_items = lang_items::collect_language_items(krate, &state.session);
+            let _ = lang_items::collect_language_items(krate, &state.session);
             /*let resolve::CrateMap {
                 def_map,
                 freevars,
@@ -1468,7 +1468,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
             // According to some condition !
             //let ps = syntax::parse::ParseSess::new();
-            let ps = &state.session.parse_sess;
+            //let ps = &state.session.parse_sess;
             let cratename = match attr::find_crate_name(&krate.attrs[..]) {
                 Some(name) => name.to_string(),
                 None => String::from("unknown_crate"),
