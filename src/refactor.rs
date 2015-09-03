@@ -1724,4 +1724,3 @@ fn path_all(sp: Span,
         segments: segments,
     }
 }
-
