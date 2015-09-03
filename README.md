@@ -15,7 +15,10 @@ https://github.com/GSam/rust
 
 Before running the tool, an additional environment variable is required for the internal compilation using stdlibs, RUST_FOLDER needs to be set to either the stage2 lib folder or the stage2/rustlib/XXX/lib folder currently.
 
-#TODO:
+###Known issues:
+There appears to be issues with running the tool on Windows. The cause appears to be the inability to locate the stdlib, but neither setting the linker flag or the sysroot appears to be of any use.
+
+###TODO:
 Renaming enum, variants + struct variants
 
 Renaming traits
