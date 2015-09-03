@@ -2,8 +2,10 @@
 extern crate csv;
 
 use getopts;
-use rustc::ast_map;
-use rustc::ast_map::Node::*;
+use rustc_front::fold::Folder;
+use rustc::front::map as ast_map;
+use rustc::front::map::Node;
+use rustc::front::map::Node::*;
 use rustc::session::{self, Session};
 use rustc::session::config::{self, Input};
 use rustc_driver::{CompilerCalls, Compilation, diagnostics_registry, driver,
@@ -16,15 +18,18 @@ use rustc::middle::def_id::DefId;
 use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty::BoundRegion::*;
-use syntax::{self, ast, attr, diagnostic, diagnostics, visit};
-use syntax::ast::{Name, NodeId, ExplicitSelf_};
-use syntax::ast::Item_::{ItemImpl, ItemStruct};
-use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos, Spanned};
-use syntax::fold::Folder;
+use syntax::{self, diagnostic, diagnostics};
+use rustc_front::{attr, visit};
+use rustc_front::hir as ast;
+use rustc_front::hir::ExplicitSelf;
+use rustc_front::hir::Item_::{ItemImpl, ItemStruct};
+use syntax::ast::{Name, NodeId, Ident};
+use syntax::codemap::{self, DUMMY_SP, FileLoader, Pos, Span, Spanned};
 use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
+use syntax::owned_slice::OwnedSlice;
 use syntax::parse::token;
-use syntax::print::pprust::{self, State};
+use rustc_front::print::pprust::{self, State};
 use syntax::print::pp::eof;
 use syntax::ptr::P;
 use std::collections::{HashMap, HashSet};
@@ -336,7 +341,7 @@ pub fn rename_function(input_file: &str,
 }
 
 fn lifetimes_in_scope(map: &ast_map::Map,
-                      scope_id: ast::NodeId)
+                      scope_id: NodeId)
                       -> Vec<ast::LifetimeDef> {
     let mut taken = Vec::new();
     let method_id_opt = match map.find(scope_id) {
@@ -1048,7 +1053,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
         if is_full {
             control.after_analysis.stop = Compilation::Stop;
             control.after_analysis.callback = box move |state| {
-                let krate = state.expanded_crate.unwrap().clone();
+                let krate = state.krate.unwrap().clone();
                 let tcx = state.tcx.unwrap();
                 let anal = state.analysis.unwrap();
                 let ast_map = &tcx.map;
@@ -1093,7 +1098,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         if let Some(other) = other {
                             let v = pp_state.print_item(&other);
                             //debug!("{:?}", v);
-                            pp_state.print_mod(&krate.module, &krate.attrs);
+                            //pp_state.print_mod(&krate.module, &krate.attrs);
                         }
                         eof(&mut pp_state.s);
                     }
@@ -1394,7 +1399,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         // We can make concrete the output lifetime as well (which may be multiple).
                         if let Some(expl_self) = expl_self {
                             match *expl_self {
-                                ExplicitSelf_::SelfRegion(ref life, _, _) => {
+                                ast::SelfRegion(ref life, _, _) => {
                                     if life.is_some() {
                                         // self has a named lifetime
                                         let mut regions = Vec::new();
@@ -1446,7 +1451,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
         control.after_write_deps.stop = Compilation::Stop;
         control.after_write_deps.callback = box move |state| {
-            let krate = state.expanded_crate.unwrap().clone();
+            let krate = state.krate.unwrap().clone();
             let ast_map = state.ast_map.unwrap();
             let krate = ast_map.krate();
             LocalCrateReader::new(&state.session, &ast_map).read_crates(krate);
@@ -1469,11 +1474,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 None => String::from("unknown_crate"),
             };
 
-            let mut tmp = vec![];
             debug!("{:?}", token::str_to_ident(&new_name[..]));
-            let cx = syntax::ext::base::ExtCtxt::new(ps, krate.config.clone(), //vec![],
-                                                         syntax::ext::expand::ExpansionConfig::default(cratename),
-                                                         &mut tmp);
             debug!("{:?}", token::str_to_ident(&new_name[..]));
             //let ast_node = ast_map.get(ast_map.get_parent(node_to_find));
             //println!("{:?}", ast_node);
@@ -1498,11 +1499,11 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         }
                     },
 
-                        _ => {}
+                    _ => {}
                 }
             }
 
-            let path = cx.path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
+            let path = build_path(DUMMY_SP, vec![token::str_to_ident(&new_name)]);
             // create resolver
             let mut resolver = resolve::create_resolver(&state.session, &ast_map, krate, resolve::MakeGlobMap::No,
             Some(Box::new(move |node: ast_map::Node, resolved: &mut bool| {
@@ -1578,7 +1579,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     idens.push(new_iden);
 
                     token::str_to_ident(&new_name[..]);
-                    let path = cx.path(DUMMY_SP, idens);
+                    let path = build_path(DUMMY_SP, idens);
 
                     // resolver resolve node id
                     println!("{:?}", path);
@@ -1591,7 +1592,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let mut t = token::str_to_ident(&new_name[..]);
                     t.ctxt = syntax_ctx;
                     debug!("{:?}", mtwt::resolve(t));
-                    let path = cx.path(DUMMY_SP, vec![t]);
+                    let path = build_path(DUMMY_SP, vec![t]);
 
                     visit::walk_crate(&mut resolver, krate);
 
@@ -1681,3 +1682,46 @@ fn make_input(free_matches: &[String]) -> Option<(Input, Option<PathBuf>)> {
         None
     }
 }
+
+pub fn build_path(span: Span, strs: Vec<Ident> ) -> ast::Path {
+    path_all(span, false, strs, Vec::new(), Vec::new(), Vec::new())
+}
+
+pub fn build_path_ident(span: Span, id: Ident) -> ast::Path {
+    build_path(span, vec!(id))
+}
+
+pub fn build_path_global(span: Span, strs: Vec<Ident> ) -> ast::Path {
+    path_all(span, true, strs, Vec::new(), Vec::new(), Vec::new())
+}
+
+fn path_all(sp: Span,
+            global: bool,
+            mut idents: Vec<Ident> ,
+            lifetimes: Vec<ast::Lifetime>,
+            types: Vec<P<ast::Ty>>,
+            bindings: Vec<P<ast::TypeBinding>> )
+            -> ast::Path {
+    let last_identifier = idents.pop().unwrap();
+    let mut segments: Vec<ast::PathSegment> = idents.into_iter()
+                                                  .map(|ident| {
+        ast::PathSegment {
+            identifier: ident,
+            parameters: ast::PathParameters::none(),
+        }
+    }).collect();
+    segments.push(ast::PathSegment {
+        identifier: last_identifier,
+        parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+            lifetimes: lifetimes,
+            types: OwnedSlice::from_vec(types),
+            bindings: OwnedSlice::from_vec(bindings),
+        })
+    });
+    ast::Path {
+        span: sp,
+        global: global,
+        segments: segments,
+    }
+}
+

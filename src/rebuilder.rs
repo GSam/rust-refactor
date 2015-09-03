@@ -12,7 +12,10 @@
 
 use self::FreshOrKept::*;
 
-use rustc::ast_map;
+use rustc_front::hir;
+use rustc_front::hir as ast;
+use rustc_front::print::pprust;
+use rustc::front::map as ast_map;
 use rustc::middle::def;
 use rustc::middle::infer::{self, InferCtxt};
 use rustc::middle::infer::region_inference::SameRegions;
@@ -21,11 +24,10 @@ use rustc::middle::subst;
 use std::cell::{Cell, RefCell};
 use std::char::from_u32;
 use std::collections::HashSet;
-use syntax::ast;
-use syntax::ast_util::name_to_dummy_lifetime;
+use syntax::{codemap};
+use syntax::ast::{DUMMY_NODE_ID, Name, NodeId};
 use syntax::owned_slice::OwnedSlice;
 use syntax::parse::token;
-use syntax::print::pprust;
 use syntax::ptr::P;
 
 struct RebuildPathInfo<'a> {
@@ -36,7 +38,7 @@ struct RebuildPathInfo<'a> {
     // (e.g., expected=1 for struct Foo<'a>)
     expected: u32,
     anon_nums: &'a HashSet<u32>,
-    region_names: &'a HashSet<ast::Name>
+    region_names: &'a HashSet<Name>
 }
 
 pub struct Rebuilder<'a, 'tcx: 'a> {
@@ -118,7 +120,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
     }
 
     fn pick_lifetime(&self,
-                     region_names: &HashSet<ast::Name>)
+                     region_names: &HashSet<Name>)
                      -> (ast::Lifetime, FreshOrKept) {
         if !region_names.is_empty() {
             // It's not necessary to convert the set of region names to a
@@ -137,7 +139,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
     }
 
     fn extract_anon_nums_and_names(&self, same_regions: &SameRegions)
-                                   -> (HashSet<u32>, HashSet<ast::Name>) {
+                                   -> (HashSet<u32>, HashSet<Name>) {
         let mut anon_nums = HashSet::new();
         let mut region_names = HashSet::new();
         for br in &same_regions.regions {
@@ -154,7 +156,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
         (anon_nums, region_names)
     }
 
-    fn extract_all_region_names(&self) -> HashSet<ast::Name> {
+    fn extract_all_region_names(&self) -> HashSet<Name> {
         let mut all_region_names = HashSet::new();
         for sr in self.same_regions {
             for br in &sr.regions {
@@ -194,7 +196,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
     fn rebuild_ty_params(&self,
                          ty_params: OwnedSlice<ast::TyParam>,
                          lifetime: ast::Lifetime,
-                         region_names: &HashSet<ast::Name>)
+                         region_names: &HashSet<Name>)
                          -> OwnedSlice<ast::TyParam> {
         ty_params.map(|ty_param| {
             let bounds = self.rebuild_ty_param_bounds(ty_param.bounds.clone(),
@@ -213,7 +215,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
     fn rebuild_ty_param_bounds(&self,
                                ty_param_bounds: OwnedSlice<ast::TyParamBound>,
                                lifetime: ast::Lifetime,
-                               region_names: &HashSet<ast::Name>)
+                               region_names: &HashSet<Name>)
                                -> OwnedSlice<ast::TyParamBound> {
         ty_param_bounds.map(|tpb| {
             match tpb {
@@ -258,7 +260,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
                          expl_self_opt: Option<ast::ExplicitSelf_>,
                          lifetime: ast::Lifetime,
                          anon_nums: &HashSet<u32>,
-                         region_names: &HashSet<ast::Name>)
+                         region_names: &HashSet<Name>)
                          -> Option<ast::ExplicitSelf_> {
         match expl_self_opt {
             Some(ref expl_self) => match *expl_self {
@@ -285,8 +287,8 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
     fn rebuild_generics(&self,
                         generics: &ast::Generics,
                         add: &Vec<ast::Lifetime>,
-                        keep: &HashSet<ast::Name>,
-                        remove: &HashSet<ast::Name>,
+                        keep: &HashSet<Name>,
+                        remove: &HashSet<Name>,
                         ty_params: OwnedSlice<ast::TyParam>,
                         where_clause: ast::WhereClause)
                         -> ast::Generics {
@@ -312,7 +314,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
                        inputs: &[ast::Arg],
                        lifetime: ast::Lifetime,
                        anon_nums: &HashSet<u32>,
-                       region_names: &HashSet<ast::Name>)
+                       region_names: &HashSet<Name>)
                        -> Vec<ast::Arg> {
         let mut new_inputs = Vec::new();
         for arg in inputs {
@@ -331,7 +333,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
     fn rebuild_output(&self, ty: &ast::FunctionRetTy,
                       lifetime: ast::Lifetime,
                       anon_nums: &HashSet<u32>,
-                      region_names: &HashSet<ast::Name>) -> ast::FunctionRetTy {
+                      region_names: &HashSet<Name>) -> ast::FunctionRetTy {
         match *ty {
             ast::Return(ref ret_ty) => ast::Return(
                 self.rebuild_arg_ty_or_output(&**ret_ty, lifetime, anon_nums, region_names)
@@ -345,7 +347,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
                                 ty: &ast::Ty,
                                 lifetime: ast::Lifetime,
                                 anon_nums: &HashSet<u32>,
-                                region_names: &HashSet<ast::Name>)
+                                region_names: &HashSet<Name>)
                                 -> P<ast::Ty> {
         let mut new_ty = P(ty.clone());
         let mut ty_queue = vec!(ty);
@@ -601,7 +603,7 @@ impl<'tcx> Resolvable<'tcx> for ty::PolyTraitRef<'tcx> {
 }
 
 fn lifetimes_in_scope(tcx: &ty::ctxt,
-                      scope_id: ast::NodeId)
+                      scope_id: NodeId)
                       -> Vec<ast::LifetimeDef> {
     let mut taken = Vec::new();
     let parent = tcx.map.get_parent(scope_id);
@@ -620,7 +622,6 @@ fn lifetimes_in_scope(tcx: &ty::ctxt,
                         taken.push_all(&sig.generics.lifetimes);
                         Some(ii.id)
                     }
-                    ast::MacImplItem(_) => tcx.sess.bug("unexpanded macro"),
                     _ => None,
                 }
             }
@@ -704,4 +705,10 @@ impl LifeGiver {
     pub fn get_generated_lifetimes(&self) -> Vec<ast::Lifetime> {
         self.generated.borrow().clone()
     }
+}
+
+fn name_to_dummy_lifetime(name: Name) -> hir::Lifetime {
+    hir::Lifetime { id: DUMMY_NODE_ID,
+                    span: codemap::DUMMY_SP,
+                    name: name }
 }

@@ -3,23 +3,27 @@ use trans::save::{generated_code, recorder, SaveContext, Data};
 
 use rustc::session::Session;
 
-use rustc::ast_map;
+use rustc::front::map as ast_map;
+use rustc_front::fold::Folder;
+use rustc_front::fold::{noop_fold_expr, noop_fold_explicit_self_underscore};
+use rustc_front::hir::*;
 use rustc::middle::def::{self, PathResolution};
 use rustc::middle::def_id::{DefId, LOCAL_CRATE};
 use rustc::middle::ty;
 use rustc_resolve as resolve;
 use rustc_resolve::Namespace;
 use std::collections::HashMap;
-use syntax::ast::*;
+use syntax;
+use syntax::ast::{Ident, Name, NodeId};
 use syntax::codemap::{DUMMY_SP, Span, Spanned, NO_EXPANSION};
 use syntax::ext::{base, expand};
 use syntax::ext::build::AstBuilder;
-use syntax::fold::Folder;
-use syntax::fold::{noop_fold_expr, noop_fold_explicit_self_underscore};
 use syntax::ptr::P;
-use syntax::visit::{self, Visitor};
+use rustc_front::visit::{self, Visitor};
 use syntax::util::small_vector::SmallVector;
 use trans::save::span_utils::SpanUtils;
+
+use refactor::{build_path, build_path_ident};
 
 pub struct InlineFolder<'l, 'tcx: 'l> {
     save_ctxt: SaveContext<'l, 'tcx>,
@@ -100,7 +104,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             path = &not_generated;
         }
 
-        let path_data = self.save_ctxt.get_path_data(id, path);
+        let path_data = self.save_ctxt.get_path_data(id, &self.front_to_ast(path));
         let path_data = match path_data {
             Some(pd) => pd,
             None => {
@@ -152,6 +156,17 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         false
     }
 
+    fn front_to_ast(&self, input: &Path) -> syntax::ast::Path {
+        let krate = self.tcx.map.krate();
+        let ps = &self.sess.parse_sess;
+        let mut tmp = vec![];
+        let mut cx = base::ExtCtxt::new(ps, Vec::new(),//krate.config.clone(),
+                                        expand::ExpansionConfig::default("".to_string()),
+                                        &mut tmp);
+
+        cx.path_ident(input.span.clone(), input.segments[0].identifier)
+    }
+
 //pub fn noop_fold_expr<T: Folder>(Expr {id, node, span}: Expr, folder: &mut T) -> Expr {}
 
 }
@@ -201,13 +216,8 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
                                 let krate = self.tcx.map.krate();
                                 let ps = &self.sess.parse_sess;
 
-                                let mut tmp = vec![];
-                                let mut cx = base::ExtCtxt::new(ps, krate.config.clone(),
-                                                                expand::ExpansionConfig::default("".to_string()),
-                                                                &mut tmp);
-
                                 t.ctxt = s_ctx;
-                                let path = cx.path(DUMMY_SP, vec![t]);
+                                let path = build_path(DUMMY_SP, vec![t]);
                                 resolution = resolver.resolve_path(self.node_to_find, &path, 0, Namespace::ValueNS, true);
                             } else {
                                 resolution = resolver.resolve_path(self.node_to_find, &path.0, 0, path.1, true);
