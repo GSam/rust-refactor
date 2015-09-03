@@ -160,7 +160,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
         let krate = self.tcx.map.krate();
         let ps = &self.sess.parse_sess;
         let mut tmp = vec![];
-        let mut cx = base::ExtCtxt::new(ps, Vec::new(),//krate.config.clone(),
+        let cx = base::ExtCtxt::new(ps, Vec::new(),//krate.config.clone(),
                                         expand::ExpansionConfig::default("".to_string()),
                                         &mut tmp);
 
