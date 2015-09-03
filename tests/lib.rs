@@ -1014,3 +1014,18 @@ fn working_elide_8() {
         Err(_) => assert!(false)
     }
 }
+
+#[test]
+fn working_elide_9() {
+    // TODO needs to be fixed, elide when there are non-elidables in input
+    // e.g. self: 'a, 'b, 'static -> 'a
+    // ===> self, _, 'static -> _
+    let file = "tests/lifetime/elide_multi_static_self_ret.rs";
+    let output = read_to_string("tests/lifetime/elide_multi_static_self_ret_out.rs");
+    let analysis = read_to_string("tests/lifetime/elide_multi_static_self_ret.csv");
+
+    match refactor::refactor::elide_fn_lifetime(&file, &analysis, "9") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
