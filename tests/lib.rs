@@ -967,6 +967,7 @@ fn working_elide_4() {
 
 #[test]
 fn working_elide_5() {
+    // TODO this could be fixed
     // At the moment, don't bother eliding even input if output is invalid
     let file = "tests/lifetime/elide_single_static_ret.rs";
     let analysis = read_to_string("tests/lifetime/elide_single_static_ret.csv");
@@ -974,5 +975,17 @@ fn working_elide_5() {
     match refactor::refactor::elide_fn_lifetime(&file, &analysis, "5") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
+    }
+}
+
+#[test]
+fn working_elide_6() {
+    let file = "tests/lifetime/elide_multi_in.rs";
+    let output = read_to_string("tests/lifetime/elide_multi_in_out.rs");
+    let analysis = read_to_string("tests/lifetime/elide_multi_in.csv");
+
+    match refactor::refactor::elide_fn_lifetime(&file, &analysis, "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
     }
 }
