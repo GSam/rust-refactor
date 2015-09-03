@@ -578,11 +578,11 @@ fn run_compiler<'a>(args: &[String], callbacks: &mut CompilerCalls<'a>, loader: 
         None => return
     };
 
+    let sopts = config::build_session_options(&matches);
+
     let descriptions = diagnostics_registry();
 
-    do_or_return!(callbacks.early_callback(&matches, &descriptions));
-
-    let sopts = config::build_session_options(&matches);
+    do_or_return!(callbacks.early_callback(&matches, &descriptions, sopts.color));
 
     let (odir, ofile) = make_output(&matches);
     let (input, input_file_path) = match make_input(&matches.free) {
@@ -1010,13 +1010,6 @@ impl RefactorCalls {
 }
 
 impl<'a> CompilerCalls<'a> for RefactorCalls {
-    fn early_callback(&mut self,
-                      _: &getopts::Matches,
-                      _: &diagnostics::registry::Registry)
-                      -> Compilation {
-        Compilation::Continue
-    }
-
     fn late_callback(&mut self,
                      m: &getopts::Matches,
                      s: &Session,
