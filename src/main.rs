@@ -35,15 +35,8 @@ fn main() {
     }
 
     let path = Path::new(&args[3]);
-    let s;
+    let input_id;
     let mut rename_var = &args[4];
-
-    /*let mut file = match File::open(&path) {
-        Err(why) => panic!("couldn't open file {}", why),
-        Ok(file) => file,
-    };
-    let mut file_str = String::new();
-    let _ = file.read_to_string(&mut file_str);*/
 
     let mut analysis = match File::open(&args[2]) {
         Err(why) => panic!("couldn't open file {}", why),
@@ -55,11 +48,11 @@ fn main() {
 
     let v: Vec<_> = args[4].split(":").collect();
     if v.len() == 3 {
-        s = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_str,
+        input_id = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_str,
                                             v[0], v[1].parse().unwrap(), 
                                             v[2].parse().unwrap());
-        let _ = writeln!(&mut std::io::stderr(), "NODE ID: {}", s);
-        rename_var = &s;
+        let _ = writeln!(&mut std::io::stderr(), "NODE ID: {}", input_id);
+        rename_var = &input_id;
     }
 
     match &*args[1] {
