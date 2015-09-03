@@ -3,7 +3,7 @@ use std::fmt::Debug;
 struct Point;
 
 impl Point {
-    fn foo<'a,'b,'c>(&'a self, x: &'b Debug, y: &'c Debug) -> &'a Point {
+    fn foo<'b, 'c, 'a>(&'a self, x: &'b Debug, y: &'c Debug) -> &'a Point {
         println!("{:?} {:?}", x, y);
         self
     }
