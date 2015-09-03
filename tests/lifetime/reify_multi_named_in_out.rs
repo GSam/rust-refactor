@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-fn foo<'a, 'b>(x: &'a Debug, y: &'b Debug) {
+fn foo<'b, 'a>(x: &'a Debug, y: &'b Debug) {
     println!("{:?} {:?}", x, y);
 }
 
