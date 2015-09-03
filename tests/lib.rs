@@ -1,4 +1,3 @@
-#![feature(io)]
 
 extern crate refactor;
 
@@ -875,6 +874,18 @@ fn working_reify_4() {
     let file = "tests/lifetime/reify_multi_in.rs";
     let output = read_to_string("tests/lifetime/reify_multi_in_out.rs");
     let analysis = read_to_string("tests/lifetime/reify_multi_in.csv");
+
+    match refactor::refactor::restore_fn_lifetime(&file, &analysis, "5") {
+        Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
+        Err(_) => assert!(false)
+    }
+}
+
+#[test]
+fn working_reify_5() {
+    let file = "tests/lifetime/reify_multi_named_in.rs";
+    let output = read_to_string("tests/lifetime/reify_multi_named_in_out.rs");
+    let analysis = read_to_string("tests/lifetime/reify_multi_named_in.csv");
 
     match refactor::refactor::restore_fn_lifetime(&file, &analysis, "5") {
         Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
