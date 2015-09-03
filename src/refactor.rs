@@ -1089,7 +1089,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let mut out = Vec::new();
                     let ann = pprust::NoAnn;
                     {
-                        let mut out_borrow: &mut Write = &mut out;
+                        let out_borrow: &mut Write = &mut out;
                         let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr, box out_borrow, &ann, true);
 
                         if let Some(other) = other {
@@ -1225,7 +1225,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                         let mut out = Vec::new();
                         {
-                            let mut out_borrow: &mut Write = &mut out;
+                            let out_borrow: &mut Write = &mut out;
                             let mut pp_state = State::new_from_input(state.session.codemap(), state.session.diagnostic(), input.clone(), &mut rdr2, box out_borrow, &ann, true);
 
                             pp_state.print_item(&folder.fold_item(par).get(0));
