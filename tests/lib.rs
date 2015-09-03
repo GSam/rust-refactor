@@ -166,7 +166,7 @@ fn prevented_variable_1() {
     let file = "tests/variable/basic_rename.rs";
     let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &analysis, "j", "36") {
+    match refactor::refactor::rename_variable(&file, &analysis, "j", "36") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -177,7 +177,7 @@ fn prevented_variable_2() {
     let file = "tests/variable/basic_rename.rs";
     let analysis = read_to_string("tests/variable/basic_rename.csv");
 
-    match refactor::refactor::rename_variable(&"tests/variable/basic_rename.rs", &analysis, "x", "36") {
+    match refactor::refactor::rename_variable(&file, &analysis, "x", "36") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -188,7 +188,7 @@ fn prevented_variable_3() {
     let file = "tests/variable/override.rs";
     let analysis = read_to_string("tests/variable/override.csv");
 
-    match refactor::refactor::rename_variable(&"tests/variable/override.rs", &analysis, "v", "9") {
+    match refactor::refactor::rename_variable(&file, &analysis, "v", "9") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -448,7 +448,7 @@ fn prevented_struct_1() {
     let file = "tests/type/conflict_struct.rs";
     let analysis = read_to_string("tests/type/conflict_struct.csv");
 
-    match refactor::refactor::rename_type(&"tests/type/conflict_struct.rs", &analysis, "P", "4") {
+    match refactor::refactor::rename_type(&file, &analysis, "P", "4") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -459,7 +459,7 @@ fn prevented_struct_2() {
     let file = "tests/type/conflict_mod_struct.rs";
     let analysis = read_to_string("tests/type/conflict_mod_struct.csv");
 
-    match refactor::refactor::rename_type(&"tests/type/conflict_mod_struct.rs", &analysis, "B", "6") {
+    match refactor::refactor::rename_type(&file, &analysis, "B", "6") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -470,7 +470,7 @@ fn prevented_struct_3() {
     let file = "tests/type/conflict_use_mod_struct.rs";
     let analysis = read_to_string("tests/type/conflict_use_mod_struct.csv");
 
-    match refactor::refactor::rename_type(&"tests/type/conflict_use_mod_struct.rs", &analysis, "B", "6") {
+    match refactor::refactor::rename_type(&file, &analysis, "B", "6") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
@@ -482,7 +482,7 @@ fn working_method_1() {
     let output = read_to_string("tests/function/working_method_1_out.rs");
     let analysis = read_to_string("tests/function/basic_default_method.csv");
 
-    match refactor::refactor::rename_function(&"tests/function/basic_default_method.rs", &analysis, "func", "5") {
+    match refactor::refactor::rename_function(&file, &analysis, "func", "5") {
         Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
         Err(_) => assert!(false)
     }
@@ -494,7 +494,7 @@ fn working_method_2() {
     let output = read_to_string("tests/function/working_method_2_out.rs");
     let analysis = read_to_string("tests/function/impl_override_method.csv");
 
-    match refactor::refactor::rename_function(&"tests/function/impl_override_method.rs", &analysis, "func", "5") {
+    match refactor::refactor::rename_function(&file, &analysis, "func", "5") {
         Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
         Err(_) => assert!(false)
     }
@@ -506,7 +506,7 @@ fn working_method_3() {
     let output = read_to_string("tests/function/alex_override_method_out2.rs");
     let analysis = read_to_string("tests/function/alex_override_method.csv");
 
-    match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &analysis, "grue", "74") {
+    match refactor::refactor::rename_function(&file, &analysis, "grue", "74") {
         Ok(x) => assert_eq!(output.trim(), x.get(file).unwrap().trim()),
         Err(_) => assert!(false)
     }
@@ -517,7 +517,7 @@ fn not_working_method_1() {
     let file = "tests/function/alex_override_method.rs";
     let analysis = read_to_string("tests/function/alex_override_method.csv");
 
-    match refactor::refactor::rename_function(&"tests/function/alex_override_method.rs", &analysis, "foo", "74") {
+    match refactor::refactor::rename_function(&file, &analysis, "foo", "74") {
         Ok(_) => assert!(false),
         Err(x) => assert_eq!(Response::Conflict, x)
     }
