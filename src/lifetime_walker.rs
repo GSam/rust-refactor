@@ -1,8 +1,10 @@
 
+use syntax::ast::Name;
+use std::collections::HashSet;
+//use syntax::ast::*;
+//use syntax::visit::{self, Visitor};
 use rustc_front::hir::*;
 use rustc_front::visit::{self, Visitor};
-use std::collections::HashSet;
-use syntax::ast::Name;
 use syntax::codemap::Span;
 
 pub struct LifetimeWalker {

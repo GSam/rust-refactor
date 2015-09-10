@@ -4,9 +4,8 @@ use trans::save::{generated_code, recorder, SaveContext, Data};
 use rustc::session::Session;
 
 use rustc::front::map as ast_map;
-use rustc_front::fold::Folder;
-use rustc_front::fold::{noop_fold_expr, noop_fold_explicit_self_underscore};
-use rustc_front::hir::*;
+use rustc_front::hir;
+use rustc_front::lowering;
 use rustc::middle::def::{self, PathResolution};
 use rustc::middle::def_id::{DefId, LOCAL_CRATE};
 use rustc::middle::ty;
@@ -14,12 +13,14 @@ use rustc_resolve as resolve;
 use rustc_resolve::Namespace;
 use std::collections::HashMap;
 use syntax;
-use syntax::ast::{Name, NodeId};
+use syntax::ast::*;
 use syntax::codemap::{DUMMY_SP, Span, Spanned, NO_EXPANSION};
 use syntax::ext::{base, expand};
 use syntax::ext::build::AstBuilder;
 use syntax::ptr::P;
 use rustc_front::visit::{self, Visitor};
+use syntax::fold::Folder;
+use syntax::fold::{noop_fold_expr, noop_fold_explicit_self_underscore};
 use syntax::util::small_vector::SmallVector;
 use trans::save::span_utils::SpanUtils;
 
@@ -36,7 +37,7 @@ pub struct InlineFolder<'l, 'tcx: 'l> {
     pub type_node_id: NodeId,
     pub usages: u32,
     pub mutable: bool,
-    pub paths: HashMap<(Path, Namespace), def::Def>,
+    pub paths: HashMap<(hir::Path, Namespace), def::Def>,
     pub changed_paths: bool,
 }
 
@@ -68,7 +69,7 @@ impl <'l, 'tcx> InlineFolder<'l, 'tcx> {
             DeclLocal(ref l) if l.pat.id == self.node_to_find => {
                 self.to_replace = l.init.clone();
                 l.init.clone().unwrap().and_then(
-                    |expr|{ visit::walk_expr(self, &expr); }
+                    |expr|{ visit::walk_expr(self, &*lowering::lower_expr(&expr.clone())); }
                 );
                 if let Some(def_type) = l.ty.as_ref() {
                     self.type_node_id = def_type.id;
@@ -217,6 +218,7 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
 
                                 t.ctxt = s_ctx;
                                 let path = build_path(DUMMY_SP, vec![t]);
+                                //let path = lowering::lower_path(&path);
                                 resolution = resolver.resolve_path(self.node_to_find, &path, 0, Namespace::ValueNS, true);
                             } else {
                                 resolution = resolver.resolve_path(self.node_to_find, &path.0, 0, path.1, true);
@@ -249,7 +251,7 @@ impl <'l, 'tcx> Folder for InlineFolder<'l, 'tcx> {
 }
 
 impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
-    fn visit_expr(&mut self, ex: &Expr) {
+    fn visit_expr(&mut self, ex: &hir::Expr) {
         let node_to_find = self.node_to_find;
         let mut resolver = resolve::create_resolver(&self.sess, &self.tcx.map,
                                                     &self.tcx.map.krate(),
@@ -271,7 +273,7 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
             }
         )));
         match ex.node {
-            ExprPath(_, ref path) => {
+            hir::ExprPath(_, ref path) => {
                 //self.process_path(ex.id, path, None);
                 visit::walk_crate(&mut resolver, &self.tcx.map.krate());
                 let resolution = resolver.resolve_path(self.node_to_find, &path,

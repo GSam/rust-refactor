@@ -13,8 +13,6 @@
 use self::FreshOrKept::*;
 
 use rustc_front::hir;
-use rustc_front::hir as ast;
-use rustc_front::print::pprust;
 use rustc::front::map as ast_map;
 use rustc::middle::def;
 use rustc::middle::infer::{self, InferCtxt};
@@ -26,6 +24,8 @@ use std::char::from_u32;
 use std::collections::HashSet;
 use syntax::{codemap};
 use syntax::ast::{DUMMY_NODE_ID, Name, NodeId};
+use syntax::ast;
+//use rustc_front::hir as ast;
 use syntax::owned_slice::OwnedSlice;
 use syntax::parse::token;
 use syntax::ptr::P;
@@ -382,9 +382,7 @@ impl<'a, 'tcx> Rebuilder<'a, 'tcx> {
                         None => {
                             self.tcx
                                 .sess
-                                .fatal(&format!(
-                                        "unbound path {}",
-                                        pprust::path_to_string(path)))
+                                .fatal("unbound path")
                         }
                         Some(d) => d.full_def()
                     };
@@ -602,7 +600,7 @@ impl<'tcx> Resolvable<'tcx> for ty::PolyTraitRef<'tcx> {
     }
 }
 
-fn lifetimes_in_scope(tcx: &ty::ctxt,
+/*fn lifetimes_in_scope(tcx: &ty::ctxt,
                       scope_id: NodeId)
                       -> Vec<ast::LifetimeDef> {
     let mut taken = Vec::new();
@@ -610,7 +608,7 @@ fn lifetimes_in_scope(tcx: &ty::ctxt,
     let method_id_opt = match tcx.map.find(parent) {
         Some(node) => match node {
             ast_map::NodeItem(item) => match item.node {
-                ast::ItemFn(_, _, _, _, ref gen, _) => {
+                hir::ItemFn(_, _, _, _, ref gen, _) => {
                     taken.push_all(&gen.lifetimes);
                     None
                 },
@@ -618,7 +616,7 @@ fn lifetimes_in_scope(tcx: &ty::ctxt,
             },
             ast_map::NodeImplItem(ii) => {
                 match ii.node {
-                    ast::MethodImplItem(ref sig, _) => {
+                    hir::MethodImplItem(ref sig, _) => {
                         taken.push_all(&sig.generics.lifetimes);
                         Some(ii.id)
                     }
@@ -635,7 +633,7 @@ fn lifetimes_in_scope(tcx: &ty::ctxt,
         match tcx.map.find(parent) {
             Some(node) => match node {
                 ast_map::NodeItem(item) => match item.node {
-                    ast::ItemImpl(_, _, ref gen, _, _, _) => {
+                    hir::ItemImpl(_, _, ref gen, _, _, _) => {
                         taken.push_all(&gen.lifetimes);
                     }
                     _ => ()
@@ -646,7 +644,7 @@ fn lifetimes_in_scope(tcx: &ty::ctxt,
         }
     }
     return taken;
-}
+}*/
 
 // LifeGiver is responsible for generating fresh lifetime names
 pub struct LifeGiver {
@@ -656,7 +654,7 @@ pub struct LifeGiver {
 }
 
 impl LifeGiver {
-    pub fn with_taken(taken: &[ast::LifetimeDef]) -> LifeGiver {
+    pub fn with_taken(taken: &[hir::LifetimeDef]) -> LifeGiver {
         let mut taken_ = HashSet::new();
         for lt in taken {
             let lt_name = lt.lifetime.name.to_string();
@@ -707,8 +705,8 @@ impl LifeGiver {
     }
 }
 
-fn name_to_dummy_lifetime(name: Name) -> hir::Lifetime {
-    hir::Lifetime { id: DUMMY_NODE_ID,
+fn name_to_dummy_lifetime(name: Name) -> ast::Lifetime {
+    ast::Lifetime { id: DUMMY_NODE_ID,
                     span: codemap::DUMMY_SP,
                     name: name }
 }

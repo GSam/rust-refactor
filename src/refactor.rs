@@ -2,7 +2,7 @@
 extern crate csv;
 
 use getopts;
-use rustc_front::fold::Folder;
+use rustc_front::lowering;
 use rustc::front::map as ast_map;
 use rustc::front::map::Node;
 use rustc::front::map::Node::*;
@@ -18,7 +18,9 @@ use rustc::middle::def_id::DefId;
 use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty::BoundRegion::*;
+use syntax;
 use syntax::{diagnostic, diagnostics};
+use syntax::fold::Folder;
 use rustc_front::{attr, visit};
 use rustc_front::hir as ast;
 use rustc_front::hir::Item_::{ItemImpl, ItemStruct};
@@ -28,7 +30,7 @@ use syntax::ext::build::AstBuilder;
 use syntax::ext::mtwt;
 use syntax::owned_slice::OwnedSlice;
 use syntax::parse::token;
-use rustc_front::print::pprust::{self, State};
+use syntax::print::pprust::{self, State};
 use syntax::print::pp::eof;
 use syntax::ptr::P;
 use std::collections::{HashMap, HashSet};
@@ -48,6 +50,8 @@ use folder::{InlineFolder, LifetimeFolder};
 use loader::ReplaceLoader;
 use rebuilder::{Rebuilder, LifeGiver};
 use lifetime_walker::LifetimeWalker;
+use ast_map::{Forest, map_crate};
+use ast_map as custom_map;
 
 #[derive(Debug, PartialEq)]
 pub enum Response {
@@ -1040,6 +1044,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                 let krate = state.krate.unwrap().clone();
                 let tcx = state.tcx.unwrap();
                 let anal = state.analysis.unwrap();
+                let mut new_for = Forest::new(krate.clone());
+                let ast_map_original = map_crate(&mut new_for);
                 let ast_map = &tcx.map;
                 if r_type == RefactorType::InlineLocal {
 
@@ -1054,8 +1060,8 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     let mut parent = None;
                     let mut other = None;
-                    match ast_map.get(ast_map.get_parent(node_to_find)) {
-                        NodeItem(ref item) => {
+                    match ast_map_original.get(ast_map.get_parent(node_to_find)) {
+                        custom_map::NodeItem(ref item) => {
                             parent = Some(P((*item).clone()));
                             other = Some((*item).clone());
                             debug!("{:?}", pprust::item_to_string(item));
@@ -1175,7 +1181,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // However, you must check no one redeclares a in the meantime!
                             if let Some(ref to_replace) = folder.to_replace {
                                 match (**to_replace).node {
-                                    ast::ExprPath(..) => {
+                                    syntax::ast::ExprPath(..) => {
                                         // Alias case:
                                     },
                                     _ => {
@@ -1228,20 +1234,20 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                     let taken = lifetimes_in_scope(&tcx.map, node_to_find);
                     let life_giver = LifeGiver::with_taken(&taken[..]);
-                    let node_inner = match ast_map.find(node_to_find) {
+                    let node_inner = match ast_map_original.find(node_to_find) {
                         Some(ref node) => match *node {
-                            ast_map::NodeItem(ref item) => {
+                            custom_map::NodeItem(ref item) => {
                                 match item.node {
-                                    ast::ItemFn(ref fn_decl, unsafety, constness, _, ref gen, ref body) => {
+                                    syntax::ast::ItemFn(ref fn_decl, unsafety, constness, _, ref gen, ref body) => {
                                         Some((fn_decl, gen, unsafety, constness,
                                               item.ident, None, item.span, body.span))
                                     },
                                     _ => None
                                 }
                             }
-                            ast_map::NodeImplItem(item) => {
+                            custom_map::NodeImplItem(item) => {
                                 match item.node {
-                                    ast::MethodImplItem(ref sig, ref body) => {
+                                    syntax::ast::MethodImplItem(ref sig, ref body) => {
                                         Some((&sig.decl,
                                               &sig.generics,
                                               sig.unsafety,
@@ -1254,9 +1260,9 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                                     _ => None,
                                 }
                             },
-                            ast_map::NodeTraitItem(item) => {
+                            custom_map::NodeTraitItem(item) => {
                                 match item.node {
-                                    ast::MethodTraitItem(ref sig, Some(ref body)) => {
+                                    syntax::ast::MethodTraitItem(ref sig, Some(ref body)) => {
                                         Some((&sig.decl,
                                               &sig.generics,
                                               sig.unsafety,
@@ -1286,17 +1292,19 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                     let mut out_walker = LifetimeWalker::new();
 
                     if let Some(expl_self) = expl_self {
-                        visit::walk_explicit_self(&mut in_walker, &Spanned {node: expl_self.clone(), span: DUMMY_SP});
+                        visit::walk_explicit_self(&mut in_walker,
+                                                  &Spanned {node: lowering::lower_explicit_self_underscore(expl_self), span: DUMMY_SP});
                         elided_expl_self_tmp = folder.fold_explicit_self(Spanned {node: expl_self.clone(), span: DUMMY_SP});
                         elided_expl_self = Some(&elided_expl_self_tmp.node);
                     }
 
                     for argument in fn_decl.inputs.iter() {
                         debug!("FN DECL: {:?}", argument);
-                        visit::walk_ty(&mut in_walker, &*argument.ty);
+                        visit::walk_ty(&mut in_walker, &lowering::lower_ty(&*argument.ty));
                     }
 
-                    visit::walk_fn_ret_ty(&mut out_walker, &fn_decl.output);
+                    let lowered_fn = lowering::lower_fn_decl(&fn_decl);
+                    visit::walk_fn_ret_ty(&mut out_walker, &lowered_fn.output);
 
                     if r_type == RefactorType::ElideLifetime {
                         let elided_generics = folder.fold_generics(generics.clone());
@@ -1383,7 +1391,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                         // We can make concrete the output lifetime as well (which may be multiple).
                         if let Some(expl_self) = expl_self {
                             match *expl_self {
-                                ast::SelfRegion(ref life, _, _) => {
+                                syntax::ast::SelfRegion(ref life, _, _) => {
                                     if life.is_some() {
                                         // self has a named lifetime
                                         let mut regions = Vec::new();
