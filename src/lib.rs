@@ -25,3 +25,4 @@ pub mod lifetime_walker;
 pub mod loader;
 pub mod rebuilder;
 pub mod refactor;
+pub mod ast_map;
