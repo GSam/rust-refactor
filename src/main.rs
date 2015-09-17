@@ -21,16 +21,15 @@ use refactor::refactor::init;
 
 fn main() {
     let args = env::args();
+    let args: Vec<_> = args.collect();
 
     if args.len() < 5 {
-        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn|lifetime|elide> <analysis> <src> <var> [<outvar>]");
+        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn|inline|lifetime|elide> <analysis> <src> <var> [<outvar>]");
         let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
     }
 
-    let args: Vec<_> = args.collect();
-
-    if args.len() < 6 && &*args[1] != "lifetime" && &*args[1] != "elide" {
+    if args.len() < 6 && &*args[1] != "lifetime" && &*args[1] != "elide" && &*args[1] != "inline" {
         let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
         let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
