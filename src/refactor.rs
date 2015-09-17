@@ -18,10 +18,9 @@ use rustc::middle::def_id::DefId;
 use rustc::middle::lang_items;
 use rustc::middle::infer::region_inference::SameRegions;
 use rustc::middle::ty::BoundRegion::*;
-use syntax;
-use syntax::{diagnostic, diagnostics};
+use syntax::{self, attr, diagnostic, diagnostics};
 use syntax::fold::Folder;
-use rustc_front::{attr, visit};
+use rustc_front::visit;
 use rustc_front::hir as ast;
 use rustc_front::hir::Item_::{ItemImpl, ItemStruct};
 use syntax::ast::{Name, NodeId, Ident};
@@ -528,6 +527,7 @@ fn run_compiler_resolution(root: String,
             path.push_str(&val[..]);
             vec!["refactor".to_owned(),
                 path,
+                "-Z".to_owned(), "keep_mtwt_tables".to_owned(),
                 root]
         }
         Err(e) => {vec!["refactor".to_owned(), root]},
