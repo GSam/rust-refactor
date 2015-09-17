@@ -1169,7 +1169,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
                             // If the variable is a direct alias, then it might be alright.
                             // In this case, movements or borrows are irrelevant.
                             // e.g. let a = 2;
-                            //      let b = a; // it doesn't matter if this is a copy
+                            //      let b = a; // copy, but memory shouldn't mutate underneath
                             //   or let a = &2;
                             //      let b = a; // this duplicates the reference
                             //   or let a = &mut 2;
@@ -1192,8 +1192,7 @@ impl<'a> CompilerCalls<'a> for RefactorCalls {
 
                             debug!("IS NOT MUTABLE");
                             // Immutable case:
-                            // If the final type implements the copy trait, then this should always be OK!
-                            // Either way check which paths compose the initializer and ensure they resolve
+                            // Check which paths compose the initializer and ensure they resolve
                             // to the same item at the new call site.
                             // e.g. b = 2;
                             // let a = b + c
