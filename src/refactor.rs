@@ -327,7 +327,7 @@ pub fn rename_function(input_file: &str,
 
     let output = rename_dec_and_ref(new_name, rename_var, dec_map, ref_map);
 
-    println!("{:?}", output);
+    //println!("{:?}", output);
     try!(check_reduced_graph(String::from(input_file),
                              output.iter().map(|(x,y)|
                              (x.clone(), y.clone())).collect(),
