@@ -24,12 +24,12 @@ fn main() {
     let args: Vec<_> = args.collect();
 
     if args.len() < 5 {
-        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn|inline|lifetime|elide> <analysis> <src> <var> [<outvar>]");
+        let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn|inline|reify|elide> <analysis> <src> <var> [<outvar>]");
         let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
     }
 
-    if args.len() < 6 && &*args[1] != "lifetime" && &*args[1] != "elide" && &*args[1] != "inline" {
+    if args.len() < 6 && &*args[1] != "reify" && &*args[1] != "elide" && &*args[1] != "inline" {
         let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn> <analysis> <src> <var> <outvar>");
         let _ = writeln!(&mut std::io::stderr(), "var: <nodeid> | <name>:<row or -1>:<col or -1>");
         return;
@@ -86,7 +86,7 @@ fn main() {
                 Err(x) => println!("{:?}", x)
             }
         },
-        "lifetime" => {
+        "reify" => {
             let result = refactor::refactor::restore_fn_lifetime(&args[3], &analysis_data, rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
