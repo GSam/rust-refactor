@@ -26,6 +26,7 @@ use trans::save::span_utils::SpanUtils;
 
 use refactor::build_path;
 
+// Fold local variable and replace usages with initializing expression.
 pub struct InlineFolder<'l, 'tcx: 'l> {
     save_ctxt: SaveContext<'l, 'tcx>,
     sess: &'l Session,
@@ -301,6 +302,7 @@ impl<'l, 'tcx, 'v> Visitor<'v> for InlineFolder<'l, 'tcx> {
     }
 }
 
+// Fold lifetimes so they are all removed.
 pub struct LifetimeFolder {
     pub has_bounds: bool,
     pub expl_self: Name,
