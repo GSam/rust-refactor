@@ -52,6 +52,7 @@ use lifetime_walker::LifetimeWalker;
 use ast_map::{Forest, map_crate};
 use ast_map as custom_map;
 
+// The general idea is to expand the variants to be more fine-grained.
 #[derive(Debug, PartialEq)]
 pub enum Response {
     Error,
@@ -61,6 +62,8 @@ pub enum Response {
 
 type ErrorCode = i32;
 
+// Renames a variable (or variable-like construct).
+// This includes constants, fields, and function parameters.
 pub fn rename_variable(input_file: &str,
                        analyzed_data: &AnalysisData,
                        new_name: &str,
@@ -177,6 +180,7 @@ pub fn rename_variable(input_file: &str,
     Ok(output)
 }
 
+// Rename concrete types (structs, enums and struct enums).
 pub fn rename_type(input_file: &str,
                    analyzed_data: &AnalysisData,
                    new_name: &str,
@@ -249,6 +253,7 @@ pub fn rename_type(input_file: &str,
     Ok(rename_dec_and_ref(new_name, rename_var, dec_map, ref_map))
 }
 
+// Rename functions and methods.
 pub fn rename_function(input_file: &str,
                        analyzed_data: &AnalysisData,
                        new_name: &str,
@@ -336,6 +341,7 @@ pub fn rename_function(input_file: &str,
     Ok(output)
 }
 
+// Identifies the current lifetimes in scope for finding an unused lifetime.
 fn lifetimes_in_scope(map: &ast_map::Map,
                       scope_id: NodeId)
                       -> Vec<ast::LifetimeDef> {
@@ -382,6 +388,7 @@ fn lifetimes_in_scope(map: &ast_map::Map,
     return taken;
 }
 
+// Reify the lifetimes in a signature
 pub fn restore_fn_lifetime(input_file: &str,
                            analyzed_data: &AnalysisData,
                            rename_var: &str)
@@ -422,12 +429,13 @@ pub fn restore_fn_lifetime(input_file: &str,
     Ok(output)
 }
 
+// Elide the lifetimes in a signature
 pub fn elide_fn_lifetime(input_file: &str,
                          analyzed_data: &AnalysisData,
                          rename_var: &str)
                          -> Result<HashMap<String, String>, Response> {
     let dec_map = &analyzed_data.func_map;
-    let ref_map = &analyzed_data.func_ref_map;
+    //let ref_map = &analyzed_data.func_ref_map;
 
     let node: NodeId = rename_var.parse().unwrap();
 
@@ -463,12 +471,13 @@ pub fn elide_fn_lifetime(input_file: &str,
 }
 
 
+// Inline a local variable
 pub fn inline_local(input_file: &str,
                     analyzed_data: &AnalysisData,
                     rename_var: &str)
                     -> Result<HashMap<String, String>, Response> {
     let dec_map = &analyzed_data.var_map;
-    let ref_map = &analyzed_data.var_ref_map;
+    //let ref_map = &analyzed_data.var_ref_map;
     let node: NodeId = rename_var.parse().unwrap();
 
     let input_file_str = String::from(input_file);
@@ -498,6 +507,7 @@ pub fn inline_local(input_file: &str,
     Ok(output)
 }
 
+// Used to check same-block conflicts in modules (since name resolution doesn't seem to).
 fn check_reduced_graph(root: String,
                        files: Vec<(String, String)>,
                        new_name: String,
@@ -560,6 +570,7 @@ fn run_compiler_resolution(root: String,
     )
 }
 
+// Basically a clone of the function librustc_driver
 fn run_compiler<'a>(args: &[String], callbacks: &mut CompilerCalls<'a>, loader: Box<FileLoader>) {
     macro_rules! do_or_return {($expr: expr) => {
         match $expr {
@@ -616,6 +627,7 @@ fn run_compiler<'a>(args: &[String], callbacks: &mut CompilerCalls<'a>, loader: 
     driver::compile_input(sess, cfg, &input, &odir, &ofile, Some(plugins), control);
 }
 
+// Essentially the CSV file in a more accessible manner.
 pub struct AnalysisData {
     var_map: HashMap<String, HashMap<String, String>>,
     var_ref_map: HashMap<String, Vec<HashMap<String, String>>>,
@@ -808,6 +820,7 @@ pub fn init(analysis: &str) -> AnalysisData {
                          type_ref_map: type_ref_map, func_map: func_map, func_ref_map: func_ref_map }
 }
 
+// Convenience function for replacing the declaration and all references.
 fn rename_dec_and_ref(new_name: &str,
                       rename_var: &str,
                       dec_map: &HashMap<String, HashMap<String, String>>,
@@ -897,6 +910,8 @@ fn rename(ropes: &mut Vec<Rope>,
     to_change[0].src_insert(file_col, new_name.to_string());
 }
 
+// Find the id associated with the row and column given
+// (or a -1 wildcard is given and any with a matching name will be returned).
 // TODO more efficient, perhaps better indexed and given type of node as arg
 pub fn identify_id(input_filename: &str,
                    analyzed_data: &AnalysisData,
@@ -1678,6 +1693,7 @@ fn make_input(free_matches: &[String]) -> Option<(Input, Option<PathBuf>)> {
     }
 }
 
+// Path functions duplicated due to HIR lowering
 pub fn build_path(span: Span, strs: Vec<Ident> ) -> ast::Path {
     path_all(span, false, strs, Vec::new(), Vec::new(), Vec::new())
 }

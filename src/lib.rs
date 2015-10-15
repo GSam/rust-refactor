@@ -2,7 +2,6 @@
 #![feature(box_patterns)]
 #![feature(catch_panic)]
 #![feature(rustc_private)]
-#![feature(result_expect)]
 #![feature(slice_splits)]
 #![feature(vec_push_all)]
 
