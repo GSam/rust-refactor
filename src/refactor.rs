@@ -528,6 +528,7 @@ fn run_compiler_resolution(root: String,
             vec!["refactor".to_owned(),
                 path,
                 "-Z".to_owned(), "keep_mtwt_tables".to_owned(),
+                //"--crate-type", "lib",
                 root]
         }
         Err(e) => {vec!["refactor".to_owned(), root]},
