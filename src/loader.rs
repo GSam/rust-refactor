@@ -10,6 +10,7 @@ pub struct ReplaceLoader {
     files: HashMap<FileName, String>,
 }
 
+// Custom file loader to replace files matching certain names for the codemap.
 impl FileLoader for ReplaceLoader {
     fn file_exists(&self, path: &Path) -> bool {
         fs::metadata(path).is_ok()

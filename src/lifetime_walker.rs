@@ -25,6 +25,7 @@ impl LifetimeWalker {
     }
 }
 
+// Walk the AST for lifetimes and count them.
 impl<'v> Visitor<'v> for LifetimeWalker {
 
     fn visit_opt_lifetime_ref(&mut self,

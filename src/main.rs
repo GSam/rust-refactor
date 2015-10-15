@@ -19,6 +19,8 @@ use std::collections::HashMap;
 
 use refactor::refactor::init;
 
+// Simple command line interface to the library.
+// Should probably use the actual getopt to be more practical.
 fn main() {
     let args = env::args();
     let args: Vec<_> = args.collect();
