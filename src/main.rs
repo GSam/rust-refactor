@@ -52,7 +52,7 @@ fn main() {
     if v.len() == 3 {
         input_id = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_data,
                                             v[0], v[1].parse().unwrap(), 
-                                            v[2].parse().unwrap());
+                                            v[2].parse().unwrap(), None);
         let _ = writeln!(&mut std::io::stderr(), "NODE ID: {}", input_id);
         rename_var = &input_id;
     }

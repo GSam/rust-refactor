@@ -902,23 +902,24 @@ pub fn identify_id(input_filename: &str,
                    analyzed_data: &AnalysisData,
                    rename_var: &str,
                    row: i32,
-                   col: i32)
+                   col: i32,
+                   file: Option<&str>)
                    -> String {
     let _ = writeln!(&mut stderr(), "{} {} {}", rename_var, row, col);
     for (key, value) in &analyzed_data.var_map {
-        if check_match(rename_var, input_filename, row, col, value) {
+        if check_match(rename_var, input_filename, row, col, value, file) {
             return key.clone();
         }
     }
 
     for (key, value) in &analyzed_data.type_map {
-        if check_match(rename_var, input_filename, row, col, value) {
+        if check_match(rename_var, input_filename, row, col, value, file) {
             return key.clone();
         }
     }
 
     for (key, value) in &analyzed_data.func_map {
-        if check_match(rename_var, input_filename, row, col, value) {
+        if check_match(rename_var, input_filename, row, col, value, file) {
             return key.clone();
         }
     }
@@ -930,7 +931,8 @@ fn check_match(name: &str,
                input_filename: &str,
                row: i32,
                col: i32,
-               record: &HashMap<String, String>)
+               record: &HashMap<String, String>,
+               file: Option<&str>)
                -> bool {
 
     let c: i32 = record.get("file_col").unwrap().parse().unwrap();
@@ -940,7 +942,7 @@ fn check_match(name: &str,
     let filename = record.get("file_name").unwrap();
     let n = record.get("name").unwrap();
 
-    if &name == n { //&& filename == &input_filename {
+    if &name == n && (!file.is_some() || filename == file.unwrap()) {
         if !(row < 0) {
             if row >= r && row <= r_end {
                 if !(col < 0) {
