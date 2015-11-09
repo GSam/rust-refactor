@@ -3,3 +3,13 @@ Cargo.lock
 *.swp
 *.swo
 *~
+
+*.aux
+
+papers/ASEJournalSubmission2015/main.bbl
+
+papers/ASEJournalSubmission2015/main.blg
+
+papers/ASEJournalSubmission2015/main.log
+
+papers/ASEJournalSubmission2015/main.synctex.gz
