@@ -6,10 +6,7 @@ Cargo.lock
 
 *.aux
 
-papers/ASEJournalSubmission2015/main.bbl
-
-papers/ASEJournalSubmission2015/main.blg
-
-papers/ASEJournalSubmission2015/main.log
-
-papers/ASEJournalSubmission2015/main.synctex.gz
+papers/ASEJournalSubmission/main.bbl
+papers/ASEJournalSubmission/main.blg
+papers/ASEJournalSubmission/main.log
+papers/ASEJournalSubmission/main.synctex.gz
