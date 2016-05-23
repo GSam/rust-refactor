@@ -1,17 +1,11 @@
 This is BibTeX, Version 0.99d (TeX Live 2015)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: main.aux
-A level-1 auxiliary file: introduction.aux
-A level-1 auxiliary file: background.aux
-A level-1 auxiliary file: workdone.aux
-A level-1 auxiliary file: evaluation.aux
-A level-1 auxiliary file: futurework.aux
-A level-1 auxiliary file: conclusion.aux
 The style file: plain.bst
 Database file #1: garming.bib
 You've used 40 entries,
             2118 wiz_defined-function locations,
-            675 strings with 8546 characters,
+            669 strings with 8462 characters,
 and the built_in function-call counts, 9547 in all, are:
 = -- 949
 > -- 336
