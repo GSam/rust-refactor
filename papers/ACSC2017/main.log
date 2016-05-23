@@ -1,0 +1,471 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.4.20)  10 NOV 2015 08:24
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**main.tex
+(./main.tex
+LaTeX2e <2014/05/01>
+Babel <3.9l> and hyphenation patterns for 79 languages loaded.
+(/usr/local/texlive/2014/texmf-dist/tex/latex/base/fix-cm.sty
+Package: fix-cm 2014/09/29 v1.1s fixes to LaTeX
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/base/ts1enc.def
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+)) (./svjour3.cls
+Document Class: svjour3 2007/05/08 v3.2 
+LaTeX document class for Springer journals
+Class Springer-SVJour3 Info: extra/valid Springer sub-package (-> *.clo) 
+(Springer-SVJour3)           not found in option list of \documentclass
+(Springer-SVJour3)           - autoactivating "global" style.
+(./svglov3.clo
+File: svglov3.clo 2009/12/18 v3.2 style option for standardised journals
+
+SVJour Class option: svglov3.clo for standardised journals
+)
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 147.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 148.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 149.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 150.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 151.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 152.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 153.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 154.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 155.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 156.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 157.
+\logodepth=\dimen102
+\headerboxheight=\dimen103
+\betweenumberspace=\dimen104
+\aftertext=\dimen105
+\headlineindent=\dimen106
+\c@inst=\count79
+\c@auth=\count80
+\instindent=\dimen107
+\authrun=\box26
+\authorrunning=\toks14
+\titrun=\box27
+\titlerunning=\toks15
+\combirun=\box28
+\c@lastpage=\count81
+\rubricwidth=\dimen108
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\spthmsep=\dimen109
+\c@theorem=\count87
+\c@case=\count88
+\c@conjecture=\count89
+\c@corollary=\count90
+\c@definition=\count91
+\c@example=\count92
+\c@exercise=\count93
+\c@lemma=\count94
+\c@note=\count95
+\c@problem=\count96
+\c@property=\count97
+\c@proposition=\count98
+\c@question=\count99
+\c@solution=\count100
+\c@remark=\count101
+\c@figure=\count102
+\c@table=\count103
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\figcapgap=\dimen110
+\tabcapgap=\dimen111
+\figgap=\dimen112
+\bibindent=\dimen113
+\@tempcntc=\count104
+) (/usr/local/texlive/2014/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+(/usr/local/texlive/2014/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2014/10/28 v1.0p Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count105
+))
+\Gin@req@height=\dimen114
+\Gin@req@width=\dimen115
+)
+(/usr/local/texlive/2014/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2014/10/28 v1.1a Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 137.
+)
+(/usr/local/texlive/2014/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+(/usr/local/texlive/2014/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2014/10/28 v1.8i multicolumn formatting (FMi)
+\c@tracingmulticols=\count106
+\mult@box=\box29
+\multicol@leftmargin=\dimen116
+\c@unbalance=\count107
+\c@collectmore=\count108
+\doublecol@number=\count109
+\multicoltolerance=\count110
+\multicolpretolerance=\count111
+\full@width=\dimen117
+\page@free=\dimen118
+\premulticols=\dimen119
+\postmulticols=\dimen120
+\multicolsep=\skip43
+\multicolbaselineskip=\skip44
+\partial@page=\box30
+\last@line=\box31
+\maxbalancingoverflow=\dimen121
+\mult@rightbox=\box32
+\mult@grightbox=\box33
+\mult@gfirstbox=\box34
+\mult@firstbox=\box35
+\@tempa=\box36
+\@tempa=\box37
+\@tempa=\box38
+\@tempa=\box39
+\@tempa=\box40
+\@tempa=\box41
+\@tempa=\box42
+\@tempa=\box43
+\@tempa=\box44
+\@tempa=\box45
+\@tempa=\box46
+\@tempa=\box47
+\@tempa=\box48
+\@tempa=\box49
+\@tempa=\box50
+\@tempa=\box51
+\@tempa=\box52
+\c@columnbadness=\count112
+\c@finalcolumnbadness=\count113
+\last@try=\dimen122
+\multicolovershoot=\dimen123
+\multicolundershoot=\dimen124
+\mult@nat@firstbox=\box53
+\colbreak@box=\box54
+\mc@col@check@num=\count114
+) (./main.aux
+(./introduction.aux) (./background.aux) (./workdone.aux) (./evaluation.aux)
+(./futurework.aux) (./conclusion.aux))
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+
+Unknown journal: specify \journalname{<name of your journal>} in preambel
+
+(/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count115
+\scratchdimen=\dimen125
+\scratchbox=\box55
+\nofMPsegments=\count116
+\nofMParguments=\count117
+\everyMPshowfont=\toks17
+\MPscratchCnt=\count118
+\MPscratchDim=\dimen126
+\MPnumerator=\count119
+\makeMPintoPDFobject=\count120
+\everyMPtoPDFconversion=\toks18
+) (/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/local/texlive/2014/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+))
+(/usr/local/texlive/2014/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+
+(/usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+SVJour3 warning: Missing \journalname
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 55.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 55.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 55.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 55.
+[1{/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+\openout2 = `introduction.aux'.
+
+
+(./introduction.tex [2
+
+]) [3] [4]
+\openout2 = `background.aux'.
+
+ (./background.tex [5
+
+
+] [6]
+Overfull \hbox (30.08409pt too wide) in paragraph at lines 99--100
+\OT1/cmr/m/n/10 to hi-er-ar-chi-cally di-vide code while man-ag-ing vis-i-bil-i
+ty [[]].
+ []
+
+[7] [8]
+Overfull \hbox (30.77837pt too wide) in paragraph at lines 193--194
+\OT1/cmr/m/n/10 con-texts in which they were used or their lex-i-cal scope [[]]
+.
+ []
+
+[9] [10] [11] [12] [13] [14]
+Overfull \hbox (1.27847pt too wide) in paragraph at lines 343--344
+\OT1/cmr/m/n/10 method, or-ga-nize im-ports and ten-ta-tively move class [[]].
+ []
+
+[15]
+Overfull \hbox (29.98685pt too wide) in paragraph at lines 353--354
+\OT1/cmr/m/n/10 tended to al-low a lim-ited, but flex-i-ble refac-tor-ing ca-pa
+-bil-ity [[]].
+ []
+
+
+Overfull \hbox (47.47186pt too wide) in paragraph at lines 353--354
+\OT1/cmr/m/n/10 A sim-i-lar rustfmt tool ex-ists for pretty-printing Rust code 
+[[]],
+ []
+
+[16]) [17] [18] [19]
+\openout2 = `workdone.aux'.
+
+ (./workdone.tex
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no ™ in font cmr10!
+ [20
+
+
+] [21] [22] [23] [24] [25] [26]
+[27] [28] [29] [30] [31] [32] [33]) [34] [35] [36] [37]
+\openout2 = `evaluation.aux'.
+
+ (./evaluation.tex
+[38
+
+
+] [39] [40]
+Overfull \hbox (70.22296pt too wide) in paragraph at lines 86--87
+\OT1/cmr/m/n/10 mal-iza-tion. One at-tempt used graph rewrit-ing [[]]
+ []
+
+[41] [42] [43] <refactorings.png, id=152, 562.35094pt x 456.95718pt>
+File: refactorings.png Graphic file (type png)
+
+<use refactorings.png>
+Package pdftex.def Info: refactorings.png used on input line 238.
+(pdftex.def)             Requested size: 562.34956pt x 456.95605pt.
+
+Overfull \hbox (116.41478pt too wide) in paragraph at lines 238--239
+ [] 
+ []
+
+[44] <scaling.png, id=156, 531.48563pt x 338.76563pt>
+File: scaling.png Graphic file (type png)
+ <use scaling.png>
+Package pdftex.def Info: scaling.png used on input line 273.
+(pdftex.def)             Requested size: 531.48433pt x 338.76479pt.
+
+Overfull \hbox (91.72249pt too wide) in paragraph at lines 273--274
+ [] 
+ []
+
+) [45] [46] [47 <./refactorings.png>] [48 <./scaling.png>]
+\openout2 = `futurework.aux'.
+
+ (./futurework.tex
+[49
+
+
+] [50] [51] [52]) [53] [54]
+\openout2 = `conclusion.aux'.
+
+ (./conclusion.tex
+Overfull \hbox (12.221pt too wide) in paragraph at lines 42--43
+[][] 
+ []
+
+) [55
+
+
+] (./main.bbl
+Missing character: There is no â in font cmr8!
+Missing character: There is no € in font cmr8!
+Missing character: There is no ™ in font cmr8!
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--31
+[]\OT1/cmr/m/n/8 Cox R (2011) In-tro-duc-ing Gofix. $\OT1/cmtt/m/n/8 http : / /
+ blog . golang . org /
+ []
+
+
+Underfull \hbox (badness 1226) in paragraph at lines 45--47
+[]\OT1/cmr/m/n/8 Github (2015) Rust DXR plu-gin. $\OT1/cmtt/m/n/8 https : / / g
+ithub . com / nrc / dxr / blob /
+ []
+
+
+Underfull \hbox (badness 7012) in paragraph at lines 70--72
+[]\OT1/cmr/m/n/8 Rytz L, Oder-sky M, Haller P (2012)
+ []
+
+
+Underfull \hbox (badness 2334) in paragraph at lines 70--72
+\OT1/cmr/m/n/8 Lightweight poly-mor-phic ef-fects. In: Object-Oriented Pro-gram
+-ming -- ECOOP,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 119--121
+[]\OT1/cmr/m/n/8 The Rust Com-mu-nity (2015b) Crates). $\OT1/cmtt/m/n/8 http :
+ []
+
+[56
+
+]
+Underfull \hbox (badness 4954) in paragraph at lines 139--141
+[]\OT1/cmr/m/n/8 The Rust Com-mu-nity (2015g) Rust Wiki - Com-
+ []
+
+
+Underfull \hbox (badness 7907) in paragraph at lines 139--141
+\OT1/cmr/m/n/8 piler Snap-shots. $\OT1/cmtt/m/n/8 https : / / github . com / ru
+st-[]lang / rust-[]wiki-[]backup / blob / master /
+ []
+
+
+Underfull \hbox (badness 1270) in paragraph at lines 147--149
+[]\OT1/cmr/m/n/8 The Rust Com-mu-nity (2015i) Struct syn-tax::ast::Path.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 155--157
+[]\OT1/cmr/m/n/8 The Rust Com-mu-nity (2015k) Traits. $\OT1/cmtt/m/n/8 http :
+ []
+
+
+Underfull \hbox (badness 1122) in paragraph at lines 167--170
+\OT1/cmr/m/n/8 tions are not pure by de-fault? -- Email. $\OT1/cmtt/m/n/8 https
+ : / / mail . mozilla . org / pipermail /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 172--174
+[]\OT1/cmr/m/n/8 Widmer T (2007) Un-leash-ing the Power of Refac-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 172--174
+\OT1/cmr/m/n/8 tor-ing. $\OT1/cmtt/m/n/8 http : / / www . eclipse . org / artic
+les / article . php ? file =
+ []
+
+) [57] (./main.aux (./introduction.aux) (./background.aux) (./workdone.aux)
+(./evaluation.aux) (./futurework.aux) (./conclusion.aux)) ) 
+Here is how much of TeX's memory you used:
+ 2589 strings out of 493109
+ 38354 string characters out of 6135004
+ 118923 words of memory out of 5000000
+ 5987 multiletter control sequences out of 15000+600000
+ 10168 words of font info for 36 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 38i,10n,23p,1847b,315s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/
+2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></usr/local/texlive/
+2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2
+014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/20
+14/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/local/texlive/2014
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2014/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2014/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2014/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2014/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2014/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2014/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmti8.pfb></usr/local/texlive/2014/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2014/texmf-dist/font
+s/type1/public/amsfonts/cm/cmtt8.pfb>
+Output written on main.pdf (57 pages, 338144 bytes).
+PDF statistics:
+ 243 PDF objects out of 1000 (max. 8388607)
+ 167 compressed objects within 2 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+
