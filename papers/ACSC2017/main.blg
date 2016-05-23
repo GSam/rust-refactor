@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2014)
+This is BibTeX, Version 0.99d (TeX Live 2015)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: main.aux
 A level-1 auxiliary file: introduction.aux
@@ -7,47 +7,46 @@ A level-1 auxiliary file: workdone.aux
 A level-1 auxiliary file: evaluation.aux
 A level-1 auxiliary file: futurework.aux
 A level-1 auxiliary file: conclusion.aux
-The style file: spbasic.bst
+The style file: plain.bst
 Database file #1: garming.bib
-Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 You've used 40 entries,
-            3270 wiz_defined-function locations,
-            844 strings with 9327 characters,
-and the built_in function-call counts, 25983 in all, are:
-= -- 2603
-> -- 496
-< -- 40
-+ -- 233
-- -- 150
-* -- 1723
-:= -- 3688
-add.period$ -- 40
+            2118 wiz_defined-function locations,
+            675 strings with 8546 characters,
+and the built_in function-call counts, 9547 in all, are:
+= -- 949
+> -- 336
+< -- 4
++ -- 141
+- -- 100
+* -- 382
+:= -- 1610
+add.period$ -- 124
 call.type$ -- 40
-change.case$ -- 257
-chr.to.int$ -- 28
+change.case$ -- 165
+chr.to.int$ -- 0
 cite$ -- 40
-duplicate$ -- 2494
-empty$ -- 2225
-format.name$ -- 206
-if$ -- 5363
-int.to.chr$ -- 13
-int.to.str$ -- 1
-missing$ -- 241
-newline$ -- 130
-num.names$ -- 160
-pop$ -- 717
+duplicate$ -- 365
+empty$ -- 911
+format.name$ -- 100
+if$ -- 2085
+int.to.chr$ -- 0
+int.to.str$ -- 40
+missing$ -- 10
+newline$ -- 203
+num.names$ -- 80
+pop$ -- 286
 preamble$ -- 1
-purify$ -- 210
+purify$ -- 130
 quote$ -- 0
-skip$ -- 834
+skip$ -- 310
 stack$ -- 0
-substring$ -- 2164
-swap$ -- 909
+substring$ -- 346
+swap$ -- 74
 text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 357
+type$ -- 158
 warning$ -- 0
-while$ -- 193
-width$ -- 0
-write$ -- 423
+while$ -- 94
+width$ -- 42
+write$ -- 417

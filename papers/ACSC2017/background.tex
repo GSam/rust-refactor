@@ -6,7 +6,7 @@ To provide the necessary context for understanding the Rust specific terminology
 
 To introduce the syntax of the Rust programming language, Figure \ref{Fig:hello} annotates a simple Hello World Rust program with a few additions. Notice how variables have to be annotated with `mut' in order to mutated, and how this applies to any references.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{verbatim}
 // This is a comment
@@ -37,7 +37,7 @@ fn main() {
 
 In Rust, variable bindings have `ownership' of whatever they are bound to \cite{docowner15}\cite{rustbook15}. When an owning variable moves out of scope, any resources (including those on the heap) can be freed and manual cleanup is unnecessary. By default, Rust has `move semantics' where by assigning the value of one variable to another, the object is moved to the new variable and the old variable cannot be used to reference this object anymore. Alternatively, there is the option of performing cloning and the ability to default to copying behaviour, much like primitives within the Rust language (e.g. u32 or i32 for 32-bit signed/unsigned integers).
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{verbatim}
 let v = vec![1, 2];
@@ -54,7 +54,7 @@ While straightforward ownership with cloning probably provides a good deal of th
 This system does potentially add complexity during coding; when returning references for instance, the compiler might need additional help to infer the borrowing lifetimes of the different parameters and returns. In order to do so, much like generics (in Java or C++) which parameterize functions or types over some generic type, there is the additional of lifetime parameters (which precede any normal generic types and annotated using a prefixing apostrophe) to describe the lifetime of the input and output variables.
 
 %[TODO] Example of lifetime parameters?
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 {\verb|fn foo<|}{\color{blue} \verb|'a|}{\verb|>(x: &|}
 {\color{blue} \verb|'a|}{\verb| Debug)|}
@@ -82,7 +82,7 @@ REIFIED: fn get_mut<'a>(&'a mut self) -> &'a mut T
 \paragraph{Traits}
 A trait is a collection of methods defined for an unknown type which is denoted by `Self'. Traits define interfaces, but do not follow the standard notion of inheritance \cite{traitexample15}. Traits can be composed of other traits, and any conflicting methods must be resolved if they occur. Traits allow definition of default implementations and most importantly, traits are implemented for data types -- specifically structs and enums. Basically, where a type implements a trait, you can be expected to call any of the methods present in that trait on any object of that type. Rust allows limited operator overloading using traits. The `+' operator for instance, can be overloaded by creating an implementation for the corresponding trait `Add'.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{verbatim}
         struct Cow;                    trait Moo {

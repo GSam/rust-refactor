@@ -23,7 +23,7 @@ Performing renaming without any of the necessary checks is not a particularly di
 \subsubsection{Super-block conflict}
 Super-block conflicts occur when a new name coincides with one declared in an outer enclosing block. In this situation, any references to the name in the outer block could be shadowed by the new name.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{verbatim}
               int A = 1;                         int A = 1;
               int B = 2;                         int B = 2;
@@ -39,7 +39,7 @@ Super-block conflicts occur when a new name coincides with one declared in an ou
 \subsubsection{Sub-block conflict}
 Sub-block conflicts occur when a new name coincides with one declared in an inner sub-block. In this situation, any references to the name in the outer block when changed to the new name might be shadowed by the existing declaration in the sub-block.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{verbatim}
               int B = 1;                         int A = 1;
               {                                  {
@@ -54,7 +54,7 @@ Sub-block conflicts occur when a new name coincides with one declared in an inne
 \subsubsection{Same-block conflict}
 In other languages, this normally occurs with local variables which appear in the same scope. However, as described earlier, let bindings allow the redeclaration of variables under the same name in the same scope. In Rust, this allows mutability to be modified while retaining the original name and is generally considered good practice. While this conflict doesn't occur in Rust in the context of local variables, they still occur with global static variables, fields, and works similarly with other constructs like methods and types.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{verbatim}
               int A = 1;                         int A = 1;
               int B = 2;                         int A = 2;
@@ -97,7 +97,7 @@ There are a number of factors to be considered when inlining a variable. The fir
 \subsubsection{Explanations and issues}\label{S:inlineissues}
 This description is optimistic in that an invalid refactoring should fail, but it also means that some valid refactorings may also fail. Our first point of interest is the requirement for pure function calls which have no side effects. Although it appears to be a reasonable requirement, the function actually need only be conditionally pure for the code section of interest for the inline. This appears to be a very difficult analysis, when even regular purity cannot be predicted in Rust. Much like the case in Java for JRRT \cite{schafer2010specification}, the issue of identification of these functions cannot be solved in Rust. Pure functions were part of the language definition earlier on in the development of Rust but due to difficulty in producing an exact definition, they were abandoned \cite{pwalton}. In Figure \ref{Fig:funcinline}, we can see how the inlining of a database call which might insert a single record will suddenly be repeated if it is inlined. Now an interesting question is the presence of constructors or factory methods. In some cases, where there is only a single usage the inline could be valid, but the code in the constructor might violate purity. When there are multiple usages, being immutable and overriding the correct equality operators may suffice for inlining over most situations, but requiring strict singletons might be necessary for others. In any case, constructors appear to be an additional level of difficulty much beyond the current level of analysis.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{verbatim}
     let a = insert_into_db();          // After inlining a
     println!("{:?}", a);               println!("{:?}", insert_into_db());
@@ -109,7 +109,7 @@ This description is optimistic in that an invalid refactoring should fail, but i
 
 For Step 3, if there is exactly one usage of a local variable in an inline, then due to uniqueness constraints in Rust, there really is just a single usage without any aliases. This is unlike C++ for instance, where some other pointer could still refer to the same section of memory. The check for the left-hand side is to ensure that the variable was not being assigned some value. In general, mutating the value of a local variable that is about to be inlined is invalid since the inline converts a single long-lived state into transient ones. This reasoning applies exactly the same for steps 4 and 5, noting that interior mutability should be considered unsafe. The interior mutability may be unused and so, this is somewhat optimistic.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{verbatim}
     let b = 1;                         let b = 1;
     let a = 2 + b;                     // a has been inlined
@@ -129,7 +129,7 @@ Step 6 makes sure that if any variable composing the initializing expression has
 \subsubsection{A remaining caveat}
 There is one other edge case without mention yet. In Figure \ref{Fig:inlinefail} we can see the inlining of a vector. The problem with the resulting code is that despite calling {\verb|iter()|} on the inlined vector, the vector should be disposed. As a local variable, a valid borrow normally occurs, but without it, the iterator has no proper parent and causes a violation of lifetimes. Besides running through compilation (analysis) again, it is unclear how this case should be handled or if they can be resolved in a simpler way. As such, no further considerations are made.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{verbatim}
     let v = vec![1, 2];                // a has been inlined
     // i is an iterator                // i is an iterator     
@@ -308,7 +308,7 @@ In order to map a variable, function or type to the corresponding AST node, the 
 
 \subsubsection{Simple command line}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 
 \begin{verbatim}
@@ -374,7 +374,7 @@ With the current setup, there are cases where a super-block conflict which shado
 \paragraph{Macros}
 Macros do not appear at all in the csv save-analysis output. Due to the incomplete information supplied by save-analysis, it should probably be encouraged that conflicts should be raised as a precautionary measure whenever possible. This makes it so that forcing super-block conflicts unnecessarily might actually help prevent conflicts with unseen macros. An additional run could identify issues with macros, however referring back to Opdyke's 7th constraint, the main issue is with sub-block or super-block conflicts which cannot be detected with any usual means and do not cause compilation errors. Pretending to handle macros is likely worse than not promising anything at all and an extra compilation run is bound to occur eventually. The following example highlights the behaviour shift with macros, which you can see with println! as a macro:
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{verbatim}
 simple.rs file:
@@ -408,7 +408,7 @@ Step 7 is actually fairly trivial to implement because all that needs to be done
 
 \subsubsection{Concrete example with order of operations}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{verbatim}
 Input:

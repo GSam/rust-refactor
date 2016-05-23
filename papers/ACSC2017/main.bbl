@@ -1,175 +1,226 @@
-\begin{thebibliography}{40}
-\providecommand{\natexlab}[1]{#1}
-\providecommand{\url}[1]{{#1}}
-\providecommand{\urlprefix}{URL }
-\expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{DOI~\discretionary{}{}{}#1}\else
-  \providecommand{\doi}{DOI~\discretionary{}{}{}\begingroup
-  \urlstyle{rm}\Url}\fi
-\providecommand{\eprint}[2][]{\url{#2}}
+\begin{thebibliography}{10}
 
-\bibitem[{B{\"a}umer et~al(2001)B{\"a}umer, Gamma, and
-  Kiezun}]{baumer2001integrating}
-B{\"a}umer D, Gamma E, Kiezun A (2001) Integrating refactoring support into a
-  java development tool. OOPSLA’01 Companion
+\bibitem{baumer2001integrating}
+Dirk B{\"a}umer, Erich Gamma, and Adam Kiezun.
+\newblock Integrating refactoring support into a java development tool.
+\newblock {\em OOPSLA’01 Companion}, 2001.
 
-\bibitem[{{Black Duck Open HUB}(2015)}]{openhub15}
-{Black Duck Open HUB} (2015) {Rust (programming language)}.
-  \url{http://code.openhub.net/project?pid=&ipid=301463}
+\bibitem{openhub15}
+{Black Duck Open HUB}.
+\newblock {Rust (programming language)}.
+\newblock \url{http://code.openhub.net/project?pid=&ipid=301463}, 2015.
 
-\bibitem[{Brown(2008)}]{brown2008tool}
-Brown CM (2008) Tool support for refactoring haskell programs. PhD thesis,
-  University of Kent
+\bibitem{brown2008tool}
+Christopher~Mark Brown.
+\newblock {\em Tool Support for Refactoring Haskell Programs}.
+\newblock PhD thesis, University of Kent, 2008.
 
-\bibitem[{Carruth(2011)}]{carruth2011clang}
-Carruth C (2011) {Clang MapReduce-Automatic C++ Refactoring at Google Scale}.
-  Google Inc
+\bibitem{carruth2011clang}
+C~Carruth.
+\newblock {Clang MapReduce-Automatic C++ Refactoring at Google Scale}.
+\newblock {\em Google Inc}, 2011.
 
-\bibitem[{Cox(2011)}]{gofix11}
-Cox R (2011) {Introducing Gofix}.
-  \url{http://blog.golang.org/introducing-gofix}
+\bibitem{gofix11}
+Russ Cox.
+\newblock {Introducing Gofix}.
+\newblock \url{http://blog.golang.org/introducing-gofix}, 2011.
 
-\bibitem[{Crates.io(2015)}]{cratesio15}
-Cratesio (2015) {Cargo: The Rust Community's crate host}.
-  \url{https://crates.io/}
+\bibitem{cratesio15}
+Crates.io.
+\newblock {Cargo: The Rust Community's crate host}.
+\newblock \url{https://crates.io/}, 2015.
 
-\bibitem[{Foote and Yoder(1997)}]{foote1997big}
-Foote B, Yoder J (1997) Big ball of mud. Pattern languages of program design
-  4:654--692
+\bibitem{foote1997big}
+Brian Foote and Joseph Yoder.
+\newblock Big ball of mud.
+\newblock {\em Pattern languages of program design}, 4:654--692, 1997.
 
-\bibitem[{Fowler and Beck(1999)}]{fowler99}
-Fowler M, Beck K (1999) Refactoring: Improving the Design of Existing Code.
-  Addison-Wesley, Reading, Massachusetts, USA
+\bibitem{fowler99}
+Martin Fowler and Kent Beck.
+\newblock {\em Refactoring: Improving the Design of Existing Code}.
+\newblock Addison-Wesley, Reading, Massachusetts, USA, 1999.
 
-\bibitem[{{Github}(2015)}]{dxr15}
-{Github} (2015) {Rust DXR plugin}.
-  \url{https://github.com/nrc/dxr/blob/rust5/dxr/plugins/rust/__init__.py}
+\bibitem{dxr15}
+{Github}.
+\newblock {Rust DXR plugin}.
+\newblock
+  \url{https://github.com/nrc/dxr/blob/rust5/dxr/plugins/rust/__init__.py},
+  2015.
 
-\bibitem[{Jemerov(2008)}]{jemerov2008implementing}
-Jemerov D (2008) {Implementing refactorings in IntelliJ IDEA}. In: Proceedings
-  of the 2nd Workshop on Refactoring Tools, ACM, p~13
+\bibitem{jemerov2008implementing}
+Dmitry Jemerov.
+\newblock {Implementing refactorings in IntelliJ IDEA}.
+\newblock In {\em Proceedings of the 2nd Workshop on Refactoring Tools},
+  page~13. ACM, 2008.
 
-\bibitem[{Jetbrains(2015)}]{jetbrains15}
-Jetbrains (2015) {Multi-language Refactorings}.
-  \url{https://www.jetbrains.com/idea/features/refactoring.html}
+\bibitem{jetbrains15}
+Jetbrains.
+\newblock {Multi-language Refactorings}.
+\newblock \url{https://www.jetbrains.com/idea/features/refactoring.html}, 2015.
 
-\bibitem[{Keep(2015)}]{keep15}
-Keep D (2015) {A Practical Intro to Macros in Rust 1.0}.
-  \url{https://danielkeep.github.io/practical-intro-to-macros.html}
+\bibitem{keep15}
+Daniel Keep.
+\newblock {A Practical Intro to Macros in Rust 1.0}.
+\newblock \url{https://danielkeep.github.io/practical-intro-to-macros.html},
+  2015.
 
-\bibitem[{Mens et~al(2002)Mens, Demeyer, and Janssens}]{graph}
-Mens T, Demeyer S, Janssens D (2002) {Formalising behaviour preserving program
-  transformations}. In: {International Conferenceon Graph Transformation (ICGT
-  2002)}, Springer-Verlag, pp 286--301
+\bibitem{graph}
+Tom Mens, Serge Demeyer, and Dirk Janssens.
+\newblock {Formalising behaviour preserving program transformations}.
+\newblock In {\em {International Conferenceon Graph Transformation (ICGT
+  2002)}}, pages 286--301. Springer-Verlag, 2002.
 
-\bibitem[{Opdyke(1992)}]{opdyke1992refactoring}
-Opdyke WF (1992) Refactoring object-oriented frameworks. PhD thesis, University
-  of Illinois at Urbana-Champaign
+\bibitem{opdyke1992refactoring}
+William~F Opdyke.
+\newblock {\em Refactoring object-oriented frameworks}.
+\newblock PhD thesis, University of Illinois at Urbana-Champaign, 1992.
 
-\bibitem[{Rytz et~al(2012)Rytz, Odersky, and Haller}]{effects}
-Rytz L, Odersky M, Haller P (2012) {Lightweight polymorphic effects}. In:
-  {Object-Oriented Programming -- ECOOP}, Springer, pp 258--282
+\bibitem{effects}
+Lukas Rytz, Martin Odersky, and Philipp Haller.
+\newblock {Lightweight polymorphic effects}.
+\newblock In {\em {Object-Oriented Programming -- ECOOP}}, pages 258--282.
+  Springer, 2012.
 
-\bibitem[{Sam(2015)}]{rrproject}
-Sam G (2015) {rust-refactor: Rust refactoring project}.
-  \url{https://github.com/GSam/rust-refactor}
+\bibitem{rrproject}
+Garming Sam.
+\newblock {rust-refactor: Rust refactoring project}.
+\newblock \url{https://github.com/GSam/rust-refactor}, 2015.
 
-\bibitem[{{Scala Refactoring}(2015)}]{scala15}
-{Scala Refactoring} (2015) {Scala Refactoring: Refactorings}.
-  \url{http://scala-refactoring.org/screenshots/}
+\bibitem{scala15}
+{Scala Refactoring}.
+\newblock {Scala Refactoring: Refactorings}.
+\newblock \url{http://scala-refactoring.org/screenshots/}, 2015.
 
-\bibitem[{Schafer(2010)}]{schafer2010specification}
-Schafer M (2010) Specification, implementation and verification of
-  refactorings. PhD thesis, Oxford University
+\bibitem{schafer2010specification}
+Max Schafer.
+\newblock {\em Specification, Implementation and Verification of Refactorings}.
+\newblock PhD thesis, Oxford University, 2010.
 
-\bibitem[{Sculthorpe et~al(2013)Sculthorpe, Farmer, and Beck}]{sculthorpe}
-Sculthorpe N, Farmer A, Beck K (2013) {The HERMIT in the Tree}. In: {24th
-  Symposium on Implementation and Application of Functional Languages, 2012},
-  Springer, pp 86--103
+\bibitem{sculthorpe}
+Neil Sculthorpe, Andrew Farmer, and Kent Beck.
+\newblock {The HERMIT in the Tree}.
+\newblock In {\em {24th Symposium on Implementation and Application of
+  Functional Languages, 2012}}, pages 86--103. Springer, 2013.
 
-\bibitem[{Steimann(2006)}]{aop}
-Steimann F (2006) The paradoxical success of aspect-oriented programming. ACM
-  Sigplan Notices 41:481--497
+\bibitem{aop}
+Friedrich Steimann.
+\newblock The paradoxical success of aspect-oriented programming.
+\newblock {\em ACM Sigplan Notices}, 41:481--497, 2006.
 
-\bibitem[{Stocker(2010)}]{stocker2010scala}
-Stocker M (2010) Scala refactoring. PhD thesis, HSR Hochschule f{\"u}r Technik
-  Rapperswil
+\bibitem{stocker2010scala}
+Mirko Stocker.
+\newblock {\em Scala refactoring}.
+\newblock PhD thesis, HSR Hochschule f{\"u}r Technik Rapperswil, 2010.
 
-\bibitem[{{The Go Authors}(2015{\natexlab{a}})}]{gofmt15}
-{The Go Authors} (2015{\natexlab{a}}) {Command gofmt}.
-  \url{https://golang.org/cmd/gofmt/}
+\bibitem{gofmt15}
+{The Go Authors}.
+\newblock {Command gofmt}.
+\newblock \url{https://golang.org/cmd/gofmt/}, 2015.
 
-\bibitem[{{The Go Authors}(2015{\natexlab{b}})}]{gorename15}
-{The Go Authors} (2015{\natexlab{b}}) {Rename: check.go}.
-  \url{https://github.com/golang/tools/blob/master/refactor/rename/check.go}
+\bibitem{gorename15}
+{The Go Authors}.
+\newblock {Rename: check.go}.
+\newblock
+  \url{https://github.com/golang/tools/blob/master/refactor/rename/check.go},
+  2015.
 
-\bibitem[{{The Rust Community}(2014{\natexlab{a}})}]{inherit}
-{The Rust Community} (2014{\natexlab{a}}) {RFC - Efficient code reuse}.
-  \url{https://github.com/rust-lang/rfcs/issues/349}
+\bibitem{inherit}
+{The Rust Community}.
+\newblock {RFC - Efficient code reuse}.
+\newblock \url{https://github.com/rust-lang/rfcs/issues/349}, 2014.
 
-\bibitem[{{The Rust Community}(2014{\natexlab{b}})}]{elisionrules}
-{The Rust Community} (2014{\natexlab{b}}) {RFC - Lifetime elision}.
-  \url{https://github.com/rust-lang/rfcs/blob/master/text/0141-lifetime-elision.md}
+\bibitem{elisionrules}
+{The Rust Community}.
+\newblock {RFC - Lifetime elision}.
+\newblock
+  \url{https://github.com/rust-lang/rfcs/blob/master/text/0141-lifetime-elision.md},
+  2014.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{a}})}]{docborrow15}
-{The Rust Community} (2015{\natexlab{a}}) {Borrowing}.
-  \url{https://doc.rust-lang.org/book/references-and-borrowing.html}
+\bibitem{docborrow15}
+{The Rust Community}.
+\newblock {Borrowing}.
+\newblock \url{https://doc.rust-lang.org/book/references-and-borrowing.html},
+  2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{b}})}]{examplecrates15}
-{The Rust Community} (2015{\natexlab{b}}) {Crates)}.
-  \url{http://rustbyexample.com/crates.html}
+\bibitem{examplecrates15}
+{The Rust Community}.
+\newblock {Crates)}.
+\newblock \url{http://rustbyexample.com/crates.html}, 2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{c}})}]{docmod15}
-{The Rust Community} (2015{\natexlab{c}}) {Crates and Modules}.
-  \url{http://static.rust-lang.org/doc/master/book/crates-and-modules.html}
+\bibitem{docmod15}
+{The Rust Community}.
+\newblock {Crates and Modules}.
+\newblock
+  \url{http://static.rust-lang.org/doc/master/book/crates-and-modules.html},
+  2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{d}})}]{driver15}
-{The Rust Community} (2015{\natexlab{d}}) {librustc\_driver -- driver.rs}.
-  \url{https://github.com/rust-lang/rust/blob/master/src/librustc_driver/driver.rs}
+\bibitem{driver15}
+{The Rust Community}.
+\newblock {librustc\_driver -- driver.rs}.
+\newblock
+  \url{https://github.com/rust-lang/rust/blob/master/src/librustc_driver/driver.rs},
+  2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{e}})}]{docowner15}
-{The Rust Community} (2015{\natexlab{e}}) {Ownership}.
-  \url{https://doc.rust-lang.org/book/ownership.html}
+\bibitem{docowner15}
+{The Rust Community}.
+\newblock {Ownership}.
+\newblock \url{https://doc.rust-lang.org/book/ownership.html}, 2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{f}})}]{doc15}
-{The Rust Community} (2015{\natexlab{f}}) {Rust Documentation}.
-  \url{https://doc.rust-lang.org/}
+\bibitem{doc15}
+{The Rust Community}.
+\newblock {Rust Documentation}.
+\newblock \url{https://doc.rust-lang.org/}, 2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{g}})}]{makefile15}
-{The Rust Community} (2015{\natexlab{g}}) {Rust Wiki - Compiler Snapshots}.
-  \url{https://github.com/rust-lang/rust-wiki-backup/blob/master/Note-compiler-snapshots.md}
+\bibitem{makefile15}
+{The Rust Community}.
+\newblock {Rust Wiki - Compiler Snapshots}.
+\newblock
+  \url{https://github.com/rust-lang/rust-wiki-backup/blob/master/Note-compiler-snapshots.md},
+  2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{h}})}]{rfmt}
-{The Rust Community} (2015{\natexlab{h}}) {rustfmt: Format Rust code}.
-  \url{https://github.com/nrc/rustfmt}
+\bibitem{rfmt}
+{The Rust Community}.
+\newblock {rustfmt: Format Rust code}.
+\newblock \url{https://github.com/nrc/rustfmt}, 2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{i}})}]{docpath15}
-{The Rust Community} (2015{\natexlab{i}}) {Struct syntax::ast::Path}.
-  \url{http://doc.rust-lang.org/syntax/ast/struct.Path.html}
+\bibitem{docpath15}
+{The Rust Community}.
+\newblock {Struct syntax::ast::Path}.
+\newblock \url{http://doc.rust-lang.org/syntax/ast/struct.Path.html}, 2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{j}})}]{rustbook15}
-{The Rust Community} (2015{\natexlab{j}}) {The Rust programming Language}.
-  \url{https://doc.rust-lang.org/book/README.html}
+\bibitem{rustbook15}
+{The Rust Community}.
+\newblock {The Rust programming Language}.
+\newblock \url{https://doc.rust-lang.org/book/README.html}, 2015.
 
-\bibitem[{{The Rust Community}(2015{\natexlab{k}})}]{traitexample15}
-{The Rust Community} (2015{\natexlab{k}}) {Traits}.
-  \url{http://rustbyexample.com/trait.html}
+\bibitem{traitexample15}
+{The Rust Community}.
+\newblock {Traits}.
+\newblock \url{http://rustbyexample.com/trait.html}, 2015.
 
-\bibitem[{{The Rust Core Team}(2015)}]{rustcore15}
-{The Rust Core Team} (2015) {Announcing Rust 1.0 - The Rust Programming
-  Language Blog}. \url{http://blog.rust-lang.org/2015/05/15/Rust-1.0.html}
+\bibitem{rustcore15}
+{The Rust Core Team}.
+\newblock {Announcing Rust 1.0 - The Rust Programming Language Blog}.
+\newblock \url{http://blog.rust-lang.org/2015/05/15/Rust-1.0.html}, 2015.
 
-\bibitem[{{The Rust Project Developers}(2015)}]{faq15}
-{The Rust Project Developers} (2015) {The Rust Project FAQ}.
-  \url{https://doc.rust-lang.org/complement-project-faq.html}
+\bibitem{faq15}
+{The Rust Project Developers}.
+\newblock {The Rust Project FAQ}.
+\newblock \url{https://doc.rust-lang.org/complement-project-faq.html}, 2015.
 
-\bibitem[{{Walton, P. (Mozilla)}(2013)}]{pwalton}
-{Walton, P (Mozilla)} (2013) {Why in the Rust language functions are not pure
-  by default? -- Email}.
-  \url{https://mail.mozilla.org/pipermail/rust-dev/2013-January/002903.html}
+\bibitem{pwalton}
+{Walton, P. (Mozilla)}.
+\newblock {Why in the Rust language functions are not pure by default? --
+  Email}.
+\newblock
+  \url{https://mail.mozilla.org/pipermail/rust-dev/2013-January/002903.html},
+  2013.
 
-\bibitem[{Widmer(2007)}]{widmer07}
-Widmer T (2007) {Unleashing the Power of Refactoring}.
-  \url{http://www.eclipse.org/articles/article.php?file=Article-Unleashing-the-Power-of-Refactoring/index.html}
+\bibitem{widmer07}
+Tobias Widmer.
+\newblock {Unleashing the Power of Refactoring}.
+\newblock
+  \url{http://www.eclipse.org/articles/article.php?file=Article-Unleashing-the-Power-of-Refactoring/index.html},
+  2007.
 
 \end{thebibliography}

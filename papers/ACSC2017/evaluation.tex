@@ -134,7 +134,7 @@ With only single file tests, the amount of time spent performing each refactorin
 \subsubsection{Relative crate sizes}
 Figure \ref{Fig:codesize} lists the four crates from Crates.io that have been chosen to help evaluate the produced tool. The listed crates form four of the top five most downloaded crates by the Rust community \cite{cratesio15}. The `winapi' crate was omitted due to less relevance on a Linux platform. A fifth crate `bitflags' was originally going to be used for analysis; however macro incompatibility made this an impossible task. The lines of code metric only concerns Rust source (.rs) files and does not take into account comments or test code. The purpose of the comparison is only to generate a rough, high level contrast and to gather any overall insights. 
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{center}
     \begin{tabular}{ | l | c |}
     \hline
@@ -159,7 +159,7 @@ Timings were generated for the different crates using the Linux perf tool: {\ver
 The classes of refactorings measured are: renaming variables (or variable-like constructs), renaming functions (or methods), renaming concrete types, reification and elision. Inline local has been omitted due to lack of sufficient examples in the given crates, particularly without mutation. In each case, examples were picked with effectively a single usage, access or equivalent (with minimal modifications made) so that the difference in timings between each of the individual refactorings could be highlighted. Figure \ref{Fig:compareref} shows how regardless of refactoring, the time taken is generally comparable within a crate. Looking at Figure \ref{Fig:codesize}, the blind code size metric does not appear to be a good indicator of the base refactoring time and so comparisons between crates are limited. In general, the complexity of a crate is not necessarily tied to crate size e.g. `libc' being mostly header declarations. Although we have some spread in crate size for this analysis, this could likely be improved. Function renaming takes noticeably longer while lifetime refactorings are noticeably shorter. This base refactoring time is likely linked to the basic compile time and how at worst, we need the analysis information to check the validity of a refactoring. While a rename refactoring requires checking every usage of a declared item using the compiler, in the `happy path' every usage should fail the compiler check during the early stages of parsing or name resolution. Only in more unlikely or unfortunate cases will a refactoring require any additional processing in analysis. This likely makes the different renamings relatively comparable. 
 
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{minipage}{.5\textwidth}
   \begin{center}
@@ -195,7 +195,7 @@ The classes of refactorings measured are: renaming variables (or variable-like c
 \end{minipage}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{minipage}{.5\textwidth}
   \begin{center}
@@ -231,7 +231,7 @@ The classes of refactorings measured are: renaming variables (or variable-like c
 \end{minipage}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{center}
 \scalebox{0.8}{
 \includegraphics{refactorings}
@@ -246,7 +246,7 @@ From `libc', a number of different concrete types were targeted for performing a
 
 %In particular, Other crates or types of renamings had few examples and only a limited amount of variation.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{center}
     \begin{tabular}{ | l | c |}
     \hline
@@ -266,7 +266,7 @@ From `libc', a number of different concrete types were targeted for performing a
 \label{Fig:scaling}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \begin{center}
 \scalebox{0.8}{
 \includegraphics{scaling}
