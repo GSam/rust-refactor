@@ -9,21 +9,20 @@
 
 \title{Automated Refactoring of Rust Programs}
 
-\author{Garming Sam\\ VUW, NZ \and Nick Cameron\\ Mozilla Corporation, NZ \and Alex Potanin\\ VUW, NZ}
+\author{Garming Sam\\ VUW, NZ \and Nick Cameron\\ Mozilla Corporation, NZ\\ \url{nchameron@mozilla.com} \and Alex Potanin\\ VUW, NZ\\ \url{alex@ecs.vuw.ac.nz}}
 
 \maketitle
 
 \begin{abstract}
-The purpose of this document is to outline a new automated refactoring tool for the Rust programming language. The creation of the tool serves as an explorative process to investigate the current ability for Rust to provide automated refactorings and to draw comparisons to  efforts in providing refactoring tools for other languages. 
+Rust is a novel programming language developed by Mozilla to replace C as the implementation choice for its entire codebase. Rust supports novel constructs such as lifetimes, ownership, controlled garbage collection, macros and a large number of systems programming features while maintaining the performance requirements of a modern browser.
 
-Beginning with a review of refactoring in general and Rust, this document describes an overview of the tool along with a selection of the major design decisions. Elaborating further, technical details and Rust-specifics are explored with respect to the capability and limitations of the tool. Evaluating the tool, the correctness of each refactoring is examined, as well as the practical use of the tool.
-
-Regarding Rust specific aspects of refactoring, a number of further extensions to this tool are proposed, along with extensions to the Rust compiler which would help facilitate this work. In particular, based on evaluation, the issue of efficiency of the tool should be further addressed and streamlining the process for convenient refactoring will contribute to the practical use of the tool.
+We describe a new refactoring tool that helps developers using Rust including discussing the issues and unusual decisions encountered due to the complexities of modern systems languages. We outline the lessons learned and hope our paper will help inform future programming languages design and enable refactoring to be integrated into the IDE's. The resulting refactoring tool is written in Rust and available from Github under an MIT license \cite{rrproject}.
 \end{abstract}
 
 \input{introduction}
 \input{background}
 \input{workdone}
+\input{implementation}
 \input{evaluation}
 \input{futurework}
 \input{conclusion}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.25)  23 MAY 2016 18:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.25)  8 JUN 2016 12:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -371,262 +371,104 @@ LaTeX Font Info:    Try loading font information for T1+ptm on input line 14.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 )
-(./introduction.tex
-Underfull \vbox (badness 7273) has occurred while \output is active []
-
- [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+(./introduction.tex [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updma
+p/pdftex.map}
 
 
-])
-(./background.tex
-LaTeX Font Info:    Try loading font information for T1+aett on input line 11.
- (/usr/local/texlive/2015/texmf-dist/tex/latex/ae/t1aett.fd
+]) (./background.tex
+LaTeX Font Info:    Try loading font information for T1+aett on input line 9.
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/ae/t1aett.fd
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
 )
-Overfull \hbox (75.96712pt too wide) in paragraph at lines 28--28
-[]\T1/aett/m/n/9 // You can have `use' statements to import items into the name
-space[] 
+Overfull \hbox (19.37599pt too wide) in paragraph at lines 28--28
+[]  \T1/aett/m/n/9 let d = &mut b; // mutable 'borrow' or reference to b[] 
  []
 
 
-Overfull \hbox (28.80785pt too wide) in paragraph at lines 28--28
-[]    \T1/aett/m/n/9 let d = &mut b; // mutable 'borrow' or reference to b[] 
- []
-
-
-Overfull \hbox (71.25119pt too wide) in paragraph at lines 28--28
-[]    \T1/aett/m/n/9 // Note: println! is actually macro with the exclamation m
-ark.[] 
- []
-
-
-Overfull \hbox (19.37599pt too wide) in paragraph at lines 47--47
+Overfull \hbox (19.37599pt too wide) in paragraph at lines 45--45
 []\T1/aett/m/n/9 println!("This line causes a compiler error {}", v[0]);[] 
  []
 
 [2]
-Overfull \hbox (28.80785pt too wide) in paragraph at lines 94--94
-[]        \T1/aett/m/n/9 impl Moo for Cow {                 fn moo(&self);[] 
+Overfull \hbox (0.51228pt too wide) in paragraph at lines 92--92
+[]  \T1/aett/m/n/9 impl Moo for Cow {                 fn moo(&self);[] 
  []
 
-[3]
-Overfull \hbox (1.78784pt too wide) in paragraph at lines 118--120
+
+Overfull \hbox (1.78784pt too wide) in paragraph at lines 116--118
 []\T1/aer/m/n/9 Analysis -- Per-forms res-o-lu-tion, type check-ing and other
  []
 
-
-Overfull \hbox (118.41046pt too wide) in paragraph at lines 147--147
-[]\T1/aett/m/n/9 variable,file_name,"basic_rename.rs",file_line,3,file_col,8,ex
-tent_start,38,[] 
- []
-
-
-Overfull \hbox (75.96712pt too wide) in paragraph at lines 147--147
-[]\T1/aett/m/n/9 extent_start_bytes,38,file_line_end,3,file_col_end,9,extent_en
-d,39,[] 
- []
-
-
-Overfull \hbox (80.68304pt too wide) in paragraph at lines 147--147
-[]\T1/aett/m/n/9 extent_end_bytes,39,id,"13",name,"y",qualname,"y$13",value,"y 
-= 20",[] 
- []
-
-
-Overfull \hbox (108.9786pt too wide) in paragraph at lines 155--155
-[]\T1/aett/m/n/9 var_ref,file_name,"basic_rename.rs",file_line,10,file_col,20,e
-xtent_start,[] 
- []
-
-
-Overfull \hbox (94.83083pt too wide) in paragraph at lines 155--155
-[]\T1/aett/m/n/9 178,extent_start_bytes,178,file_line_end,10,file_col_end,21,ex
-tent_end,[] 
- []
-
-
-Overfull \hbox (108.9786pt too wide) in paragraph at lines 155--155
-[]\T1/aett/m/n/9 179,extent_end_bytes,179,refid,"13",refidcrate,"0",qualname,""
-,scopeid,"4"[] 
- []
-
-
-Overfull \hbox (11.84879pt too wide) in paragraph at lines 164--165
+[3]
+Overfull \hbox (11.84879pt too wide) in paragraph at lines 162--163
 \T1/aer/m/n/9 fiers and other sup-port-ing in-for-ma-tion, e.g. std::cmp::Parti
 alEq
  []
 
 
-Underfull \vbox (badness 7613) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [4]
-Overfull \hbox (1.56474pt too wide) in paragraph at lines 203--204
+
+Overfull \hbox (1.56474pt too wide) in paragraph at lines 201--202
 []\T1/aer/m/n/9 Bill Opdyke in Refac-tor-ing Object-Orientated Frame-works
  []
 
-
-Overfull \hbox (0.51228pt too wide) in paragraph at lines 229--229
-[]                      \T1/aett/m/n/9 let a = 2;         let b = 2;[] 
- []
-
-
-Overfull \hbox (0.51228pt too wide) in paragraph at lines 229--229
-[]                      \T1/aett/m/n/9 let b = 4;         let b = 4;[] 
- []
-
-
-Overfull \hbox (19.37599pt too wide) in paragraph at lines 229--229
-[]                      \T1/aett/m/n/9 let c = a + b;     let c = b + b;[] 
- []
-
-[5]
-Overfull \hbox (3.78519pt too wide) in paragraph at lines 291--292
+[4] [5]
+Overfull \hbox (3.78519pt too wide) in paragraph at lines 260--261
 []\T1/aer/m/n/9 While defin-ing be-haviour preser-va-tion in his the-sis, Opdyk
 e
  []
 
-
-Overfull \hbox (0.51228pt too wide) in paragraph at lines 315--315
-[]    \T1/aett/m/n/9 Example(int y) {               Example(int x) {[] 
+) (./workdone.tex
+Overfull \hbox (11.07745pt too wide) in paragraph at lines 9--10
+[]\T1/aer/m/n/9 analyse the pro-gram un-der refac-tor-ing to find out whether
  []
 
 
-Overfull \hbox (85.39897pt too wide) in paragraph at lines 315--315
-[]        \T1/aett/m/n/9 x = y;                         x = x; // Ideally: this
-.x = x;[] 
- []
-
-[6]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [7])
-(./workdone.tex
-Overfull \hbox (11.53644pt too wide) in paragraph at lines 10--11
-[]\T1/aer/m/n/9 analyze the pro-gram un-der refac-tor-ing to find out whether
- []
-
-[8]
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 34--34
-[]              \T1/aett/m/n/9 int A = 1;                         int A = 1;[] 
-
- []
-
-
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 34--34
-[]              \T1/aett/m/n/9 int B = 2;                         int B = 2;[] 
-
- []
-
-
-Overfull \hbox (57.10341pt too wide) in paragraph at lines 34--34
-[]                  \T1/aett/m/n/9 int A = 3;                         int B = 3
-;[] 
- []
-
-
-Overfull \hbox (71.25119pt too wide) in paragraph at lines 34--34
-[]                  \T1/aett/m/n/9 print B; // 2                      print B; 
-// 3[] 
- []
-
-
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 49--49
-[]              \T1/aett/m/n/9 int B = 1;                         int A = 1;[] 
-
- []
-
-
-Overfull \hbox (57.10341pt too wide) in paragraph at lines 49--49
-[]                  \T1/aett/m/n/9 int A = 2;                         int A = 2
-;[] 
- []
-
-
-Overfull \hbox (71.25119pt too wide) in paragraph at lines 49--49
-[]                  \T1/aett/m/n/9 print B; // 1                      print A; 
-// 2[] 
- []
-
-
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 61--61
-[]              \T1/aett/m/n/9 int A = 1;                         int A = 1;[] 
-
- []
-
-
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 61--61
-[]              \T1/aett/m/n/9 int B = 2;                         int A = 2;[] 
-
+Overfull \hbox (5.22821pt too wide) in paragraph at lines 32--32
+[]    \T1/aett/m/n/9 print B; // 2                      print B; // 3[] 
  []
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[9]
-Overfull \hbox (33.52377pt too wide) in paragraph at lines 105--105
-[]    \T1/aett/m/n/9 let a = insert_into_db();          // After inlining a[] 
+
+Overfull \hbox (5.22821pt too wide) in paragraph at lines 47--47
+[]    \T1/aett/m/n/9 print B; // 1                      print A; // 2[] 
+ []
+
+[6]
+Overfull \hbox (52.38748pt too wide) in paragraph at lines 100--100
+[]\T1/aett/m/n/9 println!("{:?}", a);       println!("{:?}", insert_into_db());
+[] 
  []
 
 
-Overfull \hbox (108.9786pt too wide) in paragraph at lines 105--105
-[]    \T1/aett/m/n/9 println!("{:?}", a);               println!("{:?}", insert
-_into_db());[] 
+Overfull \hbox (52.38748pt too wide) in paragraph at lines 100--100
+[]\T1/aett/m/n/9 println!("{:?}", a);       println!("{:?}", insert_into_db());
+[] 
  []
 
-
-Overfull \hbox (108.9786pt too wide) in paragraph at lines 105--105
-[]    \T1/aett/m/n/9 println!("{:?}", a);               println!("{:?}", insert
-_into_db());[] 
- []
-
-
-Overfull \hbox (42.95563pt too wide) in paragraph at lines 118--118
-[]    \T1/aett/m/n/9 let a = 2 + b;                     // a has been inlined[]
- 
- []
-
-
-Overfull \hbox (57.10341pt too wide) in paragraph at lines 118--118
-[]    \T1/aett/m/n/9 println!("{:?}", a);               println!("{:?}", 2 + b)
-;[] 
- []
-
-
-Overfull \hbox (42.95563pt too wide) in paragraph at lines 137--137
-[]    \T1/aett/m/n/9 let v = vec![1, 2];                // a has been inlined[]
- 
- []
-
-
-Overfull \hbox (33.52377pt too wide) in paragraph at lines 137--137
-[]    \T1/aett/m/n/9 // i is an iterator                // i is an iterator[] 
- []
-
-
-Overfull \hbox (66.53526pt too wide) in paragraph at lines 137--137
-[]    \T1/aett/m/n/9 let i = v.iter();                  let i = vec![1, 2].iter
-();[] 
- []
-
-[10]
-Underfull \hbox (badness 10000) in paragraph at lines 158--161
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 153--156
 [][]\T1/aett/m/n/9 fn foo<'a, 'b, 'c>(& [][]'a[][] self, x: &[][]'b[][] Debug, 
 y: &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 162--165
+Underfull \hbox (badness 10000) in paragraph at lines 157--160
 [][]\T1/aett/m/n/9 fn foo<'a, 'b, 'c>(& [][]'a[][] self, x: &[][]'b[][] Debug, 
 y: &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 188--192
+Underfull \hbox (badness 10000) in paragraph at lines 184--189
 \T1/aer/m/n/9 becomes: []  \T1/aett/m/n/9 fn foo<'a, 'b>(x: &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 218--222
+Underfull \hbox (badness 10000) in paragraph at lines 217--222
 \T1/aer/m/n/9 becomes: []\T1/aett/m/n/9 fn foo<'a, 'b>(&
  []
 
@@ -636,69 +478,54 @@ Overfull \hbox (1.07692pt too wide) in paragraph at lines 245--246
 t/m/n/9 'a \T1/aer/m/n/9 must
  []
 
-[11]
-Overfull \hbox (17.65271pt too wide) in paragraph at lines 293--294
+[8]) (./implementation.tex
+Overfull \hbox (17.65271pt too wide) in paragraph at lines 3--4
 \T1/aer/m/n/9 the source code[] for the `rust-refactor' tool, run-ning []\T1/ae
 tt/m/n/9 cargo build
  []
 
-[12]
-Overfull \hbox (52.38748pt too wide) in paragraph at lines 328--328
+[9]
+Overfull \hbox (52.38748pt too wide) in paragraph at lines 39--39
+[]\T1/aett/m/n/9 % refactor var dxr-temp/unknown_crate.csv simple.rs  a:-1:-1 c
+[] 
+ []
+
+[10] [11]
+Overfull \hbox (52.38748pt too wide) in paragraph at lines 104--104
 []\T1/aett/m/n/9 % refactor var dxr-temp/unknown_crate.csv simple.rs  a:-1:-1 c
 [] 
  []
 
 
-Underfull \vbox (badness 4739) has occurred while \output is active []
-
- [13]
-Overfull \hbox (52.38748pt too wide) in paragraph at lines 393--393
-[]\T1/aett/m/n/9 % refactor var dxr-temp/unknown_crate.csv simple.rs  a:-1:-1 c
-[] 
- []
-
-[14]
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 422--422
+Overfull \hbox (38.2397pt too wide) in paragraph at lines 133--133
 []\T1/aett/m/n/9 fn main() { let _ = (2 + 1) * 2; } // rather than 2 + 1 * 2[] 
 
  []
 
-[15]
-Overfull \hbox (19.37599pt too wide) in paragraph at lines 448--450
+[12]
+Overfull \hbox (19.37599pt too wide) in paragraph at lines 159--161
 [][]\T1/aett/m/n/9 fn foo<'a,'b>(x: &'a Debug, y: &'a Debug, z: &'b Debug) 
  []
 
 
-Overfull \hbox (30.91348pt too wide) in paragraph at lines 448--450
+Overfull \hbox (30.91348pt too wide) in paragraph at lines 159--161
 \T1/aer/m/n/9 becomes: []\T1/aett/m/n/9 fn foo<'a>(x: &'a Debug, y: &'a Debug, 
 z: &Debug) 
  []
 
 ) (./evaluation.tex
-Overfull \hbox (61.81934pt too wide) in paragraph at lines 22--23
-[][]\T1/aett/m/n/9 let a = 2; // 1. Super-block conflict: caught by name resolu
-tion 
- []
-
-
-Overfull \hbox (99.54675pt too wide) in paragraph at lines 30--31
-[][]        \T1/aett/m/n/9 let b = [][]a[][]; // 2. Sub-block conflict: caught 
-by a compilation run 
- []
-
-
 Overfull \hbox (13.32443pt too wide) in paragraph at lines 38--39
 \T1/aer/m/n/9 and nor-mal lo-cal vari-ables, both in suc-cess-ful and non-succe
 ssful
  []
 
-
+[13]
 Overfull \hbox (3.21999pt too wide) in paragraph at lines 43--44
 \T1/aer/m/n/9 the csv file de-scrip-tion and the re-liance on the use of []\T1/
 aett/m/n/9 declname
  []
 
-[16]
+
 Overfull \hbox (0.51228pt too wide) in paragraph at lines 59--59
 []                \T1/aett/m/n/9 let Point{foo, y} = Point{x:1, y:2}[] 
  []
@@ -709,18 +536,14 @@ Overfull \hbox (19.37599pt too wide) in paragraph at lines 59--59
  []
 
 
-Underfull \vbox (badness 1259) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
+ [14]
 Overfull \hbox (1.08504pt too wide) in paragraph at lines 85--85
 []\subsecfnt Formal cor-rect-ness and al-ter-na-tive ap-proaches 
  []
 
-[17]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[18]
+[15]
 Overfull \hbox (264.0pt too wide) in paragraph at lines 164--196
  []$[]$$[]$ 
  []
@@ -730,53 +553,32 @@ Overfull \hbox (264.0pt too wide) in paragraph at lines 200--232
  []$[]$$[]$ 
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<refactorings.png, id=72, 562.35094pt x 456.95718pt>
+<refactorings.png, id=63, 562.35094pt x 456.95718pt>
 File: refactorings.png Graphic file (type png)
  <use refactorings.png>
-Package pdftex.def Info: refactorings.png used on input line 238.
-(pdftex.def)             Requested size: 562.34956pt x 456.95605pt.
+Package pdftex.def Info: refactorings.png used on input line 237.
+(pdftex.def)             Requested size: 227.62204pt x 184.96205pt.
 
-Overfull \hbox (214.80597pt too wide) in paragraph at lines 238--239
- [] 
- []
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
+[16 <./refactorings.png>]
 Overfull \hbox (7.4611pt too wide) in paragraph at lines 251--263
  [] 
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<scaling.png, id=73, 531.48563pt x 338.76563pt>
+<scaling.png, id=67, 531.48563pt x 338.76563pt>
 File: scaling.png Graphic file (type png)
  <use scaling.png>
-Package pdftex.def Info: scaling.png used on input line 273.
-(pdftex.def)             Requested size: 531.48433pt x 338.76479pt.
-
-Overfull \hbox (190.11368pt too wide) in paragraph at lines 273--274
- [] 
- []
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
+Package pdftex.def Info: scaling.png used on input line 272.
+(pdftex.def)             Requested size: 227.62204pt x 145.08743pt.
 
 Overfull \hbox (10.8696pt too wide) in paragraph at lines 288--289
 \T1/aer/m/n/9 much cor-rect-ness check-ing these tools ac-tu-ally per-form. Ecl
 ipse
  []
 
-[19]) (./futurework.tex [20 <./refactorings.png>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+) (./futurework.tex [17 <./scaling.png>]
+Underfull \vbox (badness 1558) has occurred while \output is active []
 
- [21 <./scaling.png>]
+ [18]
 Overfull \hbox (39.20212pt too wide) in paragraph at lines 79--80
 \T1/aer/m/n/9 com-piler to im-prove its ef-fi-cacy and ef-fi-ciency. Us-ing []\
 T1/aett/m/n/9 -Zsave-analysis
@@ -787,23 +589,18 @@ Overfull \hbox (10.33046pt too wide) in paragraph at lines 91--92
 []\T1/aer/m/n/9 Currently macros are com-pletely ig-nored by the save-analysis
  []
 
-) (./conclusion.tex [22]
-Overfull \hbox (135.68399pt too wide) in paragraph at lines 42--43
-[][] 
- []
-
-) (./main.bbl
+) (./conclusion.tex [19]) (./main.bbl
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [23])
-[24
+ [20])
+[21
 
 ] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 3498 strings out of 493027
- 45489 string characters out of 6134069
- 129980 words of memory out of 5000000
- 6902 multiletter control sequences out of 15000+600000
+ 3483 strings out of 493027
+ 45307 string characters out of 6134069
+ 126838 words of memory out of 5000000
+ 6884 multiletter control sequences out of 15000+600000
  58972 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,10n,35p,1843b,473s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -821,10 +618,10 @@ live/2015/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/20
 f-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/u
 rw/times/utmri8a.pfb>
-Output written on main.pdf (24 pages, 334556 bytes).
+Output written on main.pdf (21 pages, 312816 bytes).
 PDF statistics:
- 136 PDF objects out of 1000 (max. 8388607)
- 94 compressed objects within 1 object stream
+ 127 PDF objects out of 1000 (max. 8388607)
+ 88 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

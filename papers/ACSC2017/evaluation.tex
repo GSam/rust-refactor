@@ -18,7 +18,7 @@ Included in the code repository are a number of tests to ensure that the refacto
 \subsubsection{Validity of renamings}
 The testing suite attempts to test both the cases where a renaming should occur, and cases where it should not due to the variations in conflict types as outlined in Section \ref{S:different}. Currently there around 60 tests specifically written to test renaming, spread across the different classes of renaming. In particular, tests try to cause conflicts between the different classes, e.g. variable names with type names. We can examine a generic rename in Figure \ref{Fig:walk}. When running any of the renaming refactorings, name resolution will run to find any super-block conflict or some cases same-block conflicts. Afterwards, any sub-block conflicts will be caught in a compilation run. In some cases, the `use' import graph is then rebuilt to identify same-block conflicts which were missed by name resolution. By convincing ourselves that all the conflict types are covered, in addition the having test cases to show that it works, there can be confidence that the overall approach works.
 
-\begin{figure}
+\begin{figure*}
 {\verb|let a = 2; // 1. Super-block conflict: caught by name resolution|}
 
 {\verb|    {|}
@@ -32,7 +32,7 @@ The testing suite attempts to test both the cases where a renaming should occur,
 {\verb|    }|}
 \caption{Examining a tentative rename in red}
 \label{Fig:walk}
-\end{figure}
+\end{figure*}
 
 \paragraph{Local and global variables (and generally function arguments and fields)}
 At the moment there exists several tests for const, static and normal local variables, both in successful and non-successful situations. In terms of the ability for this class of renamings to fail unexpectedly, the chances appear slight since variables lack the most dynanism and complexity (no dynamic dispatch for instance), particularly for local variables. As long as name resolution works correctly and the compilation process, few of these renamings should cause issues. During the process of testing, it was found that `static mut' global variables did not record their spans correctly due to an error in the save-analysis code. In particular, the span was recorded for the `mut' identifier as opposed to the actual name of the variable. Fixing this required a minor patch to the Rust compiler and this patch was upstreamed prior to the release of Rust 1.0.
@@ -233,9 +233,9 @@ The classes of refactorings measured are: renaming variables (or variable-like c
 
 \begin{figure}[h]
 \begin{center}
-\scalebox{0.8}{
-\includegraphics{refactorings}
-}
+
+\includegraphics[width=8cm]{refactorings}
+
 \caption{Graph displaying results of the different refactorings}
 \label{Fig:compareref}
 \end{center}
@@ -268,9 +268,9 @@ From `libc', a number of different concrete types were targeted for performing a
 
 \begin{figure}[h]
 \begin{center}
-\scalebox{0.8}{
-\includegraphics{scaling}
-}
+
+\includegraphics[width=8cm]{scaling}
+
 \caption{Graph displaying results of varying the number of usages}
 \label{Fig:comparerefs}
 \end{center}

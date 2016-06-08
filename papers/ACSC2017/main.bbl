@@ -1,14 +1,9 @@
 \begin{thebibliography}{10}
 
-\bibitem{baumer2001integrating}
-Dirk B{\"a}umer, Erich Gamma, and Adam Kiezun.
-\newblock Integrating refactoring support into a java development tool.
-\newblock {\em OOPSLA’01 Companion}, 2001.
-
 \bibitem{openhub15}
 {Black Duck Open HUB}.
 \newblock {Rust (programming language)}.
-\newblock \url{http://code.openhub.net/project?pid=&ipid=301463}, 2015.
+\newblock \url{code.openhub.net/project?pid=&ipid=301463}, 2015.
 
 \bibitem{brown2008tool}
 Christopher~Mark Brown.
@@ -47,12 +42,6 @@ Martin Fowler and Kent Beck.
   \url{https://github.com/nrc/dxr/blob/rust5/dxr/plugins/rust/__init__.py},
   2015.
 
-\bibitem{jemerov2008implementing}
-Dmitry Jemerov.
-\newblock {Implementing refactorings in IntelliJ IDEA}.
-\newblock In {\em Proceedings of the 2nd Workshop on Refactoring Tools},
-  page~13. ACM, 2008.
-
 \bibitem{jetbrains15}
 Jetbrains.
 \newblock {Multi-language Refactorings}.
@@ -86,11 +75,6 @@ Garming Sam.
 \newblock {rust-refactor: Rust refactoring project}.
 \newblock \url{https://github.com/GSam/rust-refactor}, 2015.
 
-\bibitem{scala15}
-{Scala Refactoring}.
-\newblock {Scala Refactoring: Refactorings}.
-\newblock \url{http://scala-refactoring.org/screenshots/}, 2015.
-
 \bibitem{schafer2010specification}
 Max Schafer.
 \newblock {\em Specification, Implementation and Verification of Refactorings}.
@@ -111,11 +95,6 @@ Friedrich Steimann.
 Mirko Stocker.
 \newblock {\em Scala refactoring}.
 \newblock PhD thesis, HSR Hochschule f{\"u}r Technik Rapperswil, 2010.
-
-\bibitem{gofmt15}
-{The Go Authors}.
-\newblock {Command gofmt}.
-\newblock \url{https://golang.org/cmd/gofmt/}, 2015.
 
 \bibitem{gorename15}
 {The Go Authors}.
@@ -178,11 +157,6 @@ Mirko Stocker.
   \url{https://github.com/rust-lang/rust-wiki-backup/blob/master/Note-compiler-snapshots.md},
   2015.
 
-\bibitem{rfmt}
-{The Rust Community}.
-\newblock {rustfmt: Format Rust code}.
-\newblock \url{https://github.com/nrc/rustfmt}, 2015.
-
 \bibitem{docpath15}
 {The Rust Community}.
 \newblock {Struct syntax::ast::Path}.
@@ -215,12 +189,5 @@ Mirko Stocker.
 \newblock
   \url{https://mail.mozilla.org/pipermail/rust-dev/2013-January/002903.html},
   2013.
-
-\bibitem{widmer07}
-Tobias Widmer.
-\newblock {Unleashing the Power of Refactoring}.
-\newblock
-  \url{http://www.eclipse.org/articles/article.php?file=Article-Unleashing-the-Power-of-Refactoring/index.html},
-  2007.
 
 \end{thebibliography}
