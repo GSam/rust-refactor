@@ -158,8 +158,7 @@ Timings were generated for the different crates using the Linux perf tool: {\ver
 
 The classes of refactorings measured are: renaming variables (or variable-like constructs), renaming functions (or methods), renaming concrete types, reification and elision. Inline local has been omitted due to lack of sufficient examples in the given crates, particularly without mutation. In each case, examples were picked with effectively a single usage, access or equivalent (with minimal modifications made) so that the difference in timings between each of the individual refactorings could be highlighted. Figure \ref{Fig:compareref} shows how regardless of refactoring, the time taken is generally comparable within a crate. Looking at Figure \ref{Fig:codesize}, the blind code size metric does not appear to be a good indicator of the base refactoring time and so comparisons between crates are limited. In general, the complexity of a crate is not necessarily tied to crate size e.g. `libc' being mostly header declarations. Although we have some spread in crate size for this analysis, this could likely be improved. Function renaming takes noticeably longer while lifetime refactorings are noticeably shorter. This base refactoring time is likely linked to the basic compile time and how at worst, we need the analysis information to check the validity of a refactoring. While a rename refactoring requires checking every usage of a declared item using the compiler, in the `happy path' every usage should fail the compiler check during the early stages of parsing or name resolution. Only in more unlikely or unfortunate cases will a refactoring require any additional processing in analysis. This likely makes the different renamings relatively comparable. 
 
-
-\begin{figure}[h]
+\begin{figure*}
 \centering
 \begin{minipage}{.5\textwidth}
   \begin{center}
@@ -193,9 +192,9 @@ The classes of refactorings measured are: renaming variables (or variable-like c
 \caption{Timings for rustc-serialize}
 \label{Fig:rustc-serialize}
 \end{minipage}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[h]
+\begin{figure*}
 \centering
 \begin{minipage}{.5\textwidth}
   \begin{center}
@@ -229,7 +228,7 @@ The classes of refactorings measured are: renaming variables (or variable-like c
 \caption{Timings for log}
 \label{Fig:log}
 \end{minipage}
-\end{figure}
+\end{figure*}
 
 \begin{figure}[h]
 \begin{center}

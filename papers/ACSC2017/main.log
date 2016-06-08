@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.25)  8 JUN 2016 12:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.25)  8 JUN 2016 13:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -371,11 +371,11 @@ LaTeX Font Info:    Try loading font information for T1+ptm on input line 14.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 )
-(./introduction.tex [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updma
-p/pdftex.map}
+(./introduction.tex) (./background.tex [1{/usr/local/texlive/2015/texmf-var/fon
+ts/map/pdftex/updmap/pdftex.map}
 
 
-]) (./background.tex
+]
 LaTeX Font Info:    Try loading font information for T1+aett on input line 9.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/ae/t1aett.fd
@@ -401,26 +401,26 @@ Overfull \hbox (1.78784pt too wide) in paragraph at lines 116--118
  []
 
 [3]
-Overfull \hbox (11.84879pt too wide) in paragraph at lines 162--163
+Overfull \hbox (14.41371pt too wide) in paragraph at lines 162--163
 \T1/aer/m/n/9 fiers and other sup-port-ing in-for-ma-tion, e.g. std::cmp::Parti
-alEq
+alEq.
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
+ [4]
 Overfull \hbox (1.56474pt too wide) in paragraph at lines 201--202
 []\T1/aer/m/n/9 Bill Opdyke in Refac-tor-ing Object-Orientated Frame-works
  []
 
-[4] [5]
+
 Overfull \hbox (3.78519pt too wide) in paragraph at lines 260--261
 []\T1/aer/m/n/9 While defin-ing be-haviour preser-va-tion in his the-sis, Opdyk
 e
  []
 
-) (./workdone.tex
+[5]) (./workdone.tex
 Overfull \hbox (11.07745pt too wide) in paragraph at lines 9--10
 []\T1/aer/m/n/9 analyse the pro-gram un-der refac-tor-ing to find out whether
  []
@@ -437,6 +437,9 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 Overfull \hbox (5.22821pt too wide) in paragraph at lines 47--47
 []    \T1/aett/m/n/9 print B; // 1                      print A; // 2[] 
  []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
 
 [6]
 Overfull \hbox (52.38748pt too wide) in paragraph at lines 100--100
@@ -490,17 +493,26 @@ Overfull \hbox (52.38748pt too wide) in paragraph at lines 39--39
 [] 
  []
 
-[10] [11]
+[10]
+Underfull \vbox (badness 1558) has occurred while \output is active []
+
+
 Overfull \hbox (52.38748pt too wide) in paragraph at lines 104--104
 []\T1/aett/m/n/9 % refactor var dxr-temp/unknown_crate.csv simple.rs  a:-1:-1 c
 [] 
  []
 
 
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[11]
 Overfull \hbox (38.2397pt too wide) in paragraph at lines 133--133
 []\T1/aett/m/n/9 fn main() { let _ = (2 + 1) * 2; } // rather than 2 + 1 * 2[] 
 
  []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
 
 [12]
 Overfull \hbox (19.37599pt too wide) in paragraph at lines 159--161
@@ -519,13 +531,13 @@ Overfull \hbox (13.32443pt too wide) in paragraph at lines 38--39
 ssful
  []
 
-[13]
+
 Overfull \hbox (3.21999pt too wide) in paragraph at lines 43--44
 \T1/aer/m/n/9 the csv file de-scrip-tion and the re-liance on the use of []\T1/
 aett/m/n/9 declname
  []
 
-
+[13]
 Overfull \hbox (0.51228pt too wide) in paragraph at lines 59--59
 []                \T1/aett/m/n/9 let Point{foo, y} = Point{x:1, y:2}[] 
  []
@@ -535,50 +547,45 @@ Overfull \hbox (19.37599pt too wide) in paragraph at lines 59--59
 []                \T1/aett/m/n/9 let Point{x:foo, y:y} = Point{x:1, y:2}[] 
  []
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [14]
+[14]
 Overfull \hbox (1.08504pt too wide) in paragraph at lines 85--85
 []\subsecfnt Formal cor-rect-ness and al-ter-na-tive ap-proaches 
  []
 
-[15]
-Overfull \hbox (264.0pt too wide) in paragraph at lines 164--196
- []$[]$$[]$ 
- []
-
-
-Overfull \hbox (264.0pt too wide) in paragraph at lines 200--232
- []$[]$$[]$ 
- []
-
-<refactorings.png, id=63, 562.35094pt x 456.95718pt>
+[15] <refactorings.png, id=63, 562.35094pt x 456.95718pt>
 File: refactorings.png Graphic file (type png)
- <use refactorings.png>
-Package pdftex.def Info: refactorings.png used on input line 237.
+
+<use refactorings.png>
+Package pdftex.def Info: refactorings.png used on input line 236.
 (pdftex.def)             Requested size: 227.62204pt x 184.96205pt.
 
-[16 <./refactorings.png>]
-Overfull \hbox (7.4611pt too wide) in paragraph at lines 251--263
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (7.4611pt too wide) in paragraph at lines 250--262
  [] 
  []
 
-<scaling.png, id=67, 531.48563pt x 338.76563pt>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<scaling.png, id=64, 531.48563pt x 338.76563pt>
 File: scaling.png Graphic file (type png)
  <use scaling.png>
-Package pdftex.def Info: scaling.png used on input line 272.
+Package pdftex.def Info: scaling.png used on input line 271.
 (pdftex.def)             Requested size: 227.62204pt x 145.08743pt.
 
-Overfull \hbox (10.8696pt too wide) in paragraph at lines 288--289
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (10.8696pt too wide) in paragraph at lines 287--288
 \T1/aer/m/n/9 much cor-rect-ness check-ing these tools ac-tu-ally per-form. Ecl
 ipse
  []
 
-) (./futurework.tex [17 <./scaling.png>]
-Underfull \vbox (badness 1558) has occurred while \output is active []
-
- [18]
+[16]) (./futurework.tex [17 <./refactorings.png>] [18 <./scaling.png>]
 Overfull \hbox (39.20212pt too wide) in paragraph at lines 79--80
 \T1/aer/m/n/9 com-piler to im-prove its ef-fi-cacy and ef-fi-ciency. Us-ing []\
 T1/aett/m/n/9 -Zsave-analysis
@@ -589,39 +596,33 @@ Overfull \hbox (10.33046pt too wide) in paragraph at lines 91--92
 []\T1/aer/m/n/9 Currently macros are com-pletely ig-nored by the save-analysis
  []
 
-) (./conclusion.tex [19]) (./main.bbl
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [20])
-[21
-
-] (./main.aux) ) 
+[19]) (./conclusion.tex) (./main.bbl) [20] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 3483 strings out of 493027
- 45307 string characters out of 6134069
- 126838 words of memory out of 5000000
- 6884 multiletter control sequences out of 15000+600000
+ 3476 strings out of 493027
+ 45225 string characters out of 6134069
+ 130810 words of memory out of 5000000
+ 6877 multiletter control sequences out of 15000+600000
  58972 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,10n,35p,1843b,473s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc
-}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb><
-/usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb>
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></u
-sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/
-local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/loc
-al/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local
-/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/tex
-live/2015/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2015/texm
-f-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fon
-ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/u
-rw/times/utmri8a.pfb>
-Output written on main.pdf (21 pages, 312816 bytes).
+{/usr/local/texlive/20
+15/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2015/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2015/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/local/texlive/2015/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmti9.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmtt9.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/h
+elvetic/uhvb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/helvetic
+/uhvr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pf
+b></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/lo
+cal/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (20 pages, 309247 bytes).
 PDF statistics:
- 127 PDF objects out of 1000 (max. 8388607)
- 88 compressed objects within 1 object stream
+ 124 PDF objects out of 1000 (max. 8388607)
+ 86 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

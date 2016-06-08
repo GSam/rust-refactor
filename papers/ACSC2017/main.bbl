@@ -1,10 +1,5 @@
 \begin{thebibliography}{10}
 
-\bibitem{openhub15}
-{Black Duck Open HUB}.
-\newblock {Rust (programming language)}.
-\newblock \url{code.openhub.net/project?pid=&ipid=301463}, 2015.
-
 \bibitem{brown2008tool}
 Christopher~Mark Brown.
 \newblock {\em Tool Support for Refactoring Haskell Programs}.
@@ -33,7 +28,7 @@ Brian Foote and Joseph Yoder.
 \bibitem{fowler99}
 Martin Fowler and Kent Beck.
 \newblock {\em Refactoring: Improving the Design of Existing Code}.
-\newblock Addison-Wesley, Reading, Massachusetts, USA, 1999.
+\newblock AW, 1999.
 
 \bibitem{dxr15}
 {Github}.
@@ -45,19 +40,17 @@ Martin Fowler and Kent Beck.
 \bibitem{jetbrains15}
 Jetbrains.
 \newblock {Multi-language Refactorings}.
-\newblock \url{https://www.jetbrains.com/idea/features/refactoring.html}, 2015.
+\newblock \url{jetbrains.com/idea/features/refactoring.html}, 2015.
 
 \bibitem{keep15}
 Daniel Keep.
-\newblock {A Practical Intro to Macros in Rust 1.0}.
-\newblock \url{https://danielkeep.github.io/practical-intro-to-macros.html},
-  2015.
+\newblock {Practical Intro to Macros in Rust 1.0}.
+\newblock \url{danielkeep.github.io/practical-intro-to-macros.html}, 2015.
 
 \bibitem{graph}
 Tom Mens, Serge Demeyer, and Dirk Janssens.
 \newblock {Formalising behaviour preserving program transformations}.
-\newblock In {\em {International Conferenceon Graph Transformation (ICGT
-  2002)}}, pages 286--301. Springer-Verlag, 2002.
+\newblock In {\em {ICGT}}, pages 286--301. SV, 2002.
 
 \bibitem{opdyke1992refactoring}
 William~F Opdyke.
@@ -67,8 +60,7 @@ William~F Opdyke.
 \bibitem{effects}
 Lukas Rytz, Martin Odersky, and Philipp Haller.
 \newblock {Lightweight polymorphic effects}.
-\newblock In {\em {Object-Oriented Programming -- ECOOP}}, pages 258--282.
-  Springer, 2012.
+\newblock In {\em {ECOOP}}, pages 258--282. SV, 2012.
 
 \bibitem{rrproject}
 Garming Sam.
@@ -78,13 +70,12 @@ Garming Sam.
 \bibitem{schafer2010specification}
 Max Schafer.
 \newblock {\em Specification, Implementation and Verification of Refactorings}.
-\newblock PhD thesis, Oxford University, 2010.
+\newblock PhD thesis, Oxford, 2010.
 
 \bibitem{sculthorpe}
-Neil Sculthorpe, Andrew Farmer, and Kent Beck.
+N.~Sculthorpe, A.~Farmer, and K.~Beck.
 \newblock {The HERMIT in the Tree}.
-\newblock In {\em {24th Symposium on Implementation and Application of
-  Functional Languages, 2012}}, pages 86--103. Springer, 2013.
+\newblock In {\em {IAFL}}, pages 86--103. SV, 2013.
 
 \bibitem{aop}
 Friedrich Steimann.
@@ -118,13 +109,7 @@ Mirko Stocker.
 \bibitem{docborrow15}
 {The Rust Community}.
 \newblock {Borrowing}.
-\newblock \url{https://doc.rust-lang.org/book/references-and-borrowing.html},
-  2015.
-
-\bibitem{examplecrates15}
-{The Rust Community}.
-\newblock {Crates)}.
-\newblock \url{http://rustbyexample.com/crates.html}, 2015.
+\newblock \url{doc.rust-lang.org/book/references-and-borrowing.html}, 2015.
 
 \bibitem{docmod15}
 {The Rust Community}.
@@ -150,37 +135,10 @@ Mirko Stocker.
 \newblock {Rust Documentation}.
 \newblock \url{https://doc.rust-lang.org/}, 2015.
 
-\bibitem{makefile15}
-{The Rust Community}.
-\newblock {Rust Wiki - Compiler Snapshots}.
-\newblock
-  \url{https://github.com/rust-lang/rust-wiki-backup/blob/master/Note-compiler-snapshots.md},
-  2015.
-
-\bibitem{docpath15}
-{The Rust Community}.
-\newblock {Struct syntax::ast::Path}.
-\newblock \url{http://doc.rust-lang.org/syntax/ast/struct.Path.html}, 2015.
-
-\bibitem{rustbook15}
-{The Rust Community}.
-\newblock {The Rust programming Language}.
-\newblock \url{https://doc.rust-lang.org/book/README.html}, 2015.
-
 \bibitem{traitexample15}
 {The Rust Community}.
 \newblock {Traits}.
 \newblock \url{http://rustbyexample.com/trait.html}, 2015.
-
-\bibitem{rustcore15}
-{The Rust Core Team}.
-\newblock {Announcing Rust 1.0 - The Rust Programming Language Blog}.
-\newblock \url{http://blog.rust-lang.org/2015/05/15/Rust-1.0.html}, 2015.
-
-\bibitem{faq15}
-{The Rust Project Developers}.
-\newblock {The Rust Project FAQ}.
-\newblock \url{https://doc.rust-lang.org/complement-project-faq.html}, 2015.
 
 \bibitem{pwalton}
 {Walton, P. (Mozilla)}.
