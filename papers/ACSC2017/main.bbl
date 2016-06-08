@@ -20,11 +20,6 @@ Crates.io.
 \newblock {Cargo: The Rust Community's crate host}.
 \newblock \url{https://crates.io/}, 2015.
 
-\bibitem{foote1997big}
-Brian Foote and Joseph Yoder.
-\newblock Big ball of mud.
-\newblock {\em Pattern languages of program design}, 4:654--692, 1997.
-
 \bibitem{fowler99}
 Martin Fowler and Kent Beck.
 \newblock {\em Refactoring: Improving the Design of Existing Code}.
@@ -36,11 +31,6 @@ Martin Fowler and Kent Beck.
 \newblock
   \url{https://github.com/nrc/dxr/blob/rust5/dxr/plugins/rust/__init__.py},
   2015.
-
-\bibitem{jetbrains15}
-Jetbrains.
-\newblock {Multi-language Refactorings}.
-\newblock \url{jetbrains.com/idea/features/refactoring.html}, 2015.
 
 \bibitem{keep15}
 Daniel Keep.
@@ -82,22 +72,12 @@ Friedrich Steimann.
 \newblock The paradoxical success of aspect-oriented programming.
 \newblock {\em ACM Sigplan Notices}, 41:481--497, 2006.
 
-\bibitem{stocker2010scala}
-Mirko Stocker.
-\newblock {\em Scala refactoring}.
-\newblock PhD thesis, HSR Hochschule f{\"u}r Technik Rapperswil, 2010.
-
 \bibitem{gorename15}
 {The Go Authors}.
 \newblock {Rename: check.go}.
 \newblock
   \url{https://github.com/golang/tools/blob/master/refactor/rename/check.go},
   2015.
-
-\bibitem{inherit}
-{The Rust Community}.
-\newblock {RFC - Efficient code reuse}.
-\newblock \url{https://github.com/rust-lang/rfcs/issues/349}, 2014.
 
 \bibitem{elisionrules}
 {The Rust Community}.
@@ -106,18 +86,6 @@ Mirko Stocker.
   \url{https://github.com/rust-lang/rfcs/blob/master/text/0141-lifetime-elision.md},
   2014.
 
-\bibitem{docborrow15}
-{The Rust Community}.
-\newblock {Borrowing}.
-\newblock \url{doc.rust-lang.org/book/references-and-borrowing.html}, 2015.
-
-\bibitem{docmod15}
-{The Rust Community}.
-\newblock {Crates and Modules}.
-\newblock
-  \url{http://static.rust-lang.org/doc/master/book/crates-and-modules.html},
-  2015.
-
 \bibitem{driver15}
 {The Rust Community}.
 \newblock {librustc\_driver -- driver.rs}.
@@ -125,20 +93,10 @@ Mirko Stocker.
   \url{https://github.com/rust-lang/rust/blob/master/src/librustc_driver/driver.rs},
   2015.
 
-\bibitem{docowner15}
-{The Rust Community}.
-\newblock {Ownership}.
-\newblock \url{https://doc.rust-lang.org/book/ownership.html}, 2015.
-
 \bibitem{doc15}
 {The Rust Community}.
 \newblock {Rust Documentation}.
 \newblock \url{https://doc.rust-lang.org/}, 2015.
-
-\bibitem{traitexample15}
-{The Rust Community}.
-\newblock {Traits}.
-\newblock \url{http://rustbyexample.com/trait.html}, 2015.
 
 \bibitem{pwalton}
 {Walton, P. (Mozilla)}.

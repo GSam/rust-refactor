@@ -3,44 +3,44 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: main.aux
 The style file: plain.bst
 Database file #1: garming.bib
-You've used 27 entries,
+You've used 19 entries,
             2118 wiz_defined-function locations,
-            617 strings with 6744 characters,
-and the built_in function-call counts, 6674 in all, are:
-= -- 671
-> -- 234
+            588 strings with 6052 characters,
+and the built_in function-call counts, 4901 in all, are:
+= -- 495
+> -- 172
 < -- 3
-+ -- 98
-- -- 70
-* -- 285
-:= -- 1126
-add.period$ -- 84
-call.type$ -- 27
-change.case$ -- 111
++ -- 72
+- -- 52
+* -- 217
+:= -- 821
+add.period$ -- 60
+call.type$ -- 19
+change.case$ -- 79
 chr.to.int$ -- 0
-cite$ -- 27
-duplicate$ -- 259
-empty$ -- 621
-format.name$ -- 70
-if$ -- 1450
+cite$ -- 19
+duplicate$ -- 197
+empty$ -- 449
+format.name$ -- 52
+if$ -- 1069
 int.to.chr$ -- 0
-int.to.str$ -- 27
-missing$ -- 8
-newline$ -- 138
-num.names$ -- 54
-pop$ -- 185
+int.to.str$ -- 19
+missing$ -- 7
+newline$ -- 98
+num.names$ -- 38
+pop$ -- 131
 preamble$ -- 1
-purify$ -- 89
+purify$ -- 64
 quote$ -- 0
-skip$ -- 215
+skip$ -- 159
 stack$ -- 0
-substring$ -- 277
-swap$ -- 55
+substring$ -- 212
+swap$ -- 47
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 106
+type$ -- 74
 warning$ -- 0
-while$ -- 67
-width$ -- 29
-write$ -- 284
+while$ -- 49
+width$ -- 21
+write$ -- 202

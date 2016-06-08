@@ -1,5 +1,4 @@
 \section{Evaluation}\label{C:eval}
-This chapter examines the validity and practical use of the tool. The validity of the code is measured with a comprehensive test suite to capture a wide variety of test cases and edge cases. Section \ref{S:validity} looks into the test cases in more detail, why this approach to validity was taken and justifications for why the overall strategy is believed to be correct. Sections \ref{S:extentn}, \ref{S:stepsn} and \ref{S:perfeval} explore the practical use of the tool from different points of view, including some performance considerations. Lastly, Section \ref{S:otherstuff} takes a moment to consider a few other methods of evaluation that might have been insightful to explore, but ultimately flawed.
 
 \subsection{Validity of refactorings}\label{S:validity}
 Included in the code repository are a number of tests to ensure that the refactoring tool functions as expected, all written in Rust. Each test consists of a csv dump file, a Rust source file and if the refactoring is designed to be successful, an additional output Rust source file. In the case of success, the output of the tool is found to be equivalent to the expected output source code and in the case of failure, the test code confirms that the tool aborts the refactoring. Currently there are a total of 85 different tests in the test suite.
@@ -16,7 +15,8 @@ Included in the code repository are a number of tests to ensure that the refacto
 %[Need to look more back at Scala thesis etc...]
 
 \subsubsection{Validity of renamings}
-The testing suite attempts to test both the cases where a renaming should occur, and cases where it should not due to the variations in conflict types as outlined in Section \ref{S:different}. Currently there around 60 tests specifically written to test renaming, spread across the different classes of renaming. In particular, tests try to cause conflicts between the different classes, e.g. variable names with type names. We can examine a generic rename in Figure \ref{Fig:walk}. When running any of the renaming refactorings, name resolution will run to find any super-block conflict or some cases same-block conflicts. Afterwards, any sub-block conflicts will be caught in a compilation run. In some cases, the `use' import graph is then rebuilt to identify same-block conflicts which were missed by name resolution. By convincing ourselves that all the conflict types are covered, in addition the having test cases to show that it works, there can be confidence that the overall approach works.
+
+The testing suite attempts to test both the cases where a renaming should occur, and cases where it should not due to the variations in conflict types as outlined in Section~\ref{C:back}. Currently there around 60 tests specifically written to test renaming, spread across the different classes of renaming. In particular, tests try to cause conflicts between the different classes, e.g. variable names with type names. We can examine a generic rename in Figure \ref{Fig:walk}. When running any of the renaming refactorings, name resolution will run to find any super-block conflict or some cases same-block conflicts. Afterwards, any sub-block conflicts will be caught in a compilation run. In some cases, the `use' import graph is then rebuilt to identify same-block conflicts which were missed by name resolution. By convincing ourselves that all the conflict types are covered, in addition the having test cases to show that it works, there can be confidence that the overall approach works.
 
 \begin{figure*}
 {\verb|let a = 2; // 1. Super-block conflict: caught by name resolution|}
@@ -50,12 +50,12 @@ Figure \ref{Fig:fix} shows an edge case identified during this project. A struct
 
 \begin{figure}
 \begin{verbatim}
-                // Before refactoring
-                let Point{x, y} = Point{x:1, y:2}
-                // After refactoring (invalid):
-                let Point{foo, y} = Point{x:1, y:2}
-                // Manually user-corrected (valid)
-                let Point{x:foo, y:y} = Point{x:1, y:2}
+// Before refactoring
+let Point{x, y} = Point{x:1, y:2}
+// After refactoring (invalid):
+let Point{foo, y} = Point{x:1, y:2}
+// Manually user-corrected (valid)
+let Point{x:foo, y:y} = Point{x:1, y:2}
 \end{verbatim}
 \caption{Invalid rename of \emph{x} to \emph{foo} which is easily fixed manually}
 \label{Fig:fix}
@@ -94,17 +94,17 @@ Where possible, informal arguments have been given as to how different refactori
 %Given the project time constraints, again, test cases appeared to be the most effective way to ensure correctness.
 %Massive complexities, that just can't be nailed down. 
 
-\subsection{Extent of refactorings}\label{S:extentn}
-%Given only refactorings concerning renaming have been tackled, the scope of the investigation is still severely limited. 
-
-The refactorings tackled predominantly concern renaming, however, the addition of local variable inlining and lifetime elision and reification has allowed for a greater view of refactorings in Rust. In terms of the categories of refactorings mentioned by Fowler et al., only the very surface of method composition and simplifcation have been covered, but this project's underlying nature has meant notable differences and distinctions. Fielding user suggestions should provide helpful future feedback, but for now the approaches now have some weight and renamings form one of the basic units within a refactoring, allowing composition.
+%\subsection{Extent of refactorings}\label{S:extentn}
+%%Given only refactorings concerning renaming have been tackled, the scope of the investigation is still severely limited. 
+%
+%The refactorings tackled predominantly concern renaming, however, the addition of local variable inlining and lifetime elision and reification has allowed for a greater view of refactorings in Rust. In terms of the categories of refactorings mentioned by Fowler et al., only the very surface of method composition and simplifcation have been covered, but this project's underlying nature has meant notable differences and distinctions. Fielding user suggestions should provide helpful future feedback, but for now the approaches now have some weight and renamings form one of the basic units within a refactoring, allowing composition.
 
 % Also, without general users of the tool, the analysis of practicality lacks depth, but again, the refactoring tool has been mostly designed as a proof-of-concept.
 
 
 %[On the other hand, we have renaming which forms one of the primary atomic units within a refactoring and allows composition.]
 
-\subsection{Examining the steps necessary to perform a refactoring}\label{S:stepsn}
+\subsection{Steps necessary to perform a refactoring}\label{S:stepsn}
 
 Looking at what is necessary to invoke the refactoring tool we can determine a general description of steps required:
 
@@ -128,7 +128,7 @@ Looking at the list given in the Chapter \ref{C:wd} for the ideal steps for a re
 
 % This could be done outside of the refactoring library, in a persisting background process but on the other hand,
 
-\subsection{Performance evaluation -- Analyzing time taken}\label{S:perfeval}
+\subsection{Performance evaluation}\label{S:perfeval}
 With only single file tests, the amount of time spent performing each refactoring is quite negligible. Compilation times for single files, particularly trivial programs do not provide sufficient evidence of practical timings for performing a refactoring. Therefore the choice was made to investigate real world code from the Crates.io, Rust package repository \cite{cratesio15}. 
 
 \subsubsection{Relative crate sizes}
@@ -158,84 +158,84 @@ Timings were generated for the different crates using the Linux perf tool: {\ver
 
 The classes of refactorings measured are: renaming variables (or variable-like constructs), renaming functions (or methods), renaming concrete types, reification and elision. Inline local has been omitted due to lack of sufficient examples in the given crates, particularly without mutation. In each case, examples were picked with effectively a single usage, access or equivalent (with minimal modifications made) so that the difference in timings between each of the individual refactorings could be highlighted. Figure \ref{Fig:compareref} shows how regardless of refactoring, the time taken is generally comparable within a crate. Looking at Figure \ref{Fig:codesize}, the blind code size metric does not appear to be a good indicator of the base refactoring time and so comparisons between crates are limited. In general, the complexity of a crate is not necessarily tied to crate size e.g. `libc' being mostly header declarations. Although we have some spread in crate size for this analysis, this could likely be improved. Function renaming takes noticeably longer while lifetime refactorings are noticeably shorter. This base refactoring time is likely linked to the basic compile time and how at worst, we need the analysis information to check the validity of a refactoring. While a rename refactoring requires checking every usage of a declared item using the compiler, in the `happy path' every usage should fail the compiler check during the early stages of parsing or name resolution. Only in more unlikely or unfortunate cases will a refactoring require any additional processing in analysis. This likely makes the different renamings relatively comparable. 
 
-\begin{figure*}
-\centering
-\begin{minipage}{.5\textwidth}
-  \begin{center}
-    \begin{tabular}{ | l | c |}
-    \hline
-    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
-    Single variable usage & 0.2793 \\ \hline
-    Single function usage &  0.2824  \\ \hline
-    Single concrete type usage  &  0.1925 \\ \hline
-    Reify function &  0.1811 \\ \hline
-    Elide function &  0.2563 \\ \hline
-    \end{tabular}
-\end{center}
-
-\caption{Timings for libc}
-\label{Fig:libc}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-\begin{center}
-    \begin{tabular}{ | l | c |}
-    \hline
-    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
-    Single variable usage &  1.190 \\ \hline
-    Single function usage &  1.766  \\ \hline
-    Single concrete type usage  &  1.291 \\ \hline
-    Reify function &  0.9612  \\ \hline
-    Elide function &  0.9480 \\ \hline
-    \end{tabular}
-\end{center}
-
-\caption{Timings for rustc-serialize}
-\label{Fig:rustc-serialize}
-\end{minipage}
-\end{figure*}
-
-\begin{figure*}
-\centering
-\begin{minipage}{.5\textwidth}
-  \begin{center}
-    \begin{tabular}{ | l | c |}
-    \hline
-    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
-    Single variable usage &  0.5274 \\ \hline
-    Single function usage &  0.7557 \\ \hline
-    Single concrete type usage  & 0.5553 \\ \hline
-    Reify function &   0.3581 \\ \hline
-    Elide function & 0.4605 \\ \hline
-    \end{tabular}
-\end{center}
-
-\caption{Timings for rand}
-\label{Fig:rand}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-\begin{center}
-    \begin{tabular}{ | l | c |}
-    \hline
-    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
-    Single variable usage &  0.3815  \\ \hline
-    Single function usage &   0.4029  \\ \hline
-    Single concrete type usage  &  0.3638 \\ \hline
-    Reify function &   0.3173 \\ \hline
-    Elide function &  0.3240 \\ \hline
-    \end{tabular}
-\end{center}
-
-\caption{Timings for log}
-\label{Fig:log}
-\end{minipage}
-\end{figure*}
+%\begin{figure*}
+%\centering
+%\begin{minipage}{.5\textwidth}
+%  \begin{center}
+%    \begin{tabular}{ | l | c |}
+%    \hline
+%    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
+%    Single variable usage & 0.2793 \\ \hline
+%    Single function usage &  0.2824  \\ \hline
+%    Single concrete type usage  &  0.1925 \\ \hline
+%    Reify function &  0.1811 \\ \hline
+%    Elide function &  0.2563 \\ \hline
+%    \end{tabular}
+%\end{center}
+%
+%\caption{Timings for libc}
+%\label{Fig:libc}
+%\end{minipage}%
+%\begin{minipage}{.5\textwidth}
+%\begin{center}
+%    \begin{tabular}{ | l | c |}
+%    \hline
+%    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
+%    Single variable usage &  1.190 \\ \hline
+%    Single function usage &  1.766  \\ \hline
+%    Single concrete type usage  &  1.291 \\ \hline
+%    Reify function &  0.9612  \\ \hline
+%    Elide function &  0.9480 \\ \hline
+%    \end{tabular}
+%\end{center}
+%
+%\caption{Timings for rustc-serialize}
+%\label{Fig:rustc-serialize}
+%\end{minipage}
+%\end{figure*}
+%
+%\begin{figure*}
+%\centering
+%\begin{minipage}{.5\textwidth}
+%  \begin{center}
+%    \begin{tabular}{ | l | c |}
+%    \hline
+%    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
+%    Single variable usage &  0.5274 \\ \hline
+%    Single function usage &  0.7557 \\ \hline
+%    Single concrete type usage  & 0.5553 \\ \hline
+%    Reify function &   0.3581 \\ \hline
+%    Elide function & 0.4605 \\ \hline
+%    \end{tabular}
+%\end{center}
+%
+%\caption{Timings for rand}
+%\label{Fig:rand}
+%\end{minipage}%
+%\begin{minipage}{.5\textwidth}
+%\begin{center}
+%    \begin{tabular}{ | l | c |}
+%    \hline
+%    \textbf{Refactoring} & \textbf{Time (sec)} \\ \hline
+%    Single variable usage &  0.3815  \\ \hline
+%    Single function usage &   0.4029  \\ \hline
+%    Single concrete type usage  &  0.3638 \\ \hline
+%    Reify function &   0.3173 \\ \hline
+%    Elide function &  0.3240 \\ \hline
+%    \end{tabular}
+%\end{center}
+%
+%\caption{Timings for log}
+%\label{Fig:log}
+%\end{minipage}
+%\end{figure*}
 
 \begin{figure}[h]
 \begin{center}
 
 \includegraphics[width=8cm]{refactorings}
 
-\caption{Graph displaying results of the different refactorings}
+\caption{Graph displaying timing in seconds for the different refactorings}
 \label{Fig:compareref}
 \end{center}
 \end{figure}
@@ -277,13 +277,13 @@ From `libc', a number of different concrete types were targeted for performing a
 
 Rust generally encourages the use of Crates.io and package management to form modular systems. This means that the amount of code implemented by you personally is as minimal as possible, making scalability potentially a non-issue. On the other hand, more modular systems mean more API and shared functions, types etc. While this might not affect performance it affects the overall difficulty of refactoring because once an API is exposed, it is usually not liable to change. Changes across different code-bases are problematic, not just for Rust, but for programmers in general (due to different owners, licenses, etc.).
 
+%\subsection{Other potential methods of evaluation} \label{S:otherstuff}
+%%The types of considerations which could have been done are as follows:
+%%Design considerations - well, workflow problems
+%Comparison to Eclipse or IntelliJ might have provided some useful points of contrast, but the language differences would make many of the comparisons difficult or meaningless. In particular, what is not immediately clear is how much correctness checking these tools actually perform. Eclipse could be investigated by looking at their codebase, but fundamentally Java is quite a different language to Rust with different complexities. There is also Rust specific refactorings here, but a notable point of comparison is definitely inlining. In downloading and installing a recent version of Eclipse, it appears that even the consideration of preventing an inline when the variable appears in a simple assignment was ignored.
+%
+%A user study may have been another avenue to explore, but this appeared inappropriate for a number of reasons. We could bring in users of Rust, but the language is still in the process of gathering popularity. Finding those with the adequate amount of experience would likely be limited to those working heavily with the language, possibly working on the compiler (when our real target demographic is the casual user of Rust who does not know the inner workings well). There would also be few points of comparison, besides perhaps manual refactoring. A good deal of time was spent just determining what could even be done as part of this tool. Trying to juggle a user evaluation would have detracted from the goal of exploring the actual problems with a specifically Rust, refactoring tool. 
 
+\subsubsection{Limitations in the performance evaluation}
 
-
-
-\subsection{Other potential methods of evaluation} \label{S:otherstuff}
-%The types of considerations which could have been done are as follows:
-%Design considerations - well, workflow problems
-Comparison to Eclipse or IntelliJ might have provided some useful points of contrast, but the language differences would make many of the comparisons difficult or meaningless. In particular, what is not immediately clear is how much correctness checking these tools actually perform. Eclipse could be investigated by looking at their codebase, but fundamentally Java is quite a different language to Rust with different complexities. There is also Rust specific refactorings here, but a notable point of comparison is definitely inlining. In downloading and installing a recent version of Eclipse, it appears that even the consideration of preventing an inline when the variable appears in a simple assignment was ignored.
-
-A user study may have been another avenue to explore, but this appeared inappropriate for a number of reasons. We could bring in users of Rust, but the language is still in the process of gathering popularity. Finding those with the adequate amount of experience would likely be limited to those working heavily with the language, possibly working on the compiler (when our real target demographic is the casual user of Rust who does not know the inner workings well). There would also be few points of comparison, besides perhaps manual refactoring. A good deal of time was spent just determining what could even be done as part of this tool. Trying to juggle a user evaluation would have detracted from the goal of exploring the actual problems with a specifically Rust, refactoring tool. 
+Perhaps the most obvious shortcoming in these tests is the lack of sufficient data points, especially when trying to justify a trend. Finding the current set of examples was already extremely difficult given the size of the crates, made worse by the lack of macro support. Originally, a fifth crate `bitflags' was to be analyzed; however, the entire crate formed a macro expansion, preventing any refactoring. `libc' was almost entirely header declarations, having no `let' bindings, which made it difficult to generate the full set of refactorings. Performing scaling tests on more than just renaming types would have been helpful to prove worst-case linear scaling, especially for renaming functions as it was noticeably slower. But finding any meaningful variation of occurrences was difficult, and having but a few usages was common (as seen by the concentration of points in Figure \ref{Fig:comparerefs}). The relative size of the crates is still quite small and how the tool functions on much larger codebases is still completely unknown. Missing inline definitely limits the amount of useful conclusions that can be draw here. But the fact that few suitable locations for its usage were found questions the usefulness of the refactoring and the associated checks (given how incomplete they are). 

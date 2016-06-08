@@ -4,21 +4,9 @@ The Rust programming language reached the 1.0 milestone back in May 2015. Backed
 
 Refactoring is the act of performing functionality preserving code transformation. Traditionally, these transformations needed to be performed manually, but in recent years, a number of tools to aid and automate refactorings have arisen in many programming languages such as Java or C++ \cite{brown2008tool}. Manual transformations, including editor search-and-replace are potentially prone to error and so performing tool-assisted refactoring which guarantees some measure of correctness can provide much greater confidence in changes.
 
-The main purpose of this work is to produce a proof-of-concept refactoring tool which utilises existing infrastructure made available by the Rust compiler. The idea was to produce a tool which may be run to provide a set of refactorings, which may continue to be extended in the future. The list of implemented refactorings is as follows:
+The main purpose of this work is to produce a proof-of-concept refactoring tool which utilises existing infrastructure made available by the Rust compiler. The idea was to produce a tool which may be run to provide a set of refactorings, which may continue to be extended in the future.
 
-\begin{itemize}
-\item {\bfseries Renaming local and global variables} -- Variables declared within a function or method, or in a global namespace
-%\item {\bfseries Renaming global variables} -- Variables in a global namespace
-\item {\bfseries Renaming function arguments} -- Renaming local variables declared by a function or method signature
-\item {\bfseries Renaming fields} -- Struct-local members
-\item {\bfseries Renaming functions and methods} -- Statically or dynamically dispatched functions, and functions belonging to objects, including overridden methods
-\item {\bfseries Renaming structs} -- Custom data types declaring fields and methods
-\item {\bfseries Renaming enumerations} -- Enumerated data types declaring fields and methods
-\item {\bfseries Inlining local variables} -- Replacing usages of a local variable with its initialising expression
-\item {\bfseries Reification of lifetime parameters} -- Reintroducing inferred lifetimes for function and method signatures
-\item {\bfseries Elision of lifetime parameters} -- Removing lifetimes in function and method signatures that may be inferred (by the compiler)
-\end{itemize}
-
-In performing this work, this project has helped understand difficulties with the Rust language and building refactoring tools, such as the hygienic macro-system. The first investigation of providing functionality for inlining a local variable in Rust has been presented here, as well as reification and elision of lifetime parameters (transformations whose natures are specific to Rust). As the user of an infrequently used compiler API, a number of general shortcomings have been identified with the overall approach, with several patches being submitted to the Rust compiler to help facilitate this work. It is the hope that some of these considerations are noted as the Rust compiler continues to evolve.
-
-In Section~\ref{C:back}, we explore the prior related work and background knowledge required in understand the work presented in this paper. In Section~\ref{C:wd}, we explain the general concepts of Rust refactoring, while in Section~\ref{C:impl}, we discuss details of the implementation, focusing specifically on the tool itself and its associated design decisions. In Section~\ref{C:eval}, we discuss opportunities for evaluation of the tool and the current extent of testing for refactorings provided by the tool and overall validity. In Section~\ref{C:future}, we propose a number of further extensions to the tool, outline areas of future work while providing useful insights gained during the course of this work. Finally, Section~\ref{C:con} concludes.
+Our refactoring contributions are as follows: (1) Renaming local and global variables, function arguments, fields, functions and methods, structs, and enumerations;
+%, and global variables; 
+(2) inlining local variables;
+(3) lifetime parameter reification and elision. In particular, the third item was not implemented in any other language until this point. Finally, we outline the challenges involved and evaluate our tool.
