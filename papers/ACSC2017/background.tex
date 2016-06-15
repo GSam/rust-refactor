@@ -18,7 +18,7 @@ fn main() {
 }
 \end{verbatim}
 
-In Rust~\cite{doc15}, variable bindings have \textit{ownership} of whatever they are bound to. When an owning variable moves out of scope, any resources (including those on the heap) can be freed and manual cleanup is unnecessary. By default, Rust has `move semantics' where by assigning the value of one variable to another, the object is moved to the new variable and the old variable cannot be used to reference this object anymore. Alternatively, there is the option of performing cloning and the ability to default to copying behaviour, much like primitives within the Rust language
+In Rust~\cite{doc15}, variable bindings have \textit{ownership} of whatever they are bound to. When an owning variable moves out of scope, any resources (including those on the heap) can be freed and manual cleanup is unnecessary. By default, Rust has `move semantics' where by assigning the value of one variable to another, the object is moved to the new variable and the old variable cannot be used to reference this object anymore. Alternatively, there is the option of performing cloning and the ability to default to copying behaviour, much like primitives within the Rust language.
 
 While straightforward ownership with cloning probably provides a good deal of the necessary functionality for general purpose programming, it would likely be tedious. For instance, passing in a variable to a function would simply `eat' the variable and it would have to be part of the return so that the original variable can regain ownership (fortunately, Rust supports a return tuple). Rust supports references and \textit{borrowing}, where an object can be borrowed instead of being owned. Borrows must conform to certain constraints: either there are only read-only borrows, or there is a single mutable borrow.
 
@@ -33,7 +33,7 @@ Lifetime parameters act as part of the type information of a variable (or signat
 
 In most cases, descriptions of lifetime parameters follow quite simple patterns, and so Rust introduced the concept of lifetime elisions to reduce code verbosity. Elisions allow omission of lifetime parameters (based on some rules), requiring them to be specified only when they are actually required (by compiler inference). Based on a survey, the elision rules covered around 87\% of uses in the standard library \cite{elisionrules}. Lifetimes appear in either the input or output positions, again, denoted by a leading apostrophe. For functions, input positions refer to the types for the formal arguments, and the output refers to the result type. The rules are described as follows: Each elided lifetime in input position becomes a distinct lifetime parameter. If there is exactly one input lifetime position (elided or not), that lifetime is assigned to all elided output lifetimes. If there are multiple input lifetime positions, but one of them is \&self or \&mut self, the lifetime is assigned to all elided output lifetimes. Otherwise, it is an error to elide an output lifetime.  Reification of lifetimes refers to performing the opposite of elision, i.e. reintroducing a lifetime parameter where one did not exist previously.
 
-A \textit{trait} is a collection of methods defined for an unknown type which is denoted by `Self'. Traits define interfaces, but do not follow the standard notion of inheritance. Traits can be composed of other traits, and any conflicting methods must be resolved if they occur. Traits allow definition of default implementations and most importantly, traits are implemented for data types -- specifically structs and enums. Basically, where a type implements a trait, you can be expected to call any of the methods present in that trait on any object of that type. Rust allows limited operator overloading using traits. The `+' operator for instance, can be overloaded by creating an implementation for the corresponding trait `Add'.
+%A \textit{trait} is a collection of methods defined for an unknown type which is denoted by `Self'. Traits define interfaces, but do not follow the standard notion of inheritance. Traits can be composed of other traits, and any conflicting methods must be resolved if they occur. Traits allow definition of default implementations and most importantly, traits are implemented for data types -- specifically structs and enums. Basically, where a type implements a trait, you can be expected to call any of the methods present in that trait on any object of that type. Rust allows limited operator overloading using traits. The `+' operator for instance, can be overloaded by creating an implementation for the corresponding trait `Add'.
 
 %\begin{figure}[h]
 %\centering
@@ -48,7 +48,7 @@ A \textit{trait} is a collection of methods defined for an unknown type which is
 %\caption{Simple trait example}
 %\end{figure}
 
-Finally, \textit{modules} provide a logical unit of code organisation that can be used to hierarchically divide code while managing visibility. The appearance of the `use' declaration allows binding of a module path to a shorter name and utilisation of code stored within such a module namespace. Modules can be nested within the same file, created as a file with the name of the module or as a subdirectory with the name of the module.
+%Finally, \textit{modules} provide a logical unit of code organisation that can be used to hierarchically divide code while managing visibility. The appearance of the `use' declaration allows binding of a module path to a shorter name and utilisation of code stored within such a module namespace. Modules can be nested within the same file, created as a file with the name of the module or as a subdirectory with the name of the module.
 
 \subsection{The Rust Compiler}
 
@@ -74,7 +74,9 @@ In Rust, a `crate' forms a compilation unit. To compile a crate, a crate root Ru
 %%\itemsep0em 
 %\end{enumerate}
 
-A major feature provided by the compiler to enable refactoring, is the ability to produce a \textit{summarised analysis}. This output in the form of a comma separated (csv) file and collates a number of useful artefacts for annotating source code and performing code analysis. In order for rustc to generate this output, a flag must be supplied to the command line `{\verb|-Zsave-analysis|}'. Besides the refactoring tool produced as part of this work, the save-analysis output is also used by a Rust plugin for DXR, which is a source code browser developed and used frequently by Mozilla~\cite{dxr15}.  
+A major feature provided by the compiler to enable refactoring, is the ability to produce a \textit{summarised analysis}. This output in the form of a comma separated (csv) file and collates a number of useful artefacts for annotating source code and performing code analysis. In order for rustc to generate this output, a flag must be supplied to the command line `{\verb|-Zsave-analysis|}'.
+
+% Besides the refactoring tool produced as part of this work, the save-analysis output is also used by a Rust plugin for DXR, which is a source code browser developed and used frequently by Mozilla~\cite{dxr15}.  
 
 \begin{figure*}
 \vspace{5mm}
