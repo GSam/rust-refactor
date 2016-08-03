@@ -1,92 +1,14 @@
 \section{Implementation}\label{C:impl}
 
-%\subsection{Defining the entry point}\label{S:entry}
-%
-%\subsubsection{Identification of affected nodes}
-%In order to map a variable, function or type to the corresponding AST node, the save-analysis output must be provided. With the csv output, a user need only present a file line and column to determine the node id of the referenced element. Within the library, the csv is read every time this operation is required and will always perform a full scan of the file lines. While this could be avoided, there is still the fundamental issue of providing the save-analysis output as input to the tool, ensuring a full scan will always be necessary regardless. A binary search mechanism for code spans (or sections) could be particularly efficient for searching for a node; however this would still need some mechanism for long running updating of a code map to be effective. Furthermore it is unlikely that this operation presents any significant penalties compared to those encountered with the validity checking of a refactoring to be examined.
-%
-%\subsubsection{Simple command line}
-%
-%\begin{figure}[h]
-%\centering
-%
-%\begin{verbatim}
-%simple.rs file:
-%fn main() {
-%    let a = 1;
-%    let b = a + 1;
-%}
-%
-%% refactor var dxr-temp/unknown_crate.csv simple.rs  a:-1:-1 c
-%a -1 -1
-%NODE ID: 9
-%fn main() {
-%    let c = 1;
-%    let b = c + 1;
-%}
-%\end{verbatim}
-%
-%\caption{Simple renaming of local variable \emph{a} to \emph{c}}
-%\label{Fig:cmdrename}
-%\end{figure}
-%
-%With the library, a simple command line tool has been provided to give a user interface for a refactoring to be identified and invoked. The command line tool takes any new names required for a refactoring and takes the original name and code location (typically a declaration) which may be denoted with row and column numbers in the form {\verb|<name>:<row>:<col>|}. Row and column may be replaced with -1, as a wildcard, to initiate any refactoring valid for a matching name (where the expectation is that only one such name will be found). The tool also takes the operation that should be undergone (e.g. var, type or fn), the save-analysis file, the source file and with that, executes the refactoring, outputting the result to standard output.
-%
-%Figure \ref{Fig:cmdrename} describes a simple renaming of local variable {\verb|a|} to {\verb|c|}. The tool has identified the corresponding node in the AST as having id 9 and has successfully carried out the renaming. If the tool fails, e.g. finds a conflict, a simple error message `CONFLICT' is displayed.
-
 \subsection{Renaming}
 
-Given a node id, a new name, the save-analysis file and the crate root file, a rename refactoring then has enough information to begin. Loading in the csv analysis, there are two separate pieces of information that need to be identified: the declaration and the references. Once they are ascertained, we run the compiler API to invoke the compiler. Using name resolution within the compiler, we can attempt to resolve the new name at the declaration site in the AST to ensure that it does not cause any conflicts. By doing so, this would avoid same-block conflicts and prevent all super-block conflicts. Consequently, this also prevents a number of valid renamings where there is no eventual usage of the shadowed item. %This issue is partially addressed in Section \ref{S:limit}. This check does not address the issue of sub-block conflicts, however. In order to do so would require name resolution to resolve the new name at each of the reference sites in the AST to ensure that it does not resolve to an undesired declaration. 
+Given an id for an AST node, a new name, the save-analysis file, and the crate root file, a rename refactoring then has enough information to begin. Loading in the csv analysis, there are two separate pieces of information that need to be identified: the declaration and the references. Once they are ascertained, we run the compiler API to invoke the compiler. Using name resolution within the compiler, we can attempt to resolve the new name at the declaration site in the AST to ensure that it does not cause any conflicts. By doing so, this would avoid same-block conflicts and prevent all super-block conflicts. Consequently, this also prevents a number of valid renamings where there is no eventual usage of the shadowed item.
 
 Referring back to the conditions listed in Section~\ref{C:back}, resolution at the declaration site for super-block and same-block conflicts force usages binding to different declarations to remain binded to their different declaration. By addressing sub-block conflicts, at each renamed usage, name resolution would check the remaining condition that the binding was made only to the renamed declaration. Ideally, name resolution would run with both the declaration renamed and the usages renamed and within a single pass of the compiler.
 
 Unfortunately, limitations imposed by the structure of name resolution and the internal representation mean that this is not possible. In order to provide functionality for detecting the missing sub-block conflicts, recompilation of the entire crate with a single use renamed is necessary. Of course this provides significant overhead; however, hopefully name resolution can provide the required functionality in the future. Apart from compilation, there does not appear to be any straightforward way to checking if a name already exists in the context for a usage. The full name resolution approach is one which appears to be adopted by gorename \cite{gorename15} and is much more efficient in general due to the fact that only one compiler run should be necessary to check every modification point. The additional choice of employing the full compilation approach for declarations indicates further complexities in providing valid expression constructions (to test the presence of an existing name). A generic approach could not be used and so constructions of different forms for variables and variations of types and functions would be necessary -- which might not be compatible with simple ad-hoc replacement at the source code level.
 
 Adopting the compilation approach, each reference is renamed to the new name one at a time and compiled to ensure that it fails. If a compilation succeeds, then a super-block or sub-block conflict would have occurred in this location and the refactoring must be halted. Care must be taken to ensure that the compilation fails due to a name resolution problem and not one which is due to other failures. If all the compilations fail correctly, the refactoring proceeds and performs all renamings of the occurrences of a variable/function/type.
-
-%\subsection{The changes to libresolve}\label{S:changes}
-%In order to provide the necessary capabilities of name resolution, a number of modifications had to be made to the libresolve package within the Rust compiler. Name resolution occurs by walking the AST and resolving as it goes. As it proceeds through the AST, it maintains a list of ribs which correspond to lexical scopes and the various declarations made within them. By doing this, names defined within scopes can be checked, however unfortunately this means that libresolve and the associated {\verb|resolve_path|} call required for resolving a new name in the form of a path is not stateless. The module is built with resolution of an entire crate in mind and so every time a path resolution is required, the entire AST must be walked to find a single node. Compared to compilation, the cost should still not be significant, but there is still the challenge of stopping the walker (as part of the Visitor pattern) in the middle of a traversal. 
-%
-%\subsubsection{The lack of inheritance}
-%Had Rust implemented simple, single inheritance, creation of a walker to terminate at a given node would be quite trivial. An obvious alternative would be to single copy-paste the name resolution walker and modify the functionality as per necessary. Unfortunately, even if the changes were accepted upstream, this demanded heavy modification to a number of interfaces and duplication of further code which relied on the name resolution walker as the only possible type of name resolution walker. Basically it was never built for a generic implementation. Inheritance is a proposed addition to Rust, however, little progress has been made, and there are a number of outstanding issues as to how it would fit in with the existing type system \cite{inherit}.
-%
-%The second attempted approach was to attempt delegation to simulate the use of inheritance. Wrapping the outer API of the existing walker with a new walker is quite simple; however, reverting control back to the new walker is not so trivial as calls will normally just continue with the internal walker and not with the wrapped one. In some situations, refactoring of the code to force the {\verb|walk_X|} functions to occur at the end of each visit function would allow very little overall duplication of code, however if multiple {\verb|walk_X|} calls are made within a single function there is no simple solution without modification to the old walker. Even performing this proposed modification causes difficulty due to Rust and the mandatory requirement of ownership. In order to simulate inheritance, one approach would be to have the existing walker hold a field which contained a reference to either itself (for the default behaviour) or the new walker (for the new behaviour). Unfortunately, an object with a reference to itself under normal circumstances is quite difficult and prevented by the compiler due to move semantics. The ideal of one (modifying) reference to any object is broken with any cyclical or circular referencing. There are ways around this, otherwise Rust would suffer in flexibility, but most of them require planning ahead like the use of reference counting. The {\verb|RC<X>|} type is a reference counted pointer and solves any problems with creating circular graphs, however to use them for name resolution likely required conversion of the entire library.
-%
-%Accepting that reference counting would entail much more work, the last approach was to hand a callback to the resolver to invoke at every AST node. It functions generally for what is required but in terms of modifying without changes to original implementation, inheritance still appears to be the ideal approach (for the Visitor pattern).
-%
-%\subsubsection{resolve\_path termination and the issue of panics}
-%Now with a callback, and identification of the correct node location, the question is: What to do now? Deeply nested in the AST tree, the callback cannot simply halt the walker and leave it in the correct state to query the local ribs for lexical scoping. It is possible to simply panic and the stack unwind can be caught, however, the unwind mechanism is not built for general message passing (and nesting these captures is not recommended). In particular, information that can be passed through the panic should be serializable and the implementation of the resolver is not compliant with that, requiring a number of changes.
-%
-%The resolution itself could be executed in the callback, however, the resolver now owns the callback and therefore makes it impossible to pass the resolver through as an argument of the callback due to the ownership system preventing two simultaneous mutable borrows. Therefore, this is not feasible under the current structure.
-%
-%The remaining solution is to simply flag the resolver as complete and detecting this flag, perform no additional processing. The no additional processing is absolutely crucial due to the presence of the local ribs which are normally popped off as the scopes are exited. This appeared to be the only remaining practical solution to the issue of stopping the walker.
-%
-%\subsubsection{Known limitations}\label{S:limit}
-%\paragraph{Forcing super-block conflicts}
-%With the current setup, there are cases where a super-block conflict which shadows nothing, or has no usages, may still be counted as a conflict. There are a few advantages of preventing redeclaration under the same name, one of which is that instead of checking every usage of every name, you only need to check the usages for the name that has been renamed. In the full compiler scenario, this is particularly bad and slow. The reason such checking is unnecessary is due to the fact that outsider usages suddenly binding to your new declaration is impossible -- the declaration is never shadowing anything.
-%
-%\paragraph{Macros}
-%Macros do not appear at all in the csv save-analysis output. Due to the incomplete information supplied by save-analysis, it should probably be encouraged that conflicts should be raised as a precautionary measure whenever possible. This makes it so that forcing super-block conflicts unnecessarily might actually help prevent conflicts with unseen macros. An additional run could identify issues with macros, however referring back to Opdyke's 7th constraint, the main issue is with sub-block or super-block conflicts which cannot be detected with any usual means and do not cause compilation errors. Pretending to handle macros is likely worse than not promising anything at all and an extra compilation run is bound to occur eventually. The following example highlights the behaviour shift with macros, which you can see with println! as a macro:
-%
-%\begin{figure}[h]
-%\centering
-%\begin{verbatim}
-%simple.rs file:
-%fn main() {
-%    let a = 1;
-%    println!("{}", a);
-%}
-%
-%% refactor var dxr-temp/unknown_crate.csv simple.rs  a:-1:-1 c
-%a -1 -1
-%NODE ID: 9
-%fn main() {
-%    let c = 1;
-%    println!("{}", a);
-%}
-%\end{verbatim}
-%\caption{Macro failure -- no changes made}
-%\end{figure}
 
 \subsection{Inlining}
 
@@ -119,7 +41,6 @@ fn main() { let _ = (2 + 1) * 2; } // rather than 2 + 1 * 2
 \label{Fig:exinline}
 \end{figure}
 
-%  inlining in action using the command line interface that was previously described
 In Figure \ref{Fig:exinline}, you can see the general result of running the tool on the given input. In particular, you can notice that the order of operations is preserved due to the fact that the pretty printer correctly identifies where parentheses are required. Without the pretty printer handling this case, the identified expression would evaluate to 4 instead of 6. Originally, this was not the behaviour given by the pretty printer, and contributions to the compiler were required to ensure that this case (as well as other similar cases) were correctly handled.
 
 \subsubsection{An alternative approach}
@@ -143,5 +64,3 @@ becomes:\newline
 \label{Fig:partial}
 \end{figure}
 
-%\subsubsection{The missing boxed trait cases}
-%Referring back to the issue identified in Section \ref{S:pod}, the current implementation is restricted to handling only explicit borrows with a preceding `\&'. In terms of reification, it does not appear to be the case that the error reporting mechanism was designed to correctly identify these lifetime positions. This likely makes the current approach incompatible to solving the issue in general, requiring a more customized approach. One of the major advantages of using the error reporting mechanism was the ability to automatically allocate and detect missing lifetimes and without it, work would need to be done to replicate and extend the functionality in the manner necessary. In terms of elision, there does not appear to be an issue with using the general `folder' approach for removing these lifetimes, however, the identification of whether or not removal is valid still appears problematic. In particular, this is due to RFC ambiguity and the implicit definitions of what it means to be an input or output position.
