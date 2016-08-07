@@ -1,14 +1,7 @@
-#![feature(io)]
-#![feature(box_syntax)]
-#![feature(box_patterns)]
-#![feature(collections)]
 #![feature(rustc_private)]
-#![feature(core)]
-#![feature(path)]
 
 #[macro_use]
 extern crate log;
-
 extern crate refactor;
 
 use std::env;
@@ -17,13 +10,12 @@ use std::io::prelude::*;
 use std::path::Path;
 use std::collections::HashMap;
 
-use refactor::refactor::init;
+use refactor::analysis::AnalysisData;
 
 // Simple command line interface to the library.
 // Should probably use the actual getopt to be more practical.
 fn main() {
-    let args = env::args();
-    let args: Vec<_> = args.collect();
+    let args: Vec<_> = env::args().collect();
 
     if args.len() < 5 {
         let _ = writeln!(&mut std::io::stderr(), "Not enough args: <var|type|fn|inline|reify|elide> <analysis> <src> <var> [<outvar>]");
@@ -47,12 +39,12 @@ fn main() {
     };
     let mut analysis_str = String::new();
     let _ = analysis.read_to_string(&mut analysis_str);
-    let analysis_data = init(&analysis_str);
+    let analysis_data = AnalysisData::new(&analysis_str);
 
 
     let v: Vec<_> = args[4].split(":").collect();
     if v.len() == 3 {
-        input_id = refactor::refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_data,
+        input_id = refactor::identify_id(path.file_name().unwrap().to_str().unwrap(), &analysis_data,
                                             v[0], v[1].parse().unwrap(), 
                                             v[2].parse().unwrap(), None);
         let _ = writeln!(&mut std::io::stderr(), "NODE ID: {}", input_id);
@@ -61,42 +53,42 @@ fn main() {
 
     match &*args[1] {
         "var" => {
-            let result = refactor::refactor::rename_variable(&args[3], &analysis_data, &args[5], rename_var);
+            let result = refactor::rename_variable(&args[3], &analysis_data, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "type" => {
-            let result = refactor::refactor::rename_type(&args[3], &analysis_data, &args[5], rename_var);
+            let result = refactor::rename_type(&args[3], &analysis_data, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "fn" => {
-            let result = refactor::refactor::rename_function(&args[3], &analysis_data, &args[5], rename_var);
+            let result = refactor::rename_function(&args[3], &analysis_data, &args[5], rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "inline" => {
-            let result = refactor::refactor::inline_local(&args[3], &analysis_data, rename_var);
+            let result = refactor::inline_local(&args[3], &analysis_data, rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "reify" => {
-            let result = refactor::refactor::restore_fn_lifetime(&args[3], &analysis_data, rename_var);
+            let result = refactor::restore_fn_lifetime(&args[3], &analysis_data, rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)
             }
         },
         "elide" => {
-            let result = refactor::refactor::elide_fn_lifetime(&args[3], &analysis_data, rename_var);
+            let result = refactor::elide_fn_lifetime(&args[3], &analysis_data, rename_var);
             match result {
                 Ok(x) => println!("{}", better_string(x)),
                 Err(x) => println!("{:?}", x)

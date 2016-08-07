@@ -1,11 +1,8 @@
 
 use syntax::ast::Name;
 use std::collections::HashSet;
-//use syntax::ast::*;
-//use syntax::visit::{self, Visitor};
 use rustc_front::hir::*;
-use rustc_front::visit::{self, Visitor};
-use syntax::codemap::Span;
+use rustc_front::intravisit::{self as visit, Visitor};
 
 pub struct LifetimeWalker {
     pub anon: u32,
@@ -27,7 +24,7 @@ impl LifetimeWalker {
 
 // Walk the AST for lifetimes and count them.
 impl<'v> Visitor<'v> for LifetimeWalker {
-
+/* FIXME!
     fn visit_opt_lifetime_ref(&mut self,
                               _span: Span,
                               opt_lifetime: &'v Option<Lifetime>) {
@@ -40,6 +37,7 @@ impl<'v> Visitor<'v> for LifetimeWalker {
             None => self.anon += 1
         }
     }
+    */
 
     fn visit_explicit_self(&mut self, es: &'v ExplicitSelf) {
         self.expl_self = self.anon;
