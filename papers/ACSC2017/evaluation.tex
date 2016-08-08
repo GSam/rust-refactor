@@ -2,9 +2,7 @@
 
 \subsection{Validity of refactorings}\label{S:validity}
 
-TODO are we going to link to the repo or include it as an artifact? Basically, how do we refer to it. cite below
-
-We wrote 85 tests to ensure that the refactoring tool functions as expected. We test that either refactoring aborts or gives the expected output.
+We wrote 85 tests to ensure that the refactoring tool~\cite{rrproject} functions as expected. We test that either refactoring aborts or gives the expected output.
 
 \subsubsection{Validity of renamings}
 
@@ -59,10 +57,7 @@ Lifetime elision is mostly correct but incomplete. It fails in compex cases, suc
 
 \subsubsection{Formal correctness and alternative approaches}
 
-TODO fix this next para
-
-Formal foundations for refactoring in general appears incredibly weak as raised by the JRRT paper. Even the most trivial of refactorings rarely have huge amounts of published detail and are based solely on implementation. Aiming to create any reasonable formalism appears to be an arduous task, and not one met with many rewards, particularly when the goal here has been specifically the production of a Rust refactoring tool. Not only that, but the amount of time available and the necessary experience appeared thoroughly inadequate for producing anything meaningful for others. Looking at some attempts, at best they appear to be attempting case studies for different approaches of formalization. One attempt used graph rewriting \cite{graph} to reasonable success, however they note in their discussion the difficulties of handling language specific features (reiterating a massive limitation). From looking at a Haskell refactoring paper, the general attitude appears to be that if we cannot even implement a concrete tool or understand what should and should not be passing, there is no way that a formalization holds any specific meaning \cite{sculthorpe}. Furthermore, the act of implementing a reasonably powerful tool is no easy feat on its own. 
-
+Formal foundations for refactoring in general appears incredibly weak as raised by the JRRT~\cite{schafer2010specification} paper. Even the most trivial of refactorings often lack written specification and are based solely on implementation. One related case study includes a graph rewriting approach to refactoring simple programs~\cite{graph} which achieves reasonable success, but they note in their discussion the difficulties of handling language specific features (highlighting a massive limitation). Another recent paper from the Haskell community reiterates the difficulty of implementing a concrete refactoring tool or even understanding what should and should not be considered a ``valid refactoring''~\cite{sculthorpe}. It appears that, the act of implementing a reasonably powerful refactoring tool is no easy feat on its own leave alone stating its specifications or formal properties it might guarantee.
 
 \subsection{Performance evaluation}\label{S:perfeval}
 With only single file tests, the amount of time spent performing each refactoring is negligible. Compilation times for single files, particularly trivial programs do not provide sufficient evidence of practical timing for performing a refactoring. Therefore we investigated real world code from  crates.io, the Rust package repository \cite{cratesio15}. 

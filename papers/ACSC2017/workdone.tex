@@ -8,12 +8,12 @@ Performing renaming without any of the necessary checks is not a particularly di
 
 \begin{figure}[h]
 \begin{verbatim}
-let a = 1;                         let a = 1;
-let b = 2;                         let b = 2;
-{                                  {
-    let a = 3;                         let b = 3;
-    println!("{}", b); // 2            println!("{}", b); // 3
-}                                  }
+let a = 1;                     let a = 1;
+let b = 2;                     let b = 2;
+{                              {
+  let a = 3;                     let b = 3;
+  println!("{}", b); // 2        println!("{}", b); // 3
+}                              }
 \end{verbatim}
 \caption{Super-block conflict: Renaming block local a to shadow outer b}
 \label{Fig:super}
@@ -23,11 +23,11 @@ let b = 2;                         let b = 2;
 
 \begin{figure}[h]
 \begin{verbatim}
-let b = 1;                         let a = 1;
-{                                  {
-    let a = 2;                         let a = 2;
-    println!("{}", b); // 1            println!("{}", a); // 2
-}                                  }
+let b = 1;                     let a = 1;
+{                              {
+  let a = 2;                     let a = 2;
+  println!("{}", b); // 1        println!("{}", a); // 2
+}                              }
 \end{verbatim}
 \caption{Sub-block conflict: Renaming outer b forces block local a to shadow outer a}
 \label{Fig:sub}
@@ -37,8 +37,8 @@ In other languages, \textit{same-block conflict} occurs with local variables whi
 
 \begin{figure}[h]
 \begin{verbatim}
-const a: i32 = 1;                  const a: i32 = 1;
-const v: i32 = 2;                  const a: i32 = 2;
+const a: i32 = 1;              const a: i32 = 1;
+const v: i32 = 2;              const a: i32 = 2;
 \end{verbatim}
 \caption{Same-block conflict: Renaming b to conflict with a in the same scope}
 \label{Fig:same}
@@ -126,13 +126,12 @@ Although the concepts of lifetimes and ownership are not trivial, the effect of 
 {\verb|fn foo<'a>(&|}
 {\color{green} \verb|'a|}{\verb| self)|}
 
-{\verb|fn foo<'a, 'b, 'c>(&|}
-{\color{green} \verb|'a|}{\verb| self, x: &|}{\color{red} \verb|'b|}{\verb| Debug, y: &|}
-{\color{red} \verb|'c|}{\verb| Debug)|}
+{\verb|fn foo<'a, 'b, 'c>(&|}{\color{green} \verb|'a|}{\verb| self,|}\\
+{\verb|                   x: &|}{\color{red} \verb|'b|}{\verb| Debug, y: &|}{\color{red} \verb|'c|}{\verb| Debug)|}
 
-{\verb|fn foo<'a, 'b, 'c>(&|}
-{\color{green} \verb|'a|}{\verb| self, x: &|}{\color{red} \verb|'b|}{\verb| Debug, y: &|}
-{\color{red}\verb|'c|}{\verb| Debug) -> &|}{\color{blue}\verb|'a|}{\verb| Point|}
+{\verb|fn foo<'a, 'b, 'c>(&|}{\color{green} \verb|'a|}{\verb| self,|}\\
+{\verb|                   x: &|}{\color{red} \verb|'b|}{\verb| Debug,|}\\
+{\verb|                   y: &|}{\color{red}\verb|'c|}{\verb| Debug) -> &|}{\color{blue}\verb|'a|}{\verb| Point|}
 
 \caption{Examples of lifetime parameters}
 \label{Fig:lifetimes}
@@ -207,7 +206,7 @@ Now, the idea is to build a tool to annotate these lifetimes where they have bee
 
 \subsubsection{Discussion}
 
-For reification, we envision a developer who stumbles upon a piece of code involving lifetimes that they wish to change. The lifetimes were originally elided to reduce noise so that anybody using a function, for instance, could more easily grasp its underlying purpose. In modifying the code, the developer now wishes to visualize exactly which lifetimes are in use where, or debug a type error involving lifetimes. The developer could manually reinsert the lifetimes themselves, or they could use a tool for automating the reification of lifetimes.
+For reification, we envision a developer who encounters a piece of code involving lifetimes that they wish to change. The lifetimes were originally elided to reduce noise, e.g. so that anybody using a function could more easily grasp its underlying purpose. In modifying the code, the developer now wishes to visualize exactly which lifetimes are in use where, or debug a type error involving lifetimes. The developer could manually reinsert the lifetimes themselves, or they could use a tool for automating the reification of lifetimes.
 
 For elision, we envision a situation where a developer has a piece of code with all the lifetimes specified, where they were either provided from scratch while performing the implementation or by reification (ideally through a tool). The lifetimes make the code more verbose and harder to comprehend, especially to others, and so, the developer wishes to elide as many lifetimes as possible. This could be done manually, but allows the possibility of errors and missed opportunities to remove a lifetime parameter; or they could use a tool to automate the elision of lifetimes. 
 

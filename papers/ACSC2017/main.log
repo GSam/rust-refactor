@@ -1,42 +1,41 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.4.25)  15 JUN 2016 15:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (Web2C 2016) (preloaded format=pdflatex 2016.6.19)  8 AUG 2016 15:30
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
 **main.tex
 (./main.tex
 LaTeX2e <2016/03/31>
-Babel <3.9q> and hyphenation patterns for 81 language(s) loaded.
+Babel <3.9r> and hyphenation patterns for 40 language(s) loaded.
 (./sig-alternate-05-2015.cls
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/epsfig.sty
+(/usr/pkg/share/texmf-dist/tex/latex/graphics/epsfig.sty
 Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/pkg/share/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/keyval.sty
+(/usr/pkg/share/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks14
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphics.sty
-Package: graphics 2016/01/03 v1.0q Standard LaTeX Graphics (DPC,SPQR)
+(/usr/pkg/share/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/05/09 v1.0r Standard LaTeX Graphics (DPC,SPQR)
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/trig.sty
+(/usr/pkg/share/texmf-dist/tex/latex/graphics/trig.sty
 Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/graphics.cfg
-File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+(/usr/pkg/share/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/01/02 v1.10 sample graphics configuration
 )
-Package graphics Info: Driver file: pdftex.def on input line 95.
+Package graphics Info: Driver file: pdftex.def on input line 96.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/pdftex-def/pdftex.def
+(/usr/pkg/share/texmf-dist/tex/latex/pdftex-def/pdftex.def
 File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/infwarerr.sty
-Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
 )
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
-Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
 )
 \Gread@gobject=\count79
 ))
@@ -46,10 +45,10 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 \epsfxsize=\dimen104
 \epsfysize=\dimen105
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsfonts/amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsfonts/amsfonts.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \@emptytoks=\toks15
 \symAMSa=\mathgroup4
@@ -57,24 +56,24 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsmath.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2016/03/10 v2.15b AMS math features
 \@mathmargin=\skip41
 
 For additional information on amsmath, use the `?' option.
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsmath/amstext.sty
 Package: amstext 2000/06/29 v2.01 AMS text
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsgen.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks16
 \ex@=\dimen106
 ))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsbsy.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 \pmbraise@=\dimen107
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsopn.sty
+(/usr/pkg/share/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2016/03/08 v2.02 operator names
 )
 \inf@bad=\count80
@@ -125,7 +124,7 @@ m.org ******
 Questions on the style, SIGS policies, etc. to Adrienne Griscti griscti@acm.org
 
 \ACM@basesize=\count92
-(/usr/local/texlive/2015/texmf-dist/tex/latex/comment/comment.sty
+(/usr/pkg/share/texmf-dist/tex/latex/comment/comment.sty
 \CommentStream=\write3
 
 Excluding comment 'comment') Excluding comment 'CCSXML'
@@ -133,9 +132,8 @@ Excluding comment 'comment') Excluding comment 'CCSXML'
 \@maxsep=\dimen116
 \@dblmaxsep=\dimen117
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/ifpdf.sty
-Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
-Package ifpdf Info: pdfTeX in PDF mode is detected.
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2016/05/14 v3.1 Provides the ifpdf switch
 )
 \aucount=\count93
 \originalaucount=\count94
@@ -160,7 +158,7 @@ LaTeX Warning: You have requested document class `sig-alternate-05-2015',
 
 Document Class: sig-alternate 2013/05/12 v2.7 based on acmproc.cls V1.3 <Nov. 3
 0 '99>
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/latexsym.sty
+(/usr/pkg/share/texmf-dist/tex/latex/base/latexsym.sty
 Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
 \symlasy=\mathgroup6
 LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
@@ -191,17 +189,17 @@ LaTeX Info: Redefining \cite on input line 1408.
 \copyrtyr=\toks32
 \acmcopyr=\toks33
 \boilerplate=\toks34
-(/usr/local/texlive/2015/texmf-dist/tex/latex/url/url.sty
+(/usr/pkg/share/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 ) (./acmcopyright.sty
 Package: acmcopyright 2014/06/29 v1.2 Copyright statemens for ACM classes
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/pkg/share/texmf-dist/tex/latex/xkeyval/xkeyval.sty
 Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/xkeyval/xkeyval.tex
-(/usr/local/texlive/2015/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/pkg/share/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/pkg/share/texmf-dist/tex/generic/xkeyval/xkvutils.tex
 \XKV@toks=\toks35
 \XKV@tempa@toks=\toks36
 )
@@ -210,28 +208,28 @@ File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 )))
 \copyrightetc=\toks37
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/pkg/share/texmf-dist/tex/latex/base/fontenc.sty
 Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/t1enc.def
+(/usr/pkg/share/texmf-dist/tex/latex/base/t1enc.def
 File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
 )
 LaTeX Font Info:    Try loading font information for T1+aer on input line 105.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/ae/t1aer.fd
+(/usr/pkg/share/texmf-dist/tex/latex/ae/t1aer.fd
 File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
 )))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/color.sty
-Package: color 2016/01/03 v1.1b Standard LaTeX Color (DPC)
+(/usr/pkg/share/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2016/05/09 v1.1c Standard LaTeX Color (DPC)
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/color.cfg
-File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+(/usr/pkg/share/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package color Info: Driver file: pdftex.def on input line 143.
+Package color Info: Driver file: pdftex.def on input line 144.
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
-Package: multicol 2016/02/08 v1.8o multicolumn formatting (FMi)
+(/usr/pkg/share/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2016/04/07 v1.8p multicolumn formatting (FMi)
 \c@tracingmulticols=\count111
 \mult@box=\box30
 \multicol@leftmargin=\dimen123
@@ -278,41 +276,62 @@ Package: multicol 2016/02/08 v1.8o multicolumn formatting (FMi)
 \mult@nat@firstbox=\box54
 \colbreak@box=\box55
 \mc@col@check@num=\count119
-) (./main.aux)
+)
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2016/05/14 v2.6a Micro-typographical refinements (RS)
+\MT@toks=\toks38
+\MT@count=\count120
+LaTeX Info: Redefining \textls on input line 774.
+\MT@outer@kern=\dimen132
+LaTeX Info: Redefining \textmicrotypecontext on input line 1310.
+\MT@listname@count=\count121
+
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2016/05/14 v2.6a Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 916.
+LaTeX Info: Redefining \lslig on input line 916.
+\MT@outer@space=\skip46
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2016/05/14 v2.6a microtype main configuration file (RS)
+)) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
 
-(/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
+(/usr/pkg/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count120
-\scratchdimen=\dimen132
+\scratchcounter=\count122
+\scratchdimen=\dimen133
 \scratchbox=\box56
-\nofMPsegments=\count121
-\nofMParguments=\count122
-\everyMPshowfont=\toks38
-\MPscratchCnt=\count123
-\MPscratchDim=\dimen133
-\MPnumerator=\count124
-\makeMPintoPDFobject=\count125
-\everyMPtoPDFconversion=\toks39
-) (/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
-Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+\nofMPsegments=\count123
+\nofMParguments=\count124
+\everyMPshowfont=\toks39
+\MPscratchCnt=\count125
+\MPscratchDim=\dimen134
+\MPnumerator=\count126
+\makeMPintoPDFobject=\count127
+\everyMPtoPDFconversion=\toks40
+) (/usr/pkg/share/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2016/05/10 v0.21 Utility functions of pdfTeX for LuaTeX (HO
 )
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/ifluatex.sty
-Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
 )
 Package pdftexcmds Info: LuaTeX not detected.
@@ -320,23 +339,23 @@ Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
-Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+(/usr/pkg/share/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/oberdiek/grfext.sty
-Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+(/usr/pkg/share/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
-Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
 ))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/oberdiek/kvoptions.sty
-Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+(/usr/pkg/share/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
-Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
 
-(/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/etexcmds.sty
-Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+(/usr/pkg/share/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
 Package etexcmds Info: Could not find \expanded.
 (etexcmds)             That can mean that you are not using pdfTeX 1.50 or
 (etexcmds)             that some package has redefined \expanded.
@@ -345,199 +364,170 @@ Package etexcmds Info: Could not find \expanded.
 Package grfext Info: Graphics extension search list:
 (grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
 G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 452.
+(grfext)             \AppendGraphicsExtensions on input line 456.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+(/usr/pkg/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for U+msa on input line 14.
+LaTeX Info: Redefining \microtypecontext on input line 9.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `basictext'.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
+(RS)
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 15.
+
+(/usr/pkg/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 14.
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 15.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
+(/usr/pkg/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 14.
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 15.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/ulasy.fd
+(/usr/pkg/share/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-LaTeX Font Info:    Try loading font information for T1+ptm on input line 14.
+LaTeX Font Info:    Try loading font information for T1+ptm on input line 15.
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1ptm.fd
+(/usr/pkg/share/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 )
-(./introduction.tex) (./background.tex
+(/usr/pkg/share/texmf-dist/tex/latex/microtype/mt-ptm.cfg
+File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
+) (./introduction.tex) (./background.tex
 LaTeX Font Info:    Try loading font information for T1+aett on input line 7.
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/ae/t1aett.fd
+ (/usr/pkg/share/texmf-dist/tex/latex/ae/t1aett.fd
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
 )
-Overfull \hbox (19.37599pt too wide) in paragraph at lines 19--19
-[]  \T1/aett/m/n/9 let d = &mut b; // mutable 'borrow' or reference to b[] 
- []
-
-[1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
-
-
-]
-Underfull \vbox (badness 1558) has occurred while \output is active []
+Package microtype Info: Loading generic settings for font family
+(microtype)             `aett' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+ [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
-Overfull \hbox (14.41371pt too wide) in paragraph at lines 106--107
-\T1/aer/m/n/9 fiers and other sup-port-ing in-for-ma-tion, e.g. std::cmp::Parti
-alEq.
+]) (./workdone.tex
+Overfull \hbox (24.09192pt too wide) in paragraph at lines 17--17
+[]  \T1/aett/m/n/9 println!("{}", b); // 2        println!("{}", b); // 3[] 
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \hbox (24.09192pt too wide) in paragraph at lines 31--31
+[]  \T1/aett/m/n/9 println!("{}", b); // 1        println!("{}", a); // 2[] 
+ []
 
- [2]
-[3]) (./workdone.tex
-Overfull \hbox (5.22821pt too wide) in paragraph at lines 17--17
-[]    \T1/aett/m/n/9 print B; // 2                      print B; // 3[] 
+[2]
+Overfull \hbox (36.82356pt too wide) in paragraph at lines 80--80
+[]\T1/aett/m/n/9 println!("{}", a);        println!("{}", insert_into_db());[] 
+
  []
 
 
-Overfull \hbox (5.22821pt too wide) in paragraph at lines 31--31
-[]    \T1/aett/m/n/9 print B; // 1                      print A; // 2[] 
+Overfull \hbox (36.82356pt too wide) in paragraph at lines 80--80
+[]\T1/aett/m/n/9 println!("{}", a);        println!("{}", insert_into_db());[] 
+
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[4]
-Overfull \hbox (47.67155pt too wide) in paragraph at lines 80--80
-[]\T1/aett/m/n/9 println!("{:?}", a);      println!("{:?}", insert_into_db());[
-] 
- []
-
-
-Overfull \hbox (47.67155pt too wide) in paragraph at lines 80--80
-[]\T1/aett/m/n/9 println!("{:?}", a);      println!("{:?}", insert_into_db());[
-] 
- []
-
-[5]
-Underfull \hbox (badness 10000) in paragraph at lines 131--134
-[][]\T1/aett/m/n/9 fn foo<'a, 'b, 'c>(& [][]'a[][] self, x: &[][]'b[][] Debug, 
-y: &
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 135--138
-[][]\T1/aett/m/n/9 fn foo<'a, 'b, 'c>(& [][]'a[][] self, x: &[][]'b[][] Debug, 
-y: &
- []
-
-
-Overfull \hbox (2.56427pt too wide) in paragraph at lines 195--200
+[3]
+Overfull \hbox (2.56427pt too wide) in paragraph at lines 186--191
 []\T1/aett/m/n/9 fn foo<'a, 'b>(& [][]'a[][] self, x: &[][]'b[][] Debug) -> &[]
 []'a[][] Point 
  []
 
-
-Overfull \hbox (1.07692pt too wide) in paragraph at lines 223--224
-\T1/aer/m/n/9 are de-fined re-la-tion-ships be-tween life-times, like []\T1/aet
-t/m/n/9 'a \T1/aer/m/n/9 must
- []
-
-[6]) (./implementation.tex [7]
-Overfull \hbox (38.2397pt too wide) in paragraph at lines 117--117
+) (./implementation.tex [4]
+Overfull \hbox (38.2397pt too wide) in paragraph at lines 32--32
 []\T1/aett/m/n/9 fn main() { let _ = (2 + 1) * 2; } // rather than 2 + 1 * 2[] 
 
  []
 
 
-Overfull \hbox (19.37599pt too wide) in paragraph at lines 139--142
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \vbox (badness 2680) has occurred while \output is active []
+
+
+Overfull \hbox (19.37599pt too wide) in paragraph at lines 46--49
 [][]\T1/aett/m/n/9 fn foo<'a,'b>(x: &'a Debug, y: &'a Debug, z: &'b Debug) 
  []
 
-) (./evaluation.tex [8]
-Overfull \hbox (13.32443pt too wide) in paragraph at lines 38--39
-\T1/aer/m/n/9 and nor-mal lo-cal vari-ables, both in suc-cess-ful and non-succe
-ssful
- []
 
+LaTeX Font Warning: Font shape `T1/aett/bx/it' undefined
+(Font)              using `T1/aett/m/n' instead on input line 49.
 
-Overfull \hbox (3.21999pt too wide) in paragraph at lines 43--44
-\T1/aer/m/n/9 the csv file de-scrip-tion and the re-liance on the use of []\T1/
-aett/m/n/9 declname
- []
-
-[9]
-Overfull \hbox (1.08504pt too wide) in paragraph at lines 85--85
+) (./evaluation.tex [5]
+Overfull \hbox (1.08504pt too wide) in paragraph at lines 58--58
 []\subsecfnt Formal cor-rect-ness and al-ter-na-tive ap-proaches 
  []
 
-[10]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<refactorings.png, id=46, 562.35094pt x 456.95718pt>
+[6] <refactorings.png, id=33, 562.35094pt x 456.95718pt>
 File: refactorings.png Graphic file (type png)
- <use refactorings.png>
-Package pdftex.def Info: refactorings.png used on input line 236.
+
+<use refactorings.png>
+Package pdftex.def Info: refactorings.png used on input line 92.
 (pdftex.def)             Requested size: 227.62204pt x 184.96205pt.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[11]
-Overfull \hbox (7.4611pt too wide) in paragraph at lines 250--262
+Overfull \hbox (7.4611pt too wide) in paragraph at lines 104--116
  [] 
  []
 
-<scaling.png, id=50, 531.48563pt x 338.76563pt>
+<scaling.png, id=34, 531.48563pt x 338.76563pt>
 File: scaling.png Graphic file (type png)
  <use scaling.png>
-Package pdftex.def Info: scaling.png used on input line 271.
+Package pdftex.def Info: scaling.png used on input line 125.
 (pdftex.def)             Requested size: 227.62204pt x 145.08743pt.
+)
+(./discussion.tex [7 <./refactorings.png> <./scaling.png>]) (./future.tex
+Underfull \vbox (badness 1558) has occurred while \output is active []
 
+ [8])
+(./conclusion.tex) (./main.bbl) [9] (./main.aux)
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-) (./discussion.tex [12 <./refactorings.png> <./scaling.png>]
-Overfull \hbox (10.33046pt too wide) in paragraph at lines 11--12
-[]\T1/aer/m/n/9 Currently macros are com-pletely ig-nored by the save-analysis
- []
-
-) (./future.tex
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [13])
-(./conclusion.tex) (./main.bbl [14]) [15
-
-] (./main.aux) ) 
+ ) 
 Here is how much of TeX's memory you used:
- 3444 strings out of 493027
- 44853 string characters out of 6134069
- 125547 words of memory out of 5000000
- 6845 multiletter control sequences out of 15000+600000
- 56819 words of font info for 81 fonts, out of 8000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 41i,10n,35p,1843b,473s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc
-}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb><
-/usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb>
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></u
-sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/
-local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/lo
-cal/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/loca
-l/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/
-texlive/2015/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive
-/2015/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2015/t
-exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/
-fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type
-1/urw/times/utmri8a.pfb>
-Output written on main.pdf (15 pages, 265043 bytes).
+ 5416 strings out of 493682
+ 76496 string characters out of 6155720
+ 186378 words of memory out of 5000000
+ 8242 multiletter control sequences out of 15000+600000
+ 83623 words of font info for 377 fonts, out of 8000000 for 9000
+ 890 hyphenation exceptions out of 8191
+ 41i,10n,54p,1627b,479s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/pkg/share/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/pkg/share/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/pkg/share/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmbxti10.pfb></usr/pkg/share/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmr8.pfb></usr/pkg/share/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr9.pfb></usr/pkg/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.p
+fb></usr/pkg/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/pk
+g/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/pkg/share/tex
+mf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/pkg/share/texmf-dist/fonts/ty
+pe1/urw/helvetic/uhvr8a.pfb></usr/pkg/share/texmf-dist/fonts/type1/urw/times/ut
+mb8a.pfb></usr/pkg/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/pkg/
+share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (9 pages, 226317 bytes).
 PDF statistics:
- 104 PDF objects out of 1000 (max. 8388607)
- 72 compressed objects within 1 object stream
+ 85 PDF objects out of 1000 (max. 8388607)
+ 59 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 34315 words of extra memory for PDF output out of 35830 (max. 10000000)
 

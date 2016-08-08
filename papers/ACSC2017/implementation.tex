@@ -1,6 +1,6 @@
 \section{Implementation}\label{C:impl}
 
-Our refactoring tool relies on the compiler for semantic information about programs to be refactored. We get this from two sources: the compiler can be requested (with the `-Zsave-analysis' flag) to dump information from its analysis of a program; where we needed more refactoring-specific information, we used a modified version of the compiler with callbacks to our refactoring tool from the name resolution pass.
+Our refactoring tool relies on the compiler for semantic information about programs to be refactored. We get this from two sources: the compiler can be requested (with the `\verb|-Zsave-analysis|' flag) to dump information from its analysis of a program; where we needed more refactoring-specific information, we used a modified version of the compiler with callbacks to our refactoring tool from the name resolution pass.
 
 \subsection{Renaming}
 
@@ -14,7 +14,7 @@ A much better approach (but outside the scope of this project) would be to modif
 
 \subsection{Inlining}
 
-Again, inlining starts with the save-analysis data. This data allows finding the number of uses of a variable to be inlined and the mutability of its type. However, this is not enough to complete our analysis. In particular, in Rust objects can have \it{interior mutability} which is not reflected in that object's type. However, it is tracked by the compiler, so our tool can query this information. We also take account of a mutability annotation being egregious by relying on the compiler identifying such unneccessary annotations. Unfortunately, this requires running the compiler to a late stage of its analysis and thus is fairly time-consuming. Finally, we rely again on name resolution to ensure that any variables which are substituted in still resolve to their original binding.
+Again, inlining starts with the save-analysis data. This data allows finding the number of uses of a variable to be inlined and the mutability of its type. However, this is not enough to complete our analysis. In particular, in Rust objects can have \textit{interior mutability} which is not reflected in that object's type. However, it is tracked by the compiler, so our tool can query this information. We also take account of a mutability annotation being egregious by relying on the compiler identifying such unneccessary annotations. Unfortunately, this requires running the compiler to a late stage of its analysis and thus is fairly time-consuming. Finally, we rely again on name resolution to ensure that any variables which are substituted in still resolve to their original binding.
 
 We perform the actual inlining on the AST. Following that change, we must ensure that the fragment of the AST is properly printed back into the source text. In particular, parentheses may need to be added to ensure the correct ordering of operations due to precedence. See Figure \ref{Fig:exinline} for an example.
 
@@ -46,7 +46,6 @@ For a problematic example, see Figure \ref{Fig:partial}. Here, 'b can be elided,
 {\verb|fn foo<'a,'b>(x: &'a Debug, y: &'a Debug, z: &'b Debug)|}\newline
 becomes:\newline
 {\verb|fn foo<'a>(x: &'a Debug, y: &'a Debug, z: &Debug)|}
-\caption{Partial elision -- only \emph{'b} removed}
+\caption{Partial elision -- only \emph{\texttt{'b}} removed}
 \label{Fig:partial}
 \end{figure}
-
