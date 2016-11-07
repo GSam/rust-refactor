@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: acsc2-camera.aux
+The style file: plain.bst
+Database file #1: garming.bib
+You've used 15 entries,
+            2118 wiz_defined-function locations,
+            573 strings with 5637 characters,
+and the built_in function-call counts, 4073 in all, are:
+= -- 415
+> -- 144
+< -- 3
++ -- 60
+- -- 44
+* -- 191
+:= -- 677
+add.period$ -- 48
+call.type$ -- 15
+change.case$ -- 63
+chr.to.int$ -- 0
+cite$ -- 15
+duplicate$ -- 166
+empty$ -- 366
+format.name$ -- 44
+if$ -- 890
+int.to.chr$ -- 0
+int.to.str$ -- 15
+missing$ -- 6
+newline$ -- 78
+num.names$ -- 30
+pop$ -- 103
+preamble$ -- 1
+purify$ -- 52
+quote$ -- 0
+skip$ -- 131
+stack$ -- 0
+substring$ -- 192
+swap$ -- 43
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 58
+warning$ -- 0
+while$ -- 41
+width$ -- 17
+write$ -- 162

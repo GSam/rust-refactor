@@ -1,0 +1,13 @@
+\section{Discussion}
+
+% TODO - cite here? There is for sure *some* work on formalising refactoring, I'm pretty sure I've read at least one paper on this.
+
+%As raised throughout this report, lack of formalism is an ongoing problem in the area of refactoring. 
+
+General progress in the field of refactoring appears quite slow, with many opting to simply produce implementations rather than tackling the problem at large. In terms of missing formalisms, refactoring is not the only one at blame it appears. Much in the same way, compilers encode otherwise undescribed aspects of programming languages. Rust is no different, and the case with the relatively informal elision RFC (which was descriptive but definitely not complete) was a reminder of this. Being well-defined likely would have allowed reversal of the elision rules with much more ease.
+
+Compiling Rust programs is slow relative to other languages. Work is underway to implement incremental compilation and other compiler performance improvements. However, based on the current design of the tool and the need for multiple runs with modified source, the issue of performance would be better addressed by improvements to name resolution in the compiler and our tool's interaction with it. If name resolution could be re-designed to allow an `interactive' mode, renaming could require a single compiler run, rather than one for every use of the variable being renamed.
+
+Our tool cannot handle macro uses in the source text. Since Rust's macros operate on the AST rather than plain text, and the compiler is aware of them to a great extent, a tool should be able to work around macros to an extent impossible in C/C++. Whilst it is unlikely that code with macros can be refactored as easily as code without, we should at least be able to give a good estimate of whether the refactoring is safe or not. 
+
+The relationship between macro hygiene and refactoring is interesting, but from initial analysis, does not appear to provide any particular benefits. Further research into the relationship might provide some unique insights and a system which is able to incorporate both would be of significant interest.

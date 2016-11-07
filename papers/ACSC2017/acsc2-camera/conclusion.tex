@@ -1,0 +1,5 @@
+\section{Conclusion}\label{C:con}
+
+This work has explored refactoring and providing tool-support for the Rust programming language. Utilizing existing infrastructure provided by the compiler, this work identifies extensions which help facilitate common automated refactorings. In a more general sense, this work attempts to build upon existing work done on refactoring by documenting specific decisions made in building a refactoring tool (which might normally only be encoded in the source code of an actual tool), and attempting to analyze the decisions made by others.
+
+Currently, the provided tool supports renaming of local and global variables, fields, function arguments, structs, enums, and functions. Beyond renaming, it also allows reification and elision of lifetime parameters and has preliminary support for inlining of local variables. These refactorings in particular highlight the idiosyncrasies of Rust, ensuring that the analyses performed here are some of the first of its kind. The complete limitations of these refactorings are not yet fully known, but there exists a current suite of tests to ensure that there are no obvious flaws in the approach.
